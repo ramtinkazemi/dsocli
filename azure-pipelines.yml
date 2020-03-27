@@ -44,10 +44,8 @@ steps:
 
 
 - script: |
-
-    
-    react-native bundle --dev false --assets-dest android/app/src/main/res/ --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --platform android
-  displayName: 'Create release for Android'
+  react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/  
+displayName: 'Create bundle for Android'
 
 - script: |
     cd android
