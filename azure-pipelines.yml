@@ -26,7 +26,7 @@ steps:
 - script: |
     npm install
     # npm run build
-  displayName: 'npm install and build'
+  displayName: 'npm install'
 
 
 # - script: npm run lint
@@ -81,9 +81,14 @@ steps:
 #   displayName: 'Build android'
 
 
-- script: mv android/app/build/outputs/apk/release/app-release-unsigned.apk app-release.apk
+- script: 
+    mv app/build/outputs/apk/release/app-release-unsigned.apk app-release.apk
   displayName: Android Postprocess
   continueOnError: false
+
+- script: AndroidSign release
+    echo Signing release ...
+  displayName: AndroidSign release
 
 # - task: AndroidSigning@3
 #   inputs:
