@@ -23,6 +23,14 @@ steps:
     # npm run build
   displayName: 'npm install and build'
 
+- script: |
+    npm install -g react-native-cli
+  displayName: 'install react-native cli'
+
+
+  
+
+
 # - script: npm run lint
 #   displayName: 'Run lint'
 
