@@ -65,6 +65,7 @@ steps:
     rm -rf android/app/build/intermediates/res/merged/release/drawable-*
     ./gradlew clean
     ./gradlew assembleRelease
+    cd ..
   displayName: 'Create release for Android'
 
 
@@ -82,7 +83,7 @@ steps:
 
 
 - script: 
-    mv app/build/outputs/apk/release/app-release.apk app-release.apk
+    mv android/app/build/outputs/apk/release/app-release.apk app-release.apk
   displayName: Android Postprocess
   continueOnError: false
 
