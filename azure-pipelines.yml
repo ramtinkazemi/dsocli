@@ -19,14 +19,34 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    npm install -g react-native-cli
+  displayName: 'install react-native cli'
+
+
+- script: |
     npm install
     # npm run build
   displayName: 'npm install and build'
 
-- script: |
-    npm install -g react-native-cli
-  displayName: 'install react-native cli'
 
+- task: AndroidSigning@3
+  inputs:
+    apkFiles: 'app-release.apk'
+    apksign: true # Optional
+    apksignerKeystoreFile: 'my-release-key.keystore' # Required when apksign == True
+    apksignerKeystorePassword: $(KeystorePassword) # Optional
+    apksignerKeystoreAlias: $(KeystoreAlias) # Optional
+    apksignerKeyPassword: $(KeyPassword) # Optional
+    #apksignerArguments: '--verbose' # Optional
+    #apksignerFile: # Optional
+    #zipalign: true # Optional
+    #zipalignFile: # Optional
+
+
+- task: CopyFiles@2
+  inputs:
+    contents: 'app-release.apk'
+    targetFolder: $(Build.ArtifactStagingDirectory)
 
   
 
@@ -55,11 +75,18 @@ steps:
     react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/  
   displayName: 'Create bundle for Android'
 
+# - task: Gradle@2
+#   inputs:
+#     workingDirectory: 'android'
+#     gradleWrapperFile: 'android/gradlew'
+#     tasks: 'assembleRelease'
+#   continueOnError: false
+
 - script: |
     cd android
     rm -rf android/app/build/intermediates/res/merged/release/drawable-*
     ./gradlew clean
-    ./gradlew assembleReleasecd
+    ./gradlew assembleRelease
   displayName: 'Create release for Android'
 
 
@@ -74,3 +101,45 @@ steps:
 #     bundle install
 #     fastlane build
 #   displayName: 'Build android'
+
+
+- script: mv android/app/build/outputs/apk/release/app-release-unsigned.apk app-release.apk
+  displayName: Android Postprocess
+  continueOnError: false
+
+# - task: AndroidSigning@3
+#   inputs:
+#     apkFiles: 'app-release.apk'
+#     apksign: true # Optional
+#     apksignerKeystoreFile: 'my-release-key.keystore' # Required when apksign == True
+#     apksignerKeystorePassword: $(KeystorePassword) # Optional
+#     apksignerKeystoreAlias: $(KeystoreAlias) # Optional
+#     apksignerKeyPassword: $(KeyPassword) # Optional
+#     #apksignerArguments: '--verbose' # Optional
+#     #apksignerFile: # Optional
+#     #zipalign: true # Optional
+#     #zipalignFile: # Optional
+
+
+- task: CopyFiles@2
+  inputs:
+    contents: 'app-release.apk'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
+
+# - task: ShellScript@2
+#   inputs:
+#     scriptPath: appcenter-post-build.sh
+#   displayName: Post Build Script
+
+# - task: PublishBuildArtifacts@1
+
+
+# - task: AppCenterDistribute@1
+#   inputs:
+#     serverEndpoint: 'appcenter'
+#     appSlug: 'place your appSlug herer'
+#     appFile: 'app-release.apk'
+#     releaseNotesOption: 'input' # Options: input, file
+#     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
+#     distributionGroupId: 'place your distributionGroupId here'
