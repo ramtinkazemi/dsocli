@@ -44,11 +44,16 @@ steps:
 
 
 - script: |
+
+    
     react-native bundle --dev false --assets-dest android/app/src/main/res/ --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --platform android
   displayName: 'Create release for Android'
 
 - script: |
-    cd android && ./gradlew assembleReleasecd
+    cd android
+    rm -rf android/app/build/intermediates/res/merged/release/drawable-*
+    ./gradlew clean
+    ./gradlew assembleReleasecd
   displayName: 'Create release for Android'
 
 
