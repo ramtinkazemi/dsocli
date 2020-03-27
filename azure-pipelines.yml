@@ -29,28 +29,6 @@ steps:
   displayName: 'npm install and build'
 
 
-- task: AndroidSigning@3
-  inputs:
-    apkFiles: 'app-release.apk'
-    apksign: true # Optional
-    apksignerKeystoreFile: 'my-release-key.keystore' # Required when apksign == True
-    apksignerKeystorePassword: $(KeystorePassword) # Optional
-    apksignerKeystoreAlias: $(KeystoreAlias) # Optional
-    apksignerKeyPassword: $(KeyPassword) # Optional
-    #apksignerArguments: '--verbose' # Optional
-    #apksignerFile: # Optional
-    #zipalign: true # Optional
-    #zipalignFile: # Optional
-
-
-- task: CopyFiles@2
-  inputs:
-    contents: 'app-release.apk'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-
-  
-
-
 # - script: npm run lint
 #   displayName: 'Run lint'
 
