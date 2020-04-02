@@ -60,6 +60,7 @@ steps:
   inputs:
     actions: 'clean build analyze archive'
     sdk: iphoneos
+    scheme: reactnativetest
     configuration: Release
     xcWorkspacePath: ios/reactnativetest.xcworkspace
     useXcpretty: false
