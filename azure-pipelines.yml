@@ -144,7 +144,7 @@ steps:
 - script: 
     mv android/app/build/outputs/apk/release/app-release.apk react-native-test-unsigned.apk
   continueOnError: false
-  displayName: Android post-process
+  displayName: Android post-build
 
 # - task: AndroidSigning@3
 #   inputs:
@@ -159,6 +159,12 @@ steps:
 #     #zipalign: true # Optional
 #     #zipalignFile: # Optional
 
+- task: PublishBuildArtifacts@1
+  displayName: Publish Android app
+  inputs:
+    PathtoPublish: react-native-test-unsigned.apk
+    ArtifactName: react-native-test/android
+    publishLocation: Container
 
 # - task: AppCenterDistribute@1
 #   inputs:
@@ -169,13 +175,6 @@ steps:
 #     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
 #     distributionGroupId: 'place your distributionGroupId here'
 #   displayName: Distribute Android app to AppCenter
-
-- task: PublishBuildArtifacts@1
-  displayName: Publish Android app
-  inputs:
-    PathtoPublish: react-native-test-unsigned.apk
-    ArtifactName: react-native-test/android
-    publishLocation: Container
 
 ### --------------------------------------------------------------------------------
 ### Post build
