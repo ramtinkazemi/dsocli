@@ -58,7 +58,8 @@ steps:
 - task: Xcode@5
   displayName: Build iOS app
   inputs:
-    actions: 'clean build analyze archive'
+    # actions: 'clean build analyze archive'
+    actions: 'build archive'
     sdk: iphoneos
     scheme: reactnativetest
     configuration: Release
@@ -76,7 +77,7 @@ steps:
   displayName: Publish iOS artifacts
   inputs:
     pathToPublish: '$(build.artifactStagingDirectory)/react-native-test.xcarchive.zip'
-    artifactName: react-native-test
+    artifactName: react-native-test/ios
     artifactType: container
 
 # - script: |
@@ -172,7 +173,7 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: react-native-test.apk
-    ArtifactName: react-native-test
+    ArtifactName: react-native-test/android
     publishLocation: Container
 
 ### --------------------------------------------------------------------------------
