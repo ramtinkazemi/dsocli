@@ -13,15 +13,14 @@ steps:
 ### Pre build
 ### --------------------------------------------------------------------------------
 
-
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
   displayName: Install Node.js
 
-- script: |
-    npm install -g react-native-cli
-  displayName: Install react-native cli
+# - script: |
+#     npm install -g react-native-cli
+#   displayName: Install react-native cli
 
 ### --------------------------------------------------------------------------------
 ### Build app
@@ -90,14 +89,6 @@ steps:
 #     react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/
 #   displayName: Bundle for Android
 
-- task: Gradle@2
-  inputs:
-    workingDirectory: 'android'
-    gradleWrapperFile: 'android/gradlew'
-    tasks: 'assembleRelease'
-  continueOnError: false
-  displayName: Create release for Android
-
 # - script: |
 #     cd android
 #     rm -rf android/app/build/intermediates/res/merged/release/drawable-*
@@ -106,22 +97,25 @@ steps:
 #     cd ..
 #   displayName: Create release for Android
 
+- task: Gradle@2
+  inputs:
+    workingDirectory: 'android'
+    gradleWrapperFile: 'android/gradlew'
+    tasks: 'assembleRelease'
+  continueOnError: false
+  displayName: Create release for Android
+
+
 # - script: |
 #     cd android
 #     bundle install
 #     fastlane build
 #   displayName: 'Build android'
 
-# - script: 
-#     mv android/app/build/outputs/apk/release/app-release.apk cr-mobile-app-test-android.apk
-#   continueOnError: false
-#   displayName: Android Postprocess
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'android/app/build/outputs/apk/release'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+- script: 
+    mv android/app/build/outputs/apk/release/app-release.apk app-release.apk
+  continueOnError: false
+  displayName: Android post-process
 
 # - task: AndroidSigning@3
 #   inputs:
@@ -147,7 +141,11 @@ steps:
 #     distributionGroupId: 'place your distributionGroupId here'
 #   displayName: Distribute Android app to AppCenter
 
-
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: app-release.apk
+    ArtifactName: cr-mobile-app-test-android.apk
+    publishLocation: Container
 
 ### --------------------------------------------------------------------------------
 ### Post build
@@ -155,7 +153,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    contents: 'cr-mobile-app-test-android.apk'
+    contents: cr-mobile-app-test-android.apk
     targetFolder: $(Build.ArtifactStagingDirectory)
 
 # - task: ShellScript@2
