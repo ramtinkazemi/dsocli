@@ -5,7 +5,7 @@ pool:
   vmImage: 'macOS-10.15'
 
 variables:
-  - group: react-native-test
+  - group: main
 
 steps:
 
