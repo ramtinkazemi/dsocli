@@ -90,20 +90,21 @@ steps:
     react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/
   displayName: Bundle for Android
 
-# - task: Gradle@2
-#   inputs:
-#     workingDirectory: 'android'
-#     gradleWrapperFile: 'android/gradlew'
-#     tasks: 'assembleRelease'
-#   continueOnError: false
-
-- script: |
-    cd android
-    rm -rf android/app/build/intermediates/res/merged/release/drawable-*
-    ./gradlew clean
-    ./gradlew assembleRelease
-    cd ..
+- task: Gradle@2
+  inputs:
+    workingDirectory: 'android'
+    gradleWrapperFile: 'android/gradlew'
+    tasks: 'assembleRelease'
+  continueOnError: false
   displayName: Create release for Android
+
+# - script: |
+#     cd android
+#     rm -rf android/app/build/intermediates/res/merged/release/drawable-*
+#     ./gradlew clean
+#     ./gradlew assembleRelease
+#     cd ..
+#   displayName: Create release for Android
 
 # - script: |
 #     cd android
