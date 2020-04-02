@@ -35,7 +35,7 @@ steps:
 
 
 ### --------------------------------------------------------------------------------
-### Test code
+### Test code/app
 ### --------------------------------------------------------------------------------
 
 # - script: |
@@ -87,8 +87,8 @@ steps:
 ### --------------------------------------------------------------------------------
 
 - script: |
-    react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/  
-  displayName: Create bundle for Android
+    react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/
+  displayName: Bundle for Android
 
 # - task: Gradle@2
 #   inputs:
@@ -112,7 +112,7 @@ steps:
 #   displayName: 'Build android'
 
 - script: 
-    mv android/app/build/outputs/apk/release/cr-mobile-app-test-android.apk cr-mobile-app-test-android.apk
+    mv android/app/build/outputs/apk/release/app-release.apk cr-mobile-app-test-android.apk
   displayName: Android Postprocess
   continueOnError: false
 
