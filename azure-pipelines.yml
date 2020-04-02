@@ -33,6 +33,15 @@ steps:
 #     npm run test
 #   displayName: Run unit tests
 
+### BUILD IOS APP
+
+
+# - script: |
+#     cd ios
+#     bundle install
+#     fastlane build
+#   displayName: 'Build iOS'
+
 # - task: InstallAppleCertificate@2
 #   inputs:
 #     certSecureFile: cr-mobile-app-ios-cert.p12
@@ -57,6 +66,7 @@ steps:
 #     distributionGroupId: 'place your distributionGroupId here'
 #   displayName: Distribute Android app to AppCenter
 
+### BUILD ANDROID APP
 
 - script: |
     react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/  
@@ -77,19 +87,11 @@ steps:
     cd ..
   displayName: Create release for Android
 
-
-# - script: |
-#     cd ios
-#     bundle install
-#     fastlane build
-#   displayName: 'Build iOS'
-
 # - script: |
 #     cd android
 #     bundle install
 #     fastlane build
 #   displayName: 'Build android'
-
 
 - script: 
     mv android/app/build/outputs/apk/release/cr-mobile-app-test-android.apk cr-mobile-app-test-android.apk
