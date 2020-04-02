@@ -61,32 +61,21 @@ steps:
     actions: 'clean build analyze archive'
     sdk: iphoneos
     configuration: Release
-    xcWorkspacePath: reactnativetest.xcodeproj/project.xcworkspace
+    xcWorkspacePath: ios/reactnativetest.xcodeproj/project.xcworkspace
     useXcpretty: false
-    args: '-archivePath $(agent.buildDirectory)/cr-mobile-app-test'
-
-# - task: Xcode@5
-#   displayName: 'Build the app using Xcode'
-#   inputs:
-#     actions: 'clean build analyze archive'
-#     sdk: 'iphoneos'
-#     scheme: 'HelloiOS'
-#     configuration: 'Debug'
-#     xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-#     useXcpretty: 'false'
-#     args: '-archivePath $(agent.buildDirectory)/HelloiOS'
+    args: '-archivePath $(agent.buildDirectory)/react-native-test'
 
 - task: ArchiveFiles@2
   displayName: Package iOS app
   inputs:
-    rootFolderOrFile: '$(agent.buildDirectory)/cr-mobile-app-test.xcarchive/'
-    archiveFile: '$(build.artifactStagingDirectory)/cr-mobile-app-test.xcarchive.zip'
+    rootFolderOrFile: '$(agent.buildDirectory)/react-native-test.xcarchive/'
+    archiveFile: '$(build.artifactStagingDirectory)/react-native-test.xcarchive.zip'
 
 - task: PublishBuildArtifacts@1
   displayName: Publish iOS artifacts
   inputs:
-    pathToPublish: '$(build.artifactStagingDirectory)/cr-mobile-app-test.xcarchive.zip'
-    artifactName: xcarchive-files
+    pathToPublish: '$(build.artifactStagingDirectory)/react-native-test.xcarchive.zip'
+    artifactName: react-native-test
     artifactType: container
 
 # - script: |
@@ -97,7 +86,7 @@ steps:
 
 # - task: InstallAppleCertificate@2
 #   inputs:
-#     certSecureFile: cr-mobile-app-ios-cert.p12
+#     certSecureFile: react-native-test-ios.p12
 #     certPwd: $(AppleCertP12Password)
 #     keychain: 'temp'
 #     deleteCert: true
@@ -113,7 +102,7 @@ steps:
 #   inputs:
 #     serverEndpoint: 'appcenter'
 #     appSlug: 'place your appSlug herer'
-#     appFile: 'cr-mobile-app-test-android.apk'
+#     appFile: 'react-native-test-android.apk'
 #     releaseNotesOption: 'input' # Options: input, file
 #     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
 #     distributionGroupId: 'place your distributionGroupId here'
@@ -151,13 +140,13 @@ steps:
 #   displayName: 'Build android'
 
 - script: 
-    mv android/app/build/outputs/apk/release/app-release.apk app-release.apk
+    mv android/app/build/outputs/apk/release/app-release.apk react-native-test.apk
   continueOnError: false
   displayName: Android post-process
 
 # - task: AndroidSigning@3
 #   inputs:
-#     apkFiles: 'cr-mobile-app-test-android.apk'
+#     apkFiles: 'react-native-test-android.apk'
 #     apksign: true # Optional
 #     apksignerKeystoreFile: 'my-release-key.keystore' # Required when apksign == True
 #     apksignerKeystorePassword: $(KeystorePassword) # Optional
@@ -173,7 +162,7 @@ steps:
 #   inputs:
 #     serverEndpoint: 'appcenter'
 #     appSlug: 'place your appSlug herer'
-#     appFile: 'cr-mobile-app-test-android.apk'
+#     appFile: 'react-native-test-android.apk'
 #     releaseNotesOption: 'input' # Options: input, file
 #     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
 #     distributionGroupId: 'place your distributionGroupId here'
@@ -181,18 +170,18 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: app-release.apk
-    ArtifactName: cr-mobile-app-test-android.apk
+    PathtoPublish: react-native-test.apk
+    ArtifactName: react-native-test
     publishLocation: Container
 
 ### --------------------------------------------------------------------------------
 ### Post build
 ### --------------------------------------------------------------------------------
 
-- task: CopyFiles@2
-  inputs:
-    contents: cr-mobile-app-test-android.apk
-    targetFolder: $(Build.ArtifactStagingDirectory)
+# - task: CopyFiles@2
+#   inputs:
+#     contents: react-native-test.apk
+#     targetFolder: $(Build.ArtifactStagingDirectory)
 
 # - task: ShellScript@2
 #   inputs:
