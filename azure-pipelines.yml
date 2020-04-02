@@ -171,6 +171,7 @@ steps:
 #   displayName: Distribute Android app to AppCenter
 
 - task: PublishBuildArtifacts@1
+  displayName: Publish Android app
   inputs:
     PathtoPublish: react-native-test-unsigned.apk
     ArtifactName: react-native-test/android
