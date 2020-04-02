@@ -61,7 +61,7 @@ steps:
     actions: 'clean build analyze archive'
     sdk: iphoneos
     configuration: Release
-    xcWorkspacePath: reactnativetest.xcodeproj/project.xcworkspace
+    xcWorkspacePath: ios/reactnativetest.xcworkspace
     useXcpretty: false
     args: '-archivePath $(agent.buildDirectory)/cr-mobile-app-test'
 
