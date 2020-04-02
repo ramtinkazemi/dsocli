@@ -112,10 +112,16 @@ steps:
 #     fastlane build
 #   displayName: 'Build android'
 
-- script: 
-    mv android/app/build/outputs/apk/release/app-release.apk cr-mobile-app-test-android.apk
-  continueOnError: false
-  displayName: Android Postprocess
+# - script: 
+#     mv android/app/build/outputs/apk/release/app-release.apk cr-mobile-app-test-android.apk
+#   continueOnError: false
+#   displayName: Android Postprocess
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'android/app/build/outputs/apk/release'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
 
 # - task: AndroidSigning@3
 #   inputs:
@@ -140,6 +146,7 @@ steps:
 #     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
 #     distributionGroupId: 'place your distributionGroupId here'
 #   displayName: Distribute Android app to AppCenter
+
 
 
 ### --------------------------------------------------------------------------------
