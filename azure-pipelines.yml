@@ -9,6 +9,11 @@ variables:
 
 steps:
 
+### --------------------------------------------------------------------------------
+### Pre build
+### --------------------------------------------------------------------------------
+
+
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
@@ -18,12 +23,20 @@ steps:
     npm install -g react-native-cli
   displayName: Install react-native cli
 
+### --------------------------------------------------------------------------------
+### Build app
+### --------------------------------------------------------------------------------
+
 
 - script: |
     npm install
     # npm run build
   displayName: Run npm install/build
 
+
+### --------------------------------------------------------------------------------
+### Test code
+### --------------------------------------------------------------------------------
 
 # - script: |
 #     npm run lint
@@ -33,7 +46,10 @@ steps:
 #     npm run test
 #   displayName: Run unit tests
 
-### BUILD IOS APP
+
+### --------------------------------------------------------------------------------
+### Create iOS app
+### --------------------------------------------------------------------------------
 
 
 # - script: |
@@ -66,7 +82,9 @@ steps:
 #     distributionGroupId: 'place your distributionGroupId here'
 #   displayName: Distribute Android app to AppCenter
 
-### BUILD ANDROID APP
+### --------------------------------------------------------------------------------
+### Create Android app
+### --------------------------------------------------------------------------------
 
 - script: |
     react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/  
@@ -122,6 +140,10 @@ steps:
 #     distributionGroupId: 'place your distributionGroupId here'
 #   displayName: Distribute Android app to AppCenter
 
+
+### --------------------------------------------------------------------------------
+### Post build
+### --------------------------------------------------------------------------------
 
 - task: CopyFiles@2
   inputs:
