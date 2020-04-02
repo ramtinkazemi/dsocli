@@ -1,8 +1,3 @@
-# Node.js with React
-# Build a Node.js project that uses React.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - master
 
@@ -13,14 +8,15 @@ variables:
   - group: react-native-test
 
 steps:
-- task: NodeTool@0
+
+- task: NodeTool
   inputs:
     versionSpec: '10.x'
-  displayName: 'Install Node.js'
+  displayName: Install Node.js
 
 - script: |
     npm install -g react-native-cli
-  displayName: 'install react-native cli'
+  displayName: Install react-native cli
 
 
 - script: |
@@ -29,29 +25,42 @@ steps:
   displayName: 'npm install'
 
 
-# - script: npm run lint
-#   displayName: 'Run lint'
+# - script: |
+#     npm run lint
+#   displayName: Run lint
 
-# - script: npm run test
-#   displayName: 'Run unit tests'
+# - script: |
+#     npm run test
+#   displayName: Run unit tests
 
-# - task: InstallAppleCertificate@2
+# - task: InstallAppleCertificate
 #   inputs:
-#     certSecureFile: AppleDeveloperCertificate.p12
-#     certPwd: $(P12password)
+#     certSecureFile: cr-mobile-app-ios-cert.p12
+#     certPwd: $(AppleCertP12Password)
 #     keychain: 'temp'
 #     deleteCert: true
 #   displayName: Install Apple Certificate
-# - task: InstallAppleProvisioningProfile@1
+
+# - task: InstallAppleProvisioningProfile
 #   inputs:
 #     provisioningProfileLocation: 'secureFiles'
 #     provProfileSecureFile: 'AppleProvisioningProfile.mobileprovision'
-#   displayName: 'Install Apple Provisioning Profile'
+#   displayName: Install Apple Provisioning Profile
+
+# - task: AppCenterDistribute
+#   inputs:
+#     serverEndpoint: 'appcenter'
+#     appSlug: 'place your appSlug herer'
+#     appFile: 'cr-mobile-app-test-android.apk'
+#     releaseNotesOption: 'input' # Options: input, file
+#     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
+#     distributionGroupId: 'place your distributionGroupId here'
+#   displayName: Distribute Android app to AppCenter
 
 
 - script: |
     react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/  
-  displayName: 'Create bundle for Android'
+  displayName: Create bundle for Android
 
 # - task: Gradle@2
 #   inputs:
@@ -66,7 +75,7 @@ steps:
     ./gradlew clean
     ./gradlew assembleRelease
     cd ..
-  displayName: 'Create release for Android'
+  displayName: Create release for Android
 
 
 # - script: |
@@ -83,17 +92,13 @@ steps:
 
 
 - script: 
-    mv android/app/build/outputs/apk/release/app-release.apk app-release.apk
+    mv android/app/build/outputs/apk/release/cr-mobile-app-test-android.apk cr-mobile-app-test-android.apk
   displayName: Android Postprocess
   continueOnError: false
 
-- script: AndroidSign release
-    echo 'Signing release ...'
-  displayName: AndroidSign release
-
-# - task: AndroidSigning@3
+# - task: AndroidSigning
 #   inputs:
-#     apkFiles: 'app-release.apk'
+#     apkFiles: 'cr-mobile-app-test-android.apk'
 #     apksign: true # Optional
 #     apksignerKeystoreFile: 'my-release-key.keystore' # Required when apksign == True
 #     apksignerKeystorePassword: $(KeystorePassword) # Optional
@@ -105,11 +110,21 @@ steps:
 #     #zipalignFile: # Optional
 
 
-- task: CopyFiles@2
-  inputs:
-    contents: 'app-release.apk'
-    targetFolder: $(Build.ArtifactStagingDirectory)
+# - task: AppCenterDistribute
+#   inputs:
+#     serverEndpoint: 'appcenter'
+#     appSlug: 'place your appSlug herer'
+#     appFile: 'cr-mobile-app-test-android.apk'
+#     releaseNotesOption: 'input' # Options: input, file
+#     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
+#     distributionGroupId: 'place your distributionGroupId here'
+#   displayName: Distribute Android app to AppCenter
 
+
+- task: CopyFiles
+  inputs:
+    contents: 'cr-mobile-app-test-android.apk'
+    targetFolder: $(Build.ArtifactStagingDirectory)
 
 # - task: ShellScript@2
 #   inputs:
@@ -117,13 +132,3 @@ steps:
 #   displayName: Post Build Script
 
 # - task: PublishBuildArtifacts@1
-
-
-# - task: AppCenterDistribute@1
-#   inputs:
-#     serverEndpoint: 'appcenter'
-#     appSlug: 'place your appSlug herer'
-#     appFile: 'app-release.apk'
-#     releaseNotesOption: 'input' # Options: input, file
-#     releaseNotesInput: $(Build.SourceVersionMessage) # Required when releaseNotesOption == Input
-#     distributionGroupId: 'place your distributionGroupId here'
