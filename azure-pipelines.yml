@@ -77,7 +77,7 @@ steps:
 #   displayName: Publish iOS artifacts
 #   inputs:
 #     pathToPublish: '$(build.artifactStagingDirectory)/react-native-test.xcarchive.zip'
-#     artifactName: react-native-test/ios
+#     artifactName: ios
 #     artifactType: container
 
 # # - script: |
@@ -163,7 +163,7 @@ steps:
   displayName: Publish Android app
   inputs:
     PathtoPublish: react-native-test-unsigned.apk
-    ArtifactName: react-native-test/android
+    ArtifactName: android
     publishLocation: Container
 
 # - task: AppCenterDistribute@1
@@ -190,15 +190,17 @@ steps:
 #     scriptPath: appcenter-post-build.sh
 #   displayName: Post Build Script
 
-# - task: PublishBuildArtifacts@1
-
 - task: AppCenterTest@1
   displayName: Android - Espresso Test
   inputs:
-    appFile: 'react-native-test-unsigned.apk'
+    appFile: react-native-test-unsigned.apk
     artifactsDirectory: '$(Build.ArtifactStagingDirectory)/AppCenterTest'
-    frameworkOption: 'espresso'
-    credentialsOption: 'serviceEndpoint'
-    serverEndpoint: 'AppCenter'
-    appSlug: 'Cashrewards/react-native-test-android'
-    devices: 'Cashrewards/android'
+    frameworkOption: espresso
+    credentialsOption: serviceEndpoint
+    serverEndpoint: AppCenter
+    appSlug: Cashrewards/react-native-test-android
+    devices: Cashrewards/android
+
+
+
+

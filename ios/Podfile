@@ -21,6 +21,7 @@ def flipper_post_install(installer)
   end
 end
 
+
 target 'reactnativetest' do
   # Pods for reactnativetest
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
@@ -53,6 +54,8 @@ target 'reactnativetest' do
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+
+  pod 'AppCenter', '~> 3.1'
 
   target 'reactnativetestTests' do
     inherit! :complete
