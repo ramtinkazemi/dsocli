@@ -51,8 +51,10 @@ steps:
 ### --------------------------------------------------------------------------------
 
 - task: CocoaPods@0
-  displayName: Resolve iOS app pods
-
+  displayName: Resolve iOS pods
+  inputs:
+    workingDirectory: ios
+  
 - task: Xcode@5
   displayName: Build iOS app
   inputs:
