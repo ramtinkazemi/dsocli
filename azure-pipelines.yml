@@ -86,9 +86,9 @@ steps:
 ### Create Android app
 ### --------------------------------------------------------------------------------
 
-- script: |
-    react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/
-  displayName: Bundle for Android
+# - script: |
+#     react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/
+#   displayName: Bundle for Android
 
 - task: Gradle@2
   inputs:
