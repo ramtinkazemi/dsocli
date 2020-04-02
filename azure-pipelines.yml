@@ -60,8 +60,9 @@ steps:
   inputs:
     actions: 'clean build analyze archive'
     sdk: iphoneos
+    scheme: reactnativetest
     configuration: Release
-    xcWorkspacePath: ios/reactnativetest.xcodeproj/project.xcworkspace
+    xcWorkspacePath: ios/reactnativetest.xcworkspace
     useXcpretty: false
     args: '-archivePath $(agent.buildDirectory)/react-native-test'
 
