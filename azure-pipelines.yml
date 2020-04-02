@@ -114,8 +114,8 @@ steps:
 
 - script: 
     mv android/app/build/outputs/apk/release/app-release.apk cr-mobile-app-test-android.apk
-  displayName: Android Postprocess
   continueOnError: false
+  displayName: Android Postprocess
 
 # - task: AndroidSigning@3
 #   inputs:
