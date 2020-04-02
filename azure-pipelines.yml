@@ -61,7 +61,7 @@ steps:
     actions: 'clean build analyze archive'
     sdk: iphoneos
     configuration: Release
-    xcWorkspacePath: ios/*.xcodeproj/project.xcworkspace
+    xcWorkspacePath: ios/reactnativetest.xcodeproj/project.xcworkspace
     useXcpretty: false
     args: '-archivePath $(agent.buildDirectory)/cr-mobile-app-test'
 
@@ -87,7 +87,6 @@ steps:
     pathToPublish: '$(build.artifactStagingDirectory)/cr-mobile-app-test.xcarchive.zip'
     artifactName: xcarchive-files
     artifactType: container
-
 
 # - script: |
 #     cd ios
