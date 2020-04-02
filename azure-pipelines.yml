@@ -9,7 +9,7 @@ variables:
 
 steps:
 
-- task: NodeTool
+- task: NodeTool@0
   inputs:
     versionSpec: '10.x'
   displayName: Install Node.js
@@ -33,7 +33,7 @@ steps:
 #     npm run test
 #   displayName: Run unit tests
 
-# - task: InstallAppleCertificate
+# - task: InstallAppleCertificate@2
 #   inputs:
 #     certSecureFile: cr-mobile-app-ios-cert.p12
 #     certPwd: $(AppleCertP12Password)
@@ -41,13 +41,13 @@ steps:
 #     deleteCert: true
 #   displayName: Install Apple Certificate
 
-# - task: InstallAppleProvisioningProfile
+# - task: InstallAppleProvisioningProfile@1
 #   inputs:
 #     provisioningProfileLocation: 'secureFiles'
 #     provProfileSecureFile: 'AppleProvisioningProfile.mobileprovision'
 #   displayName: Install Apple Provisioning Profile
 
-# - task: AppCenterDistribute
+# - task: AppCenterDistribute@1
 #   inputs:
 #     serverEndpoint: 'appcenter'
 #     appSlug: 'place your appSlug herer'
@@ -96,7 +96,7 @@ steps:
   displayName: Android Postprocess
   continueOnError: false
 
-# - task: AndroidSigning
+# - task: AndroidSigning@3
 #   inputs:
 #     apkFiles: 'cr-mobile-app-test-android.apk'
 #     apksign: true # Optional
@@ -110,7 +110,7 @@ steps:
 #     #zipalignFile: # Optional
 
 
-# - task: AppCenterDistribute
+# - task: AppCenterDistribute@1
 #   inputs:
 #     serverEndpoint: 'appcenter'
 #     appSlug: 'place your appSlug herer'
@@ -121,7 +121,7 @@ steps:
 #   displayName: Distribute Android app to AppCenter
 
 
-- task: CopyFiles
+- task: CopyFiles@2
   inputs:
     contents: 'cr-mobile-app-test-android.apk'
     targetFolder: $(Build.ArtifactStagingDirectory)
