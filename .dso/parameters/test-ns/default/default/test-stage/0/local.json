@@ -1,0 +1,6 @@
+{
+  "global": {
+    "stage_parameter": "global.stage_parameter-value"
+  },
+  "overriden_parameter": "global-stage-parameter-overriden-value"
+}

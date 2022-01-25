@@ -1,0 +1,12 @@
+Overriden Template
+
+Parameter:
+----------
+overriden_parameter = {{overriden_parameter}}
+app.parameter = {{app.parameter}}
+
+Secrets:
+--------
+overriden_secret = {{overriden_secret}}
+app.secret = {{app.secret}}
+

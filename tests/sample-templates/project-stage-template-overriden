@@ -1,0 +1,11 @@
+Overriden Template
+
+Parameter:
+----------
+overriden_parameter = {{overriden_parameter}}
+project.stage_parameter = {{project.stage_parameter}}
+
+Secrets:
+--------
+overriden_secret = {{overriden_secret}}
+project.stage_secret = {{project.stage_secret}}

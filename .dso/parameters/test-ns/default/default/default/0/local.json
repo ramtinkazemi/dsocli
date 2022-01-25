@@ -1,0 +1,6 @@
+{
+  "global": {
+    "parameter": "global.parameter-value"
+  },
+  "overriden_parameter": "global-parameter-overriden-value"
+}

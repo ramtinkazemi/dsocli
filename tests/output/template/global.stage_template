@@ -1,0 +1,31 @@
+Global Stage Template
+
+Parameter:
+----------
+global.parameter = global.parameter-value
+global.stage_parameter = global.stage_parameter-value
+overriden_parameter = app-stage-parameter-overriden-value
+
+Secrets:
+--------
+global.secret = global.secret-value
+global.stage_secret = global.stage_secret-value
+overriden_secret = app-stage-secret-overriden-value
+
+DSO Meta:
+---------
+Namespace is test-ns
+Project is test-project
+Application is test-application
+Stage is test-stage
+Parameter provider is local/v1
+Secret  provider is aws/ssm/v1
+Template provider is local/v1
+
+Template Logics:
+------------------
+
+Hey, I am running in test-stage environment!
+I am included!
+
+

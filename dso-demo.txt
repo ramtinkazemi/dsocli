@@ -1,0 +1,54 @@
+
+Organization:
+    |- Defaults: (defaults for all projects/stages)
+    |   |- Organization.Name: Mable
+    |   |- AWS.Region: ap-southeast-2
+    |   |- ...
+    | 
+    |- Stages: (stage specific parameters across all projects)
+    |   |- dev:
+    |   |   |- AWS.Account: 111111111
+    |   |   |- ...
+    |   |
+    |   |- prd:
+    |   |   |- AWS.Account: 222222222
+    |   |   |- ...
+    |   |   
+    |   |- ...
+    |
+    |- Projects: (project spicifc parameters)
+    |   |- Backend:
+    |   |   |- Defaults: (available to all stages across all the applications in the project)
+    |   |   |   |- Project.Name: Backend
+    |   |   |   |- ...
+    |   |   |
+    |   |   |- Stages: (stages specific parameters across all the applications in the project)
+    |   |   |   |- dev:
+    |   |   |   |   |- Infra.VPC_ID: dev-backend-vpc-id
+    |   |   |   |   |- ...
+    |   |   |   |
+    |   |   |   |- prd:
+    |   |   |   |   |- Infra.VPC_ID: prd-backend-vpc-id
+    |   |   |   |   |- ...
+    |   |   |   |
+    |   |   |   |- ...
+    |   |   |
+    |   |   |- Application: (applicaion spicifc parameters)
+    |   |   |   |- API:
+    |   |   |   |   |- Defaults: (available to all stages in the applicaion)
+    |   |   |   |   |   |- Applicaion.Name: API
+    |   |   |   |   |   |- ...
+    |   |   |   |   |
+    |   |   |   |   |- Stages: (stages specific parameterst)
+    |   |   |   |   |   |- dev:
+    |   |   |   |   |   |   |- Database.Host: dev-api-backend-db-host
+    |   |   |   |   |   |   |- Database.Username: dev-api-backend-db-username
+    |   |   |   |   |   |   |- ...
+    |   |   |   |   |   |
+    |   |   |   |   |   |- prd:
+    |   |   |   |   |   |   |- Database.Host: prd-api-backend-db-host
+    |   |   |   |   |   |   |- Database.Username: prd-api-backend-db-username
+    |   |   |   |   |   |
+    |   |   |   |   |   |- ...
+    |   |   |   |   |
+

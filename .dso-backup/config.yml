@@ -1,0 +1,20 @@
+kind: dso/config/v1
+contexts:
+  - name: default
+    spec:
+      namespace: default
+      project: test-project
+      application: test-app
+      stage: stg
+  - name: ctx1
+    spec:
+      namespace: default
+      project: test-project
+      application: test-app
+      stage: stg
+  - name: ctx2
+    spec:
+      namespace: default
+      project: test-project
+      application: test-app
+      stage: dev

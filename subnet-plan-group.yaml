@@ -1,0 +1,151 @@
+name: Default
+plans:
+
+- name: H256A2S2
+  description: 256 hosts per subnet, 2 subnet per AZ, public/private split (256 workloads per stage)
+  cidr: 10.0.0.0/8
+  partitions:
+  - name: Stage
+    bits: 3
+    labels:
+      '0': core
+      '1': prd
+      '2': uat
+      '3': stg
+      '7': stage7
+  - name: Worklaod
+    bits: 9
+    labels:
+      '0': large-app1
+      '255': large-app256
+    select: 'msd(0b0)'
+  - name: Accessibility
+    plural: Accessibilities
+    bits: 1
+    labels:
+      '0': private
+      '1': public
+  - name: AvailabilityZone
+    bits: 2
+    labels:
+      '0': a
+      '1': b
+      '2': c
+      '3': d
+  - name: SubnetGroup
+    bits: 1
+    labels:
+      '0': '1'
+      '1': '2'
+
+- name: H128A2S2
+  description: 128 hosts per subnet, 2 subnet per AZ, public/private split (256 workloads per stage)
+  cidr: 10.0.0.0/8
+  partitions:
+  - name: Stage
+    bits: 3
+    labels:
+      '0': core
+      '1': prd
+      '2': uat
+      '3': stg
+      '7': stage7
+
+  - name: Worklaod
+    bits: 10
+    labels:
+      '0': medium-app1
+      '255': large-app256
+    select: 'msd(0b0) | msd(0bx0)'
+  - name: Accessibility
+    plural: Accessibilities
+    bits: 1
+    labels:
+      '0': private
+      '1': public
+  - name: AvailabilityZone
+    bits: 2
+    labels:
+      '0': a
+      '1': b
+      '2': c
+      '3': d
+  - name: SubnetGroup
+    bits: 1
+    labels:
+      '0': '1'
+      '1': '2'
+
+- name: H64A2S2
+  description: 64 hosts per subnet, 2 subnet per AZ, public/private split (256 workloads per stage)
+  cidr: 10.0.0.0/8
+  partitions:
+  - name: Stage
+    bits: 3
+    labels:
+      '0': core
+      '1': prd
+      '2': uat
+      '3': stg
+      '7': stage7
+  - name: Worklaod
+    bits: 11
+    labels:
+      '0': small-app1
+      '255': small-app256
+    select: 'msd(0b1) | msd(0bx1) | msd(0bxx0)'
+  - name: Accessibility
+    plural: Accessibilities
+    bits: 1
+    labels:
+      '0': private
+      '1': public
+  - name: AvailabilityZone
+    bits: 2
+    labels:
+      '0': a
+      '1': b
+      '2': c
+      '3': d
+  - name: SubnetGroup
+    bits: 1
+    labels:
+      '0': '1'
+      '1': '2'
+
+- name: H32A2S2
+  description: 32 hosts per subnet, 2 subnet per AZ, public/private split (512 workloads per stage)
+  cidr: 10.0.0.0/8
+  partitions:
+  - name: Stage
+    bits: 3
+    labels:
+      '0': core
+      '1': prd
+      '2': uat
+      '3': stg
+      '7': stage7
+  - name: Worklaod
+    bits: 12
+    labels:
+      '0': tiny-app1
+      '511': tiny-app256
+    select: 'msd(0b1) | msd(0bx1) | msd(0bxx1)'
+  - name: Accessibility
+    plural: Accessibilities
+    bits: 1
+    labels:
+      '0': private
+      '1': public
+  - name: AvailabilityZone
+    bits: 2
+    labels:
+      '0': a
+      '1': b
+      '2': c
+      '3': d
+  - name: SubnetGroup
+    bits: 1
+    labels:
+      '0': '1'
+      '1': '2'

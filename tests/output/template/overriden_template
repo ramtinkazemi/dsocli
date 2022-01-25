@@ -1,0 +1,11 @@
+Overriden Template
+
+Parameter:
+----------
+overriden_parameter = app-stage-parameter-overriden-value
+app.stage_parameter = app.stage_parameter-value2
+
+Secrets:
+--------
+overriden_secret = app-stage-secret-overriden-value
+app.stage_secret = app.stage_secret-value2

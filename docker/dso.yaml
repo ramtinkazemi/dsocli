@@ -1,0 +1,13 @@
+kind: dso/application/v1
+version: 1
+project: {{ project }}
+application: {{ application }}
+parameter:
+  provider:
+    id: {{ parameter.provider.id }}
+secret:
+  provider:
+    id: {{ secret.provider.id }}
+template:
+  provider:
+    id: {{ template.provider.id }}

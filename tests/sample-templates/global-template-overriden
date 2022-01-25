@@ -1,0 +1,13 @@
+Overriden Template
+
+Parameter:
+----------
+overriden_parameter = {{overriden_parameter}}
+global.parameter = {{global.parameter}}
+
+Secrets:
+--------
+overriden_secret = {{overriden_secret}}
+global.secret = {{global.secret}}
+
+
