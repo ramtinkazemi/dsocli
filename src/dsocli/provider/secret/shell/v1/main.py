@@ -7,14 +7,13 @@ from dsocli.stages import Stages
 from dsocli.constants import *
 from dsocli.exceptions import DSOException
 from dsocli.contexts import Contexts
-from dsocli.local_utils import *
+from dsocli.shell_utils import *
 from dsocli.settings import *
 
 
 __default_spec = {
     'path': os.path.join(AppConfig.config_dir, 'parameters'),
-    # 'namespace': 'default',
-    'store': 'local.json',
+    'store': 'shell.json',
 }
 
 
@@ -23,10 +22,10 @@ def get_default_spec():
 
 
 
-class LocalParameterProvider(ParameterProvider):
+class ShellParameterProvider(ParameterProvider):
 
     def __init__(self):
-        super().__init__('parameter/local/v1')
+        super().__init__('parameter/shell/v1')
 
     @property
     def root_path(self):
@@ -34,7 +33,6 @@ class LocalParameterProvider(ParameterProvider):
 
 
     def get_path_prefix(self):
-        # return self.root_path + os.sep
         return self.root_path
 
     @property
@@ -49,13 +47,13 @@ class LocalParameterProvider(ParameterProvider):
 
     def add(self, key, value):
         Logger.debug(f"Adding local parameter '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        response = add_local_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
+        response = add_shell_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
         return response
 
 
     def list(self, uninherited=False, filter=None):
         Logger.debug(f"Listing local parameters: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        parameters = load_context_local_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
+        parameters = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
         result = {'Parameters': []}
         for key, details in parameters.items():
             item = {
@@ -70,7 +68,7 @@ class LocalParameterProvider(ParameterProvider):
 
     def get(self, key, revision=None):
         if revision:
-            Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
+            Logger.warn(f"Parameter provider 'shell/v1' does not support versioning.")
         Logger.debug(f"Getting parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
@@ -84,7 +82,7 @@ class LocalParameterProvider(ParameterProvider):
 
 
     def history(self, key):
-        Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
+        Logger.warn(f"Parameter provider 'shell/v1' does not support versioning.")
 
         Logger.debug(f"Getting parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
@@ -121,4 +119,4 @@ class LocalParameterProvider(ParameterProvider):
 
 
 def register():
-    Providers.register(LocalParameterProvider())
+    Providers.register(ShellParameterProvider())

@@ -25,18 +25,18 @@ python -m setup.py publish
 newVersion=$(jq '.version' -r src/dsocli/package.json)
 echo -e "\nNew Version: ${newVersion}"
 
-tag="v${newVersion}"
-# if [ ${env} != 'prod' ]; then
-#     tag="${tag}.${env}"
+# tag="v${newVersion}"
+# # if [ ${env} != 'prod' ]; then
+# #     tag="${tag}.${env}"
+# # fi
+
+# commit="$1"
+# if [ ! "${commit}" ]; then
+#     commit="${tag}"
 # fi
 
-commit="$1"
-if [ ! "${commit}" ]; then
-    commit="${tag}"
-fi
-
-git add . && git commit -m "${commit}" && git tag "${tag}"
-git push origin ${branch} --tags
+# git add . && git commit -m "${commit}" && git tag "${tag}"
+# git push origin ${branch} --tags
 
 ### install it locally
 ### testpypi does not resolve depnedencies

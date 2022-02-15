@@ -18,7 +18,7 @@ network:
       Number: 1
 parameter:
   provider:
-    id: local/v1
+    id: shell/v1
 secret:
   provider:
     id: aws/ssm/v1
