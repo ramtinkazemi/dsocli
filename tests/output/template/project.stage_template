@@ -2,19 +2,19 @@ Project Stage Template
 
 Parameter:
 ----------
-global.parameter = global.parameter-value
-global.stage_parameter = global.stage_parameter-value
-project.parameter = project.parameter-value
-project.stage_parameter = project.stage_parameter-value
-overriden_parameter = app-stage-parameter-overriden-value
+global.parameter = global-parameter-value
+global.stage_parameter = global-stage-parameter-value
+project.parameter = project-parameter-value
+project.stage_parameter = project-stage-parameter-value
+overriden_parameter = app-stage-overridden-parameter-value
 
 Secrets:
 --------
-global.secret = global.secret-value
-global.stage_secret = global.stage_secret-value
-project.secret = project.secret-value
-project.stage_secret = project.stage_secret-value
-overriden_secret = app-stage-secret-overriden-value
+global.secret = global-secret-value
+global.stage_secret = global-stage-secret-value
+project.secret = project-secret-value
+project.stage_secret = project-stage-secret-value
+overriden_secret = app-stage-overriden-secret-value
 
 DSO Meta:
 ---------
@@ -22,9 +22,9 @@ Namespace is test-ns
 Project is test-project
 Application is test-application
 Stage is test-stage
-Parameter provider is local/v1
+Parameter provider is aws/ssm/v1
 Secret  provider is aws/ssm/v1
-Template provider is local/v1
+Template provider is aws/ssm/v1
 
 Template Logics:
 ------------------

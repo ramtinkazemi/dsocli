@@ -18,7 +18,7 @@ network:
       Number: 1
 parameter:
   provider:
-    id: aws/ssm/v1
+    id: local/v1
 secret:
   provider:
     id: aws/ssm/v1
@@ -26,13 +26,13 @@ template:
   provider:
     id: aws/ssm/v1
   render:
-    global.template: ./tests/output/template/global.template
-    global.stage_template: ./tests/output/template/global.stage_template
-    project.template: ./tests/output/template/project.template
-    project.stage_template: ./tests/output/template/project.stage_template
-    app.template: ./tests/output/template/app.template
-    app.stage_template: ./tests/output/template/app.stage_template
-    overriden_template: ./tests/output/template/overriden_template
+    global.template: .\tests\output\template\global.template
+    global.stage_template: .\tests\output\template\global.stage_template
+    project.template: .\tests\output\template\project.template
+    project.stage_template: .\tests\output\template\project.stage_template
+    app.template: .\tests\output\template\app.template
+    app.stage_template: .\tests\output\template\app.stage_template
+    overriden_template: .\tests\output\template\overriden_template
 artifactStore:
   provider:
     id: aws/s3/v1

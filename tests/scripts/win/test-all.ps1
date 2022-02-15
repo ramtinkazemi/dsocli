@@ -12,8 +12,8 @@ $ErrorActionPreference = "Stop"
 
 ##################################
 
-choco install nano > $null
-choco install less > $null
+# choco install nano > $null
+# choco install less > $null
 
 ##################################
 
