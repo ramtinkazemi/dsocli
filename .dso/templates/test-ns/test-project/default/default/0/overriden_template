@@ -9,3 +9,37 @@ Secrets:
 --------
 overriden_secret = {{overriden_secret}}
 project.secret = {{project.secret}}
+
+DSO Meta:
+---------
+Namespace is {{dso.namespace}}
+Project is {{dso.project}}
+Application is {{dso.application}}
+Stage is {{dso.stage}}
+Parameter provider is {{dso.parameter.provider.id}}
+Secret  provider is {{dso.secret.provider.id}}
+Template provider is {{dso.template.provider.id}}
+
+Template Logics:
+------------------
+{% if dso.stage == "dev" %}
+Hey, I am running in development environment!
+{% include 'tests/sample-templates/include-me' %}
+
+{% elif dso.stage == "stg" %}
+Hey, I am running in staging environment!
+{% include 'tests/sample-templates/include-me' %}
+
+{% elif dso.stage == "prd" %}
+Hey, I am running in production environment!
+{% include 'tests/sample-templates/include-me' %}
+
+{% elif dso.stage == "test-stage" %}
+Hey, I am running in test-stage environment!
+{% include 'tests/sample-templates/include-me' %}
+
+{% else %}
+Hey, I am running in default environment!
+{% include 'tests/sample-templates/include-me' %}
+
+{% endif %}

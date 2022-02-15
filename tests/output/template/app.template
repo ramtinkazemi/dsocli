@@ -20,9 +20,9 @@ Namespace is test-ns
 Project is test-project
 Application is test-application
 Stage is test-stage
-Parameter provider is aws/ssm/v1
+Parameter provider is local/v1
 Secret  provider is aws/ssm/v1
-Template provider is aws/ssm/v1
+Template provider is local/v1
 
 Template Logics:
 ------------------

@@ -7,7 +7,7 @@ global.stage_parameter = global-stage-parameter-value
 project.parameter = project-parameter-value
 project.stage_parameter = project-stage-parameter-value
 app.parameter = app-parameter-value
-app.stage_parameter = app-stage-parameter-value2
+app.stage_parameter = app-stage-parameter-value
 overriden_parameter = app-stage-overridden-parameter-value
 
 Secrets:
@@ -26,9 +26,9 @@ Namespace is test-ns
 Project is test-project
 Application is test-application
 Stage is test-stage
-Parameter provider is aws/ssm/v1
+Parameter provider is local/v1
 Secret  provider is aws/ssm/v1
-Template provider is aws/ssm/v1
+Template provider is local/v1
 
 Template Logics:
 ------------------

@@ -3,9 +3,27 @@ Overriden Template
 Parameter:
 ----------
 overriden_parameter = app-stage-overridden-parameter-value
-app.stage_parameter = app-stage-parameter-value2
+app.stage_parameter = app-stage-parameter-value
 
 Secrets:
 --------
 overriden_secret = app-stage-overriden-secret-value
 app.stage_secret = app-stage-secret-value
+
+DSO Meta:
+---------
+Namespace is test-ns
+Project is test-project
+Application is test-application
+Stage is test-stage
+Parameter provider is local/v1
+Secret  provider is aws/ssm/v1
+Template provider is local/v1
+
+Template Logics:
+------------------
+
+Hey, I am running in test-stage environment!
+I am included!
+
+

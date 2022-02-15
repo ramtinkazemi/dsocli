@@ -24,7 +24,7 @@ secret:
     id: aws/ssm/v1
 template:
   provider:
-    id: aws/ssm/v1
+    id: local/v1
   render:
     global.template: .\tests\output\template\global.template
     global.stage_template: .\tests\output\template\global.stage_template
