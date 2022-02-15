@@ -8,3 +8,4 @@ pypi-token.txt
 .eggs
 .python-version
 tests/output/
+.dso/
