@@ -1,6 +1,0 @@
-{
-  "project": {
-    "parameter": "project-parameter-value"
-  },
-  "overriden_parameter": "project-overridden-parameter-value"
-}

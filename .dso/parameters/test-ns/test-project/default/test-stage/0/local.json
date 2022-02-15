@@ -1,6 +1,0 @@
-{
-  "project": {
-    "stage_parameter": "project-stage-parameter-value"
-  },
-  "overriden_parameter": "project-stage-overridden-parameter-value"
-}

@@ -1,6 +1,0 @@
-{
-  "app": {
-    "stage_parameter": "app-stage-parameter-value2\n"
-  },
-  "overriden_parameter": "app-stage-overridden-parameter-value"
-}

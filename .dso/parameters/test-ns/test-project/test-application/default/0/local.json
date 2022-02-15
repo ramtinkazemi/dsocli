@@ -1,6 +1,0 @@
-{
-  "app": {
-    "parameter": "app-parameter-value2"
-  },
-  "overriden_parameter": "app-overridden-parameter-value"
-}
