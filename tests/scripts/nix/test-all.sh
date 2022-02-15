@@ -48,7 +48,17 @@ provider=aws/ssm/v1
 
 provider=local/v1
 ./tests/scripts/nix/test-parameters.sh $namespace $project $application $stage "$working_dir" $provider
-provider=local/v1
+
+export global_secret='global.secret'
+export global_stage_secret='global.stage_secret'
+export project_secret='project.secret'
+export project_stage_secret='project.stage_secret'
+export app_secret='app.secret'
+export app_stage_secret='app.stage_secret'
+export overriden_secret='overriden_secret'
+
+provider=shell/v1
 ./tests/scripts/nix/test-secrets.sh $namespace $project $application $stage "$working_dir" $provider 
+
 provider=local/v1
 ./tests/scripts/nix/test-templates.sh $namespace $project $application $stage "$working_dir" $provider 
