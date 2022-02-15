@@ -36,7 +36,8 @@ if [ ! "${commit}" ]; then
 fi
 
 git add . && git commit -m "${commit}" && git tag "${tag}"
-git push origin ${branch} --tags
+# git push origin ${branch} --tags
+git push origin ${branch}
 
 ### install it locally
 ### testpypi does not resolve depnedencies
