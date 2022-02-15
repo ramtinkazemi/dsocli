@@ -84,7 +84,7 @@ class ShellSecretProvider(SecretProvider):
         return result
 
 
-    def history(self, key):
+    def history(self, key, decrypt=False):
         Logger.warn(f"Secret provider 'shell/v1' does not support versioning.")
 
         Logger.debug(f"Getting shell secret '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
