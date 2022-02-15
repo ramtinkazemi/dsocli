@@ -48,4 +48,7 @@ provider=aws/ssm/v1
 
 provider=local/v1
 ./tests/scripts/nix/test-parameters.sh $namespace $project $application $stage "$working_dir" $provider
+provider=local/v1
+./tests/scripts/nix/test-secrets.sh $namespace $project $application $stage "$working_dir" $provider 
+provider=local/v1
 ./tests/scripts/nix/test-templates.sh $namespace $project $application $stage "$working_dir" $provider 

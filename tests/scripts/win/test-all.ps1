@@ -44,8 +44,10 @@ $provider = "local/v1"
 .\tests\scripts\win\test-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
 if(!$?) { exit $? }
 
+$provider = "shell/v1"
 # Invoke-Call -ScriptBlock {.\tests\scripts\win\test-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider} -ErrorAction Stop > $null
 # if(!$?) { exit $? }
 
+$provider = "local/v1"
 .\tests\scripts\win\test-templates.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
 if(!$?) { exit $? }

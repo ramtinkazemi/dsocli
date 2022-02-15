@@ -48,6 +48,8 @@ Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" --config "n
 Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" --namespace ${namespace} --project ${project} --application ${application} --config `"parameter.provider.id=${provider}` -s ${stage} --uninherited | dso parameter delete -b5 -w `"${working_dir}`" --config `"namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}`" -s ${stage} -i -`n"
 Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --uninherited | dso parameter delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}" -s ${stage} -i -} -ErrorAction Stop > $null
 
+Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" --namespace ${namespace} --project ${project} --application ${application} --config `"parameter.provider.id=${provider}` -s ${stage}/2 --uninherited | dso parameter delete -b5 -w `"${working_dir}`" --config `"namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}`" -s ${stage}/2 -i -`n"
+Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}" -s ${stage}/2 --uninherited | dso parameter delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}" -s ${stage}/2 -i -} -ErrorAction Stop > $null
 
 ##################################
 ### Setting confgiurations
@@ -87,6 +89,8 @@ Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.paramete
 Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.stage_parameter app-stage-parameter-value -s ${stage}`n"
 Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage_parameter app-stage-parameter-value -s ${stage}} -ErrorAction Stop > $null
 
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.stage_parameter app-stage-parameter-value -s ${stage}/2`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage_parameter app-stage-parameter-value -s ${stage}/2} -ErrorAction Stop > $null
 
 ##################################
 ### add overriden parameters
@@ -110,6 +114,9 @@ Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_pa
 
 Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app-stage-overridden-parameter-value -s ${stage}`n"
 Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app-stage-overridden-parameter-value -s ${stage}} -ErrorAction Stop > $null
+
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app-stage-overridden-parameter-value -s ${stage}/2`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app-stage-overridden-parameter-value -s ${stage}/2} -ErrorAction Stop > $null
 
 
 ##################################
@@ -159,6 +166,9 @@ Invoke-Call -ScriptBlock {dso parameter history -b5 -w "${working_dir}" app.para
 Write-Output "`ndso parameter history -b5 -w `"${working_dir}`" app.stage_parameter -s ${stage} --query-all -f json`n"
 Invoke-Call -ScriptBlock {dso parameter history -b5 -w "${working_dir}" app.stage_parameter -s ${stage} --query-all -f json} -ErrorAction Stop > $null
 
+Write-Output "`ndso parameter history -b5 -w `"${working_dir}`" app.stage_parameter -s ${stage}/2 --query-all -f json`n"
+Invoke-Call -ScriptBlock {dso parameter history -b5 -w "${working_dir}" app.stage_parameter -s ${stage}/2 --query-all -f json} -ErrorAction Stop > $null
+
 
 ##################################
 ### listing some parameters
@@ -173,3 +183,6 @@ Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage}
 
 Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" -s ${stage} --query-all -f yaml`n"
 Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage} --query-all -f yaml} -ErrorAction Stop > "tests/output/parameter/app-stage-all-${filename}.yaml"
+
+Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" -s ${stage}/2 --query-all -f yaml`n"
+Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage}/2 --query-all -f yaml} -ErrorAction Stop > "tests/output/parameter/app-stage2-all-${filename}.yaml"
