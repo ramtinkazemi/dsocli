@@ -11,7 +11,7 @@ from .exceptions import DSOException
 
 
 _default_config = {
-    'kind': 'dso/application/v1',
+    'kind': 'dso/application',
     'version': 1,
     'project': 'default',
     'application': 'default',

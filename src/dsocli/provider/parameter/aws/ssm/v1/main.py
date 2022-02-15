@@ -43,41 +43,26 @@ class AwsSsmParameterProvider(ParameterProvider):
 
         return result
 
+    def edit(self, key):
+        Logger.debug(f"Editing SSM parameter: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        parameters = load_context_ssm_parameters(parameter_type='String', path_prefix=self.get_path_prefix(), uninherited=True, filter=f"^{key}$")
+        if len(parameters) > 1:
+            raise DSOException(f"Mutiple parameters found with the same key in the given context.")
+        result = {}
+        if parameters:
+            result['Key'] = list(parameters.keys())[0]
+            result.update(list(parameters.values())[0])
 
-    def add(self, key, value):
-        Logger.debug(f"Checking SSM parameter overwrites '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        assert_ssm_parameter_no_namespace_overwrites(key=key, path_prefix=self.get_path_prefix())
-        Logger.debug(f"Locating SSM parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
-        if found and not found['Type'] == 'String':
-            raise DSOException(f"Failed to add parameter '{key}' becasue becasue the key is not available in the given context: namespace:{AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        path = get_ssm_path(context=AppConfig.context, key=key, path_prefix=self.get_path_prefix())
-        Logger.debug(f"Adding SSM parameter: path={path}")
-        response = add_ssm_paramater(path, value)
-        result = {
-                'RevisionId': str(response['Version']),
-                'Key': key, 
-                'Value': value,
-                'Stage': AppConfig.short_stage,
-                'Scope': AppConfig.context.scope_translation,
-                'Origin': {
-                    'Namespace': AppConfig.namespace,
-                    'Project': AppConfig.project,
-                    'Application': AppConfig.application,
-                    'Stage': AppConfig.stage,
-                },
-                'Path': path,
-            }
-        result.update(response)
         return result
 
-
-
-    def get(self, key, revision=None):
+    def get(self, key, revision=None, uninherited=False, editable=False):
         Logger.debug(f"Locating SSM parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix())
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: namespace:{AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            if uninherited:
+                raise DSOException(f"Parameter '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+            else:
+                raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         else:
             if not found['Type'] == 'String':
                 raise DSOException(f"Parameter '{key}' not found in the given context: namespace:{AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
@@ -114,6 +99,36 @@ class AwsSsmParameterProvider(ParameterProvider):
                     }
 
         return result
+
+
+    def add(self, key, value):
+        Logger.debug(f"Checking SSM parameter overwrites '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        assert_ssm_parameter_no_namespace_overwrites(key=key, path_prefix=self.get_path_prefix())
+        Logger.debug(f"Locating SSM parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
+        if found and not found['Type'] == 'String':
+            raise DSOException(f"Failed to add parameter '{key}' becasue becasue the key is not available in the given context: namespace:{AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        path = get_ssm_path(context=AppConfig.context, key=key, path_prefix=self.get_path_prefix())
+        Logger.debug(f"Adding SSM parameter: path={path}")
+        response = add_ssm_paramater(path, value)
+        result = {
+                'RevisionId': str(response['Version']),
+                'Key': key, 
+                'Value': value,
+                'Stage': AppConfig.short_stage,
+                'Scope': AppConfig.context.scope_translation,
+                'Origin': {
+                    'Namespace': AppConfig.namespace,
+                    'Project': AppConfig.project,
+                    'Application': AppConfig.application,
+                    'Stage': AppConfig.stage,
+                },
+                'Path': path,
+            }
+        result.update(response)
+        return result
+
+
 
 
 

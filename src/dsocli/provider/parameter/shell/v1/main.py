@@ -7,14 +7,13 @@ from dsocli.stages import Stages
 from dsocli.constants import *
 from dsocli.exceptions import DSOException
 from dsocli.contexts import Contexts
-from dsocli.local_utils import *
+from dsocli.shell_utils import *
 from dsocli.settings import *
 
 
 __default_spec = {
     'path': os.path.join(AppConfig.config_dir, 'parameters'),
-    # 'namespace': 'default',
-    'store': 'local.json',
+    'store': 'shell.json',
 }
 
 
@@ -23,10 +22,10 @@ def get_default_spec():
 
 
 
-class LocalParameterProvider(ParameterProvider):
+class ShellParameterProvider(ParameterProvider):
 
     def __init__(self):
-        super().__init__('parameter/local/v1')
+        super().__init__('parameter/shell/v1')
 
     @property
     def root_path(self):
@@ -34,7 +33,6 @@ class LocalParameterProvider(ParameterProvider):
 
 
     def get_path_prefix(self):
-        # return self.root_path + os.sep
         return self.root_path
 
     @property
@@ -48,14 +46,14 @@ class LocalParameterProvider(ParameterProvider):
 
 
     def add(self, key, value):
-        Logger.debug(f"Adding local parameter '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        response = add_local_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
+        Logger.debug(f"Adding shell parameter '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        response = add_shell_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
         return response
 
 
     def list(self, uninherited=False, filter=None):
-        Logger.debug(f"Listing local parameters: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        parameters = load_context_local_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
+        Logger.debug(f"Listing shell parameters: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        parameters = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
         result = {'Parameters': []}
         for key, details in parameters.items():
             item = {
@@ -67,14 +65,18 @@ class LocalParameterProvider(ParameterProvider):
         return result
 
 
-
-    def get(self, key, revision=None):
+    def get(self, key, revision=None, uninherited=False, editable=False):
         if revision:
-            Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
+            Logger.warn(f"Parameter provider 'shell/v1' does not support versioning.")
+        Logger.debug(f"Getting shell parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, raw=editable)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found nor inherited in the given config: stage={Stages.shorten(AppConfig.short_stage)}")
+            if uninherited:
+                raise DSOException(f"Parameter '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+            else:
+                raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        if len(found) > 1:
+            raise DSOException(f"Mutiple parameters found with the same key '{key}' in the given context.")
         result = {
                 'Key': key, 
             }
@@ -82,14 +84,13 @@ class LocalParameterProvider(ParameterProvider):
         return result
 
 
-
     def history(self, key):
-        Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
+        Logger.warn(f"Parameter provider 'shell/v1' does not support versioning.")
 
-        Logger.debug(f"Getting parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
+        Logger.debug(f"Getting shell parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found nor inherited in the given config: stage={Stages.shorten(AppConfig.short_stage)}")
+            raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: stage={Stages.shorten(AppConfig.short_stage)}")
         result = { "Revisions":
             [{
                 'RevisionId': '0',
@@ -104,11 +105,11 @@ class LocalParameterProvider(ParameterProvider):
     def delete(self, key):
         Logger.debug(f"Locating parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         ### only parameters owned by the config can be deleted, hence uninherited=True
-        found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
+        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found in the given config: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            raise DSOException(f"Parameter '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         Logger.info(f"Deleting parameter: path={found[key]['Path']}")
-        delete_local_parameter(found[key]['Path'], key=key)
+        delete_shell_parameter(found[key]['Path'], key=key)
         result = {
                 'Key': key,
                 'Stage': AppConfig.short_stage,
@@ -121,4 +122,4 @@ class LocalParameterProvider(ParameterProvider):
 
 
 def register():
-    Providers.register(LocalParameterProvider())
+    Providers.register(ShellParameterProvider())

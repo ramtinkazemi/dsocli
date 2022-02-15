@@ -75,14 +75,17 @@ class AwsSsmSecretProvider(SecretProvider):
         return result
 
 
-    def get(self, key, decrypt=False, revision=None):
+    def get(self, key, decrypt=False, revision=None, uninherited=False, editing=False):
         Logger.debug(f"Locating SSM secret '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix())
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:
-            raise DSOException(f"Secret '{key}' not found nor inherited in the given context: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            if uninherited:
+                raise DSOException(f"Secret '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+            else:
+                raise DSOException(f"Secret '{key}' not found nor inherited in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         else:
             if not found['Type'] == 'SecureString':
-                raise DSOException(f"Parameter '{key}' not found in the given context: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+                raise DSOException(f"Secret '{key}' not found in the given context: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         Logger.debug(f"Getting SSM secret: path={found['Name']}")
         response = get_ssm_secret_history(found['Name'], decrypt)
         secrets = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)

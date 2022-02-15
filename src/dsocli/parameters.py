@@ -1,4 +1,6 @@
 import re
+
+from jinja2.runtime import unicode_join
 from .logger import Logger
 from .providers import KeyValueStoreProvider, Providers
 from .stages import Stages
@@ -46,11 +48,11 @@ class ParameterService():
         Logger.info(f"Adding parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
         return provider.add(key, value)
 
-    def get(self, key, revision=None):
+    def get(self, key, revision=None, uninherited=False, editable=False):
         # self.validate_key(key)
         provider = Providers.ParameterProvider()
         Logger.info(f"Getting parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
-        return provider.get(key, revision)
+        return provider.get(key, revision, uninherited, editable)
 
     def history(self, key):
         # self.validate_key(key)

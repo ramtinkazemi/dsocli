@@ -393,9 +393,10 @@ def edit_parameter(stage, scope, global_scope, project_scope, verbosity, config_
         validate_command_usage()
         AppConfig.load(working_dir, config_override, stage, scope)
 
-        result = Parameters.list(uninherited=True, filter=f"^{key}$")
-        if result['Parameters']:
-            value = format_data(result, 'Parameters[0].Value', 'raw')
+        ### always edit raw values, e.g. in shell/v1 providers
+        result = Parameters.get(key, uninherited=True, editable=True)
+        if result:
+            value = format_data(result, 'Value', 'raw')
             from tempfile import NamedTemporaryFile
             ### this code was nicer, but throws permission denided exception on Windows!
             # with NamedTemporaryFile(mode='w', encoding='utf-8', delete=True) as tf:
@@ -568,7 +569,10 @@ def delete_parameter(stage, scope, global_scope, project_scope, verbosity, confi
 @secret.command('add', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['secret']['add']}")
 @command_doc(CLI_COMMANDS_HELP['secret']['add'])
 @click.argument('key', required=False)
+@click.argument('value', required=False)
 @click.option('-k', '--key', 'key_option', required=False, metavar='<key>', help=f"{CLI_PARAMETERS_HELP['secret']['key']}")
+@click.option('-v', '--value', 'value_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['secret']['value']}")
+@click.option('-g', '--ask-password', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=f"{CLI_PARAMETERS_HELP['common']['input']}")
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
@@ -582,12 +586,12 @@ def delete_parameter(stage, scope, global_scope, project_scope, verbosity, confi
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def add_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, input, format):
+def add_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, ask_password, input, format):
 
     secrets = []
 
     def validate_command_usage():
-        nonlocal working_dir, config_override, key, secrets, scope
+        nonlocal working_dir, config_override, key, value, secrets, scope
 
         if not working_dir: working_dir = os.getcwd()
 
@@ -599,6 +603,7 @@ def add_secret(stage, scope, global_scope, project_scope, verbosity, config_over
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
+            validate_none_provided([key, key_option], ["VALUE", "'-v' / '--value'"], ["'-i' / '--input'"])
             secrets = read_data(input, 'Secrets', ['Key', 'Value'], format)
 
             ### eat possible enclosing (double) quotes when source is file, stdin has already eaten them!
@@ -612,11 +617,16 @@ def add_secret(stage, scope, global_scope, project_scope, verbosity, config_over
         ### no input file
         else:
             key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-            value = getpass(" Enter secret value: ")
-            value2 = getpass("Verify secret value: ")
-            if not value == value2:
-                raise DSOException(CLI_MESSAGES['EnteredSecretValuesNotMatched'].format(format))
-
+            
+            ### should I ask password from stdin?
+            if ask_password:
+                validate_none_provided([value, value_option], ["VALUE", "'-v' / '--value'"], ["'--ask-password'"])
+                value = getpass(" Enter secret value: ")
+                value2 = getpass("Verify secret value: ")
+                if not value == value2:
+                    raise DSOException(CLI_MESSAGES['EnteredSecretValuesNotMatched'].format(format))
+            else:
+                value = validate_only_one_provided([value, value_option], ["VALUE", "'-v' / '--value'"])                
             secrets.append({'Key': key, 'Value': value})
 
     success = []
@@ -763,7 +773,7 @@ def get_secret(stage, scope, global_scope, project_scope, verbosity, config_over
         validate_command_usage()
         AppConfig.load(working_dir, config_override, stage, scope)
 
-        result = Secrets.get(key, decrypt=True, revision=revision)
+        result = Secrets.get(key, decrypt=True, revision=revision, editable=True)
         output = format_data(result, query, format)
         Pager.page(output)
 
@@ -814,9 +824,10 @@ def edit_secret(stage, scope, global_scope, project_scope, verbosity, config_ove
         validate_command_usage()
         AppConfig.load(working_dir, config_override, stage, scope)
 
-        result = Secrets.list(uninherited=True, decrypt=True, filter=f"^{key}$")
-        if result['Secrets']:
-            value = format_data(result, 'Secrets[0].Value', 'raw')
+        ### always edit raw values, e.g. in shell/v1 providers
+        result = Secrets.get(key, decrypt=True, uninherited=True)
+        if result:
+            value = format_data(result, 'Value', 'raw')
             from tempfile import NamedTemporaryFile
             ### this code was nicer, but throws permission denided exception on Windows!
             # with NamedTemporaryFile(mode='w', encoding='utf-8', delete=True) as tf:

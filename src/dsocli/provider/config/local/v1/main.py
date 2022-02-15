@@ -77,7 +77,7 @@ class LocalParameterProvider(ParameterProvider):
         Logger.debug(f"Getting parameter '{key}': namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
         found = locate_parameter_in_context_hierachy(config=config, key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found nor inherited in the given config: stage={Stages.shorten(config.short_stage)}")
+            raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: stage={Stages.shorten(config.short_stage)}")
         result = {
                 'Key': key, 
             }
@@ -93,7 +93,7 @@ class LocalParameterProvider(ParameterProvider):
         Logger.debug(f"Getting parameter '{key}': namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
         found = locate_parameter_in_context_hierachy(config=config, key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found nor inherited in the given config: stage={Stages.shorten(config.short_stage)}")
+            raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: stage={Stages.shorten(config.short_stage)}")
         result = { "Revisions":
             [{
                 'RevisionId': '0',
@@ -111,7 +111,7 @@ class LocalParameterProvider(ParameterProvider):
         ### only parameters owned by the config can be deleted, hence uninherited=True
         found = locate_parameter_in_context_hierachy(config=config, key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found in the given config: namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.short_stage}")
+            raise DSOException(f"Parameter '{key}' not found in the given context: namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.short_stage}")
         Logger.info(f"Deleting parameter: path={found[key]['Path']}")
         delete_local_parameter(found[key]['Path'], key=key)
         result = {

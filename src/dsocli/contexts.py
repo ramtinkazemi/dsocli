@@ -761,7 +761,7 @@ class ContextService():
                 result.append(path_prefix + Context(context.namespace, 'default', 'default', Stages.get_default_env(context.stage)).get_path(key))
                 ### Add global numbered stage context
                 if not Stages.is_default_env(context.stage):
-                    result.append(path_prefix + Context(context.namespace, 'default', 'default', stage).get_path(key))
+                    result.append(path_prefix + Context(context.namespace, 'default', 'default', context.stage).get_path(key))
 
             if not context.project == 'default':
                 ### Add the project context: /project/default/default/0
@@ -771,7 +771,7 @@ class ContextService():
                     result.append(path_prefix + Context(context.namespace, context.project, 'default', Stages.get_default_env(context.stage)).get_path(key))
                     ### Add the project numbered stage context: /project/default/stage/env
                     if not Stages.is_default_env(context.stage):
-                        result.append(path_prefix + Context(context.namespace, context.project, 'default', stage).get_path(key))
+                        result.append(path_prefix + Context(context.namespace, context.project, 'default', context.stage).get_path(key))
                 
                 if not context.application == 'default':
                     ### Add the application context: /project/application/default/0
@@ -784,7 +784,6 @@ class ContextService():
                             result.append(path_prefix + Context(context.namespace, context.project, context.application, context.stage).get_path(key))
 
         return list(reversed(result)) if reverse else result
-
 
 
 Contexts = ContextService()

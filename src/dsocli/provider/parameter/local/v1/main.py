@@ -53,6 +53,7 @@ class LocalParameterProvider(ParameterProvider):
         return response
 
 
+
     def list(self, uninherited=False, filter=None):
         Logger.debug(f"Listing local parameters: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         parameters = load_context_local_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
@@ -67,14 +68,18 @@ class LocalParameterProvider(ParameterProvider):
         return result
 
 
-
-    def get(self, key, revision=None):
+    def get(self, key, revision=None, uninherited=False, editable=False):
         if revision:
             Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
+        Logger.debug(f"Getting local parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found nor inherited in the given config: stage={Stages.shorten(AppConfig.short_stage)}")
+            if uninherited:
+                raise DSOException(f"Parameter '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+            else:
+                raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        if len(found) > 1:
+            raise DSOException(f"Mutiple parameters found with the same key '{key}' in the given context.")
         result = {
                 'Key': key, 
             }
@@ -82,14 +87,13 @@ class LocalParameterProvider(ParameterProvider):
         return result
 
 
-
     def history(self, key):
         Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
 
-        Logger.debug(f"Getting parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Getting local parameter '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found nor inherited in the given config: stage={Stages.shorten(AppConfig.short_stage)}")
+            raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: stage={Stages.shorten(AppConfig.short_stage)}")
         result = { "Revisions":
             [{
                 'RevisionId': '0',
@@ -106,7 +110,7 @@ class LocalParameterProvider(ParameterProvider):
         ### only parameters owned by the config can be deleted, hence uninherited=True
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found in the given config: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            raise DSOException(f"Parameter '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         Logger.info(f"Deleting parameter: path={found[key]['Path']}")
         delete_local_parameter(found[key]['Path'], key=key)
         result = {

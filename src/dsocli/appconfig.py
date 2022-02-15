@@ -28,14 +28,29 @@ class ConfigScope(OrderedEnum):
     Merged = 30
 
 _init_config = {
-    'kind': 'dso/application/v1',
+    'kind': 'dso/application',
     'version': 1,
-    'project': 'default',
-    'application': 'default',
+    'project': 'myproject',
+    'application': 'myapp',
+    'parameter': {
+        'provider': {
+            'id': 'local/v1',
+        },
+    },
+    'secret': {
+        'provider': {
+            'id': 'shell/v1',
+        },
+    },
+    'template': {
+        'provider': {
+            'id': 'local/v1',
+        },
+    },    
 }
 
 _default_config = {
-    'kind': 'dso/application/v1',
+    'kind': 'dso/application',
     'version': 1,
     'namespace': 'default',
     'project': 'default',

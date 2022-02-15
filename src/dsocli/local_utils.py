@@ -180,7 +180,7 @@ def locate_parameter_in_context_hierachy(key, store_name, path_prefix='', uninhe
     stores = get_context_hierachy_parameter_stores(context=AppConfig.context, store_name=store_name, path_prefix=path_prefix, uninherited=uninherited, reverse=True)
     parameters = {}
     for store_name in stores:
-        Logger.debug(f"Loading store_name: path={store_name['Path']}")
+        Logger.debug(f"Loading store: path={store_name['Path']}")
         if os.path.exists(store_name['Path']):
             load_parameter_store(result=parameters, path=store_name['Path'], path_prefix=path_prefix, filter=f"^{key}$")
             if key in parameters: break

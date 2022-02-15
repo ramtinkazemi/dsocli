@@ -47,11 +47,11 @@ class SecretService():
         Logger.info(f"Adding secret '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
         return provider.add(key, value)
 
-    def get(self, key, decrypt=False, revision=None):
+    def get(self, key, decrypt=False, revision=None, uninherited=False, editable=False):
         # self.validate_key(key)
         provider = Providers.SecretProvider()
         Logger.info(f"Getting secret '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
-        return provider.get(key, decrypt, revision)
+        return provider.get(key, decrypt, revision, uninherited, editable)
 
     def history(self, key, decrypt=False):
         # self.validate_key(key)
