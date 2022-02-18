@@ -773,7 +773,7 @@ def get_secret(stage, scope, global_scope, project_scope, verbosity, config_over
         validate_command_usage()
         AppConfig.load(working_dir, config_override, stage, scope)
 
-        result = Secrets.get(key, decrypt=True, revision=revision, editable=True)
+        result = Secrets.get(key, revision, decrypt=True)
         output = format_data(result, query, format)
         Pager.page(output)
 
