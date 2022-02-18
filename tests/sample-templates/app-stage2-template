@@ -1,14 +1,26 @@
-Global Overriden Template
+Application Stage 2 Template
 
 Parameter:
 ----------
-overriden_parameter = {{overriden_parameter}}
 global.parameter = {{global.parameter}}
+global.stage_parameter = {{global.stage_parameter}}
+project.parameter = {{project.parameter}}
+project.stage_parameter = {{project.stage_parameter}}
+app.parameter = {{app.parameter}}
+app.stage_parameter = {{app.stage_parameter}}
+app.stage2_parameter = {{app.stage2_parameter}}
+overriden_parameter = {{overriden_parameter}}
 
 Secrets:
 --------
-overriden_secret = {{overriden_secret}}
 global.secret = {{global.secret}}
+global.stage_secret = {{global.stage_secret}}
+project.secret = {{project.secret}}
+project.stage_secret = {{project.stage_secret}}
+app.secret = {{app.secret}}
+app.stage_secret = {{app.stage_secret}}
+app.stage2_secret = {{app.stage2_secret}}
+overriden_secret = {{overriden_secret}}
 
 DSO Meta:
 ---------

@@ -79,6 +79,8 @@ dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, proj
 printf "\n\ndso template list -b5 -w \"${working_dir}\" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} -i - -f json\n\n"
 dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --uninherited -f json | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} -i - -f json > /dev/null
 
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 -i - -f json\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 --uninherited -f json | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 -i - -f json > /dev/null
 
 ###################################
 ### Setting confgiurations
@@ -116,6 +118,8 @@ dso template add -b5 -w "${working_dir}" app.template -r 'tests/output/template/
 printf "\n\ndso template add -b5 -w \"${working_dir}\" app.stage_template -r 'tests/output/template/*' -s ${stage} -c tests/sample-templates/app-stage-template\n\n"
 dso template add -b5 -w "${working_dir}" app.stage_template -r 'tests/output/template/*' -s ${stage} -c tests/sample-templates/app-stage-template > /dev/null
 
+printf "\n\ndso template add -b5 -w \"${working_dir}\" app.stage2_template -r 'tests/output/template/*' -s ${stage}/2 -c tests/sample-templates/app-stage2-template\n\n"
+dso template add -b5 -w "${working_dir}" app.stage2_template -r 'tests/output/template/*' -s ${stage}/2 -c tests/sample-templates/app-stage2-template > /dev/null
 
 ###################################
 ### add overriden templates
@@ -138,21 +142,29 @@ dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/tem
 printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' -s ${stage} -c tests/sample-templates/app-stage-template-overriden\n\n"
 dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' -s ${stage} -c tests/sample-templates/app-stage-template-overriden > /dev/null
 
+printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' -s ${stage}/2 -c tests/sample-templates/app-stage2-template-overriden\n\n"
+dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' -s ${stage}/2 -c tests/sample-templates/app-stage2-template-overriden > /dev/null
 
 ###################################
-### getting some templates
+### get some templates
 
-printf "\n\ndso template get -b5 -w \"${working_dir}\" overriden_template -f raw\n\n"
-dso template get overriden_template -b5 -w "${working_dir}" -f raw > /dev/null
+printf "\n\ndso template get -b5 -w \"${working_dir}\" overriden_template  -scope Global -f raw\n\n"
+dso template get overriden_template -b5 -w "${working_dir}" -scope Global -f raw > /dev/null
 
 printf "\n\ndso template get -b5 -w \"${working_dir}\" overriden_template -s ${stage} -f raw\n\n"
 dso template get overriden_template -b5 -w "${working_dir}" -s ${stage} -f raw > /dev/null
+
+printf "\n\ndso template get -b5 -w \"${working_dir}\" overriden_template -s ${stage}/2 -f raw\n\n"
+dso template get overriden_template -b5 -w "${working_dir}" -s ${stage}/2 -f raw > /dev/null
 
 printf "\n\ndso template get -b5 -w \"${working_dir}\" app.template -s ${stage} -f raw\n\n"
 dso template get -b5 -w "${working_dir}" app.template -s ${stage} -f raw > /dev/null
 
 printf "\n\ndso template get -b5 -w \"${working_dir}\" app.stage_template -s ${stage} -f raw\n\n"
 dso template get -b5 -w "${working_dir}" app.stage_template -s ${stage} -f raw > /dev/null
+
+printf "\n\ndso template get -b5 -w \"${working_dir}\" app.stage2_template -s ${stage}/2 -f raw\n\n"
+dso template get -b5 -w "${working_dir}" app.stage2_template -s ${stage}/2 -f raw > /dev/null
 
 
 ###################################
@@ -170,6 +182,9 @@ dso template edit -b5 -w "${working_dir}" app.template
 printf "\n\ndso template edit -b5 -w \"${working_dir}\" app.stage_template -s ${stage}\n\n"
 dso template edit -b5 -w "${working_dir}" app.stage_template -s ${stage}
 
+printf "\n\ndso template edit -b5 -w \"${working_dir}\" app.stage2_template -s ${stage}/2\n\n"
+dso template edit -b5 -w "${working_dir}" app.stage2_template -s ${stage}/2
+
 
 ###################################
 ### getting history of some templates
@@ -186,6 +201,8 @@ dso template history -b5 -w "${working_dir}" app.template -s ${stage} --query-al
 printf "\n\ndso template history -b5 -w \"${working_dir}\" app.stage_template -s ${stage} --query-all -f json\n\n"
 dso template history -b5 -w "${working_dir}" app.stage_template -s ${stage} --query-all -f json -b5 > /dev/null
 
+printf "\n\ndso template history -b5 -w \"${working_dir}\" app.stage2_template -s ${stage}/2 --query-all -f json\n\n"
+dso template history -b5 -w "${working_dir}" app.stage2_template -s ${stage}/2 --query-all -f json -b5 > /dev/null
 
 ###################################
 ### listing some templates
@@ -197,8 +214,10 @@ printf "\n\ndso template list -b5 -w \"${working_dir}\" -s ${stage} --uninherite
 dso template list -b5 -w "${working_dir}" -s ${stage} --uninherited --contents --query-all -f json > tests/output/template/app-uninherited-${provider%%/*}.json
 
 printf "\n\ndso template list -b5 -w \"${working_dir}\" -s ${stage} -c --query-all -f yaml\n\n"
-dso template list -b5 -w "${working_dir}" -s ${stage} --contents --query-all -f yaml > tests/output/template/app-all-${provider%%/*}.yaml
+dso template list -b5 -w "${working_dir}" -s ${stage} --contents --query-all -f yaml > tests/output/template/app-stage-all-${provider%%/*}.yaml
 
+printf "\n\ndso template list -b5 -w \"${working_dir}\" -s ${stage}/2 -c --query-all -f yaml\n\n"
+dso template list -b5 -w "${working_dir}" -s ${stage}/2 --contents --query-all -f yaml > tests/output/template/app-stage2-all-${provider%%/*}.yaml
 
 ###################################
 ### rendering templates
@@ -208,6 +227,9 @@ dso template render -b5 -w "${working_dir}" -s ${stage} --filter overriden_templ
 
 printf "\n\ndso template render -b5 -w \"${working_dir}\" -s ${stage}\n\n"
 dso template render -b5 -w "${working_dir}" -s ${stage} > /dev/null
+
+printf "\n\ndso template render -b5 -w \"${working_dir}\" -s ${stage}/2\n\n"
+dso template render -b5 -w "${working_dir}" -s ${stage}/2 > /dev/null
 
 
 

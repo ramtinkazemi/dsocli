@@ -53,6 +53,9 @@ Invoke-Call -ScriptBlock {dso template list -b5 -w "${working_dir}" --config "na
 Write-Output "`ndso template list -b5 -w `"${working_dir}`" --namespace ${namespace} --project ${project} --application ${application} --config `"template.provider.id=${provider}`" -s ${stage} --uninherited | dso template delete -b5 -w `"${working_dir}`" --namespace ${namespace} --project ${project} --application ${application} --config `"template.provider.id=${provider}`" -s ${stage} -i -`n"
 Invoke-Call -ScriptBlock {dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} -i -} -ErrorAction Stop > $null
 
+Write-Output "`ndso template list -b5 -w `"${working_dir}`" --namespace ${namespace} --project ${project} --application ${application} --config `"template.provider.id=${provider}`" -s ${stage}/2 --uninherited | dso template delete -b5 -w `"${working_dir}`" --namespace ${namespace} --project ${project} --application ${application} --config `"template.provider.id=${provider}`" -s ${stage}/2 -i -`n"
+Invoke-Call -ScriptBlock {dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 -i -} -ErrorAction Stop > $null
+
 
 ##################################
 ### Setting confgiurations
@@ -91,6 +94,8 @@ Invoke-Call -ScriptBlock {dso template add -b5 -w "${working_dir}" app.template 
 Write-Output "`ndso template add -b5 -w `"${working_dir}`" -s ${stage} app.stage_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage-template`n"
 Invoke-Call -ScriptBlock {dso template add -b5 -w "${working_dir}" -s ${stage} app.stage_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage-template} -ErrorAction Stop > $null
 
+Write-Output "`ndso template add -b5 -w `"${working_dir}`" -s ${stage}/2 app.stage2_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage-template`n"
+Invoke-Call -ScriptBlock {dso template add -b5 -w "${working_dir}" -s ${stage}/2 app.stage2_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage-template} -ErrorAction Stop > $null
 
 # ##################################
 # ### add overriden templates
@@ -113,16 +118,21 @@ Invoke-Call -ScriptBlock {dso template add -b5 -w "${working_dir}" overriden_tem
 Write-Output "`ndso template add -b5 -w `"${working_dir}`" -s ${stage} overriden_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage-template-overriden`n"
 Invoke-Call -ScriptBlock {dso template add -b5 -w "${working_dir}" -s ${stage} overriden_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage-template-overriden} -ErrorAction Stop > $null
 
+Write-Output "`ndso template add -b5 -w `"${working_dir}`" -s ${stage}/2 overriden_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage2-template-overriden`n"
+Invoke-Call -ScriptBlock {dso template add -b5 -w "${working_dir}" -s ${stage}/2 overriden_template -r 'tests\output\template\*' -c tests\sample-templates\app-stage2-template-overriden} -ErrorAction Stop > $null
 
 
 ##################################
-### getting some templates
+### get some templates
 
-# Write-Output "`ndso template get -b5 -w `"${working_dir}`" overriden_template -f raw`n"
-# Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" overriden_template -f raw} -ErrorAction Stop > $null
+Write-Output "`ndso template get -b5 -w `"${working_dir}`" overriden_template --scope Global -f raw`n"
+Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" overriden_template --scope Global -f raw} -ErrorAction Stop > $null
 
-# Write-Output "`ndso template get -b5 -w `"${working_dir}`" overriden_template -s ${stage} -f raw`n"
-# Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" overriden_template -s ${stage} -f raw} -ErrorAction Stop > $null
+Write-Output "`ndso template get -b5 -w `"${working_dir}`" overriden_template --scope Project -f raw`n"
+Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" overriden_template --scope Project -f raw} -ErrorAction Stop > $null
+
+Write-Output "`ndso template get -b5 -w `"${working_dir}`" overriden_template -s ${stage} -f raw`n"
+Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" overriden_template -s ${stage} -f raw} -ErrorAction Stop > $null
 
 Write-Output "`ndso template get -b5 -w `"${working_dir}`" app.template -f raw`n"
 Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" app.template -f raw} -ErrorAction Stop > $null
@@ -130,6 +140,8 @@ Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" app.template 
 Write-Output "`ndso template get -b5 -w `"${working_dir}`" app.stage_template -s ${stage} -f raw`n"
 Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" app.stage_template -s ${stage} -f raw} -ErrorAction Stop > $null
 
+Write-Output "`ndso template get -b5 -w `"${working_dir}`" app.stage2_template -s ${stage}/2 -f raw`n"
+Invoke-Call -ScriptBlock {dso template get -b5 -w "${working_dir}" app.stage2_template -s ${stage}/2 -f raw} -ErrorAction Stop > $null
 
 ##################################
 ### edit some tempaltes
@@ -146,12 +158,17 @@ Invoke-Call -ScriptBlock {dso template edit -b5 -w "${working_dir}" app.template
 Write-Output "`ndso template edit -b5 -w `"${working_dir}`" app.stage_template -s ${stage}`n"
 Invoke-Call -ScriptBlock {dso template edit -b5 -w "${working_dir}" app.stage_template -s ${stage}} -ErrorAction Stop
 
+Write-Output "`ndso template edit -b5 -w `"${working_dir}`" app.stage2_template -s ${stage}/2`n"
+Invoke-Call -ScriptBlock {dso template edit -b5 -w "${working_dir}" app.stage2_template -s ${stage}/2} -ErrorAction Stop
 
 ##################################
 ### getting history of some templates
 
-Write-Output "`ndso template history -b5 -w `"${working_dir}`" overriden_template -f json`n"
-Invoke-Call -ScriptBlock {dso template history -b5 -w "${working_dir}" overriden_template -f json} -ErrorAction Stop > $null
+Write-Output "`ndso template history -b5 -w `"${working_dir}`" overriden_template -g -f json`n"
+Invoke-Call -ScriptBlock {dso template history -b5 -w "${working_dir}" overriden_template -g -f json} -ErrorAction Stop > $null
+
+Write-Output "`ndso template history -b5 -w `"${working_dir}`" overriden_template -p -f json`n"
+Invoke-Call -ScriptBlock {dso template history -b5 -w "${working_dir}" overriden_template -p -f json} -ErrorAction Stop > $null
 
 Write-Output "`ndso template history -b5 -w `"${working_dir}`" overriden_template -s ${stage} -f yaml`n"
 Invoke-Call -ScriptBlock {dso template history -b5 -w "${working_dir}" overriden_template -s ${stage} -f json} -ErrorAction Stop > $null
@@ -162,6 +179,8 @@ Invoke-Call -ScriptBlock {dso template history -b5 -w "${working_dir}" app.templ
 Write-Output "`ndso template history -b5 -w `"${working_dir}`" app.stage_template -s ${stage} --query-all -f yaml`n"
 Invoke-Call -ScriptBlock {dso template history -b5 -w "${working_dir}" app.stage_template -s ${stage} --query-all -f json} -ErrorAction Stop > $null
 
+Write-Output "`ndso template history -b5 -w `"${working_dir}`" app.stage2_template -s ${stage}/2 --query-all -f yaml`n"
+Invoke-Call -ScriptBlock {dso template history -b5 -w "${working_dir}" app.stage2_template -s ${stage}/2 --query-all -f json} -ErrorAction Stop > $null
 
 ##################################
 ### listing some templates
@@ -175,8 +194,10 @@ Write-Output "`ndso template list -b5 -w `"${working_dir}`" -s ${stage} --uninhe
 Invoke-Call -ScriptBlock {dso template list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > "tests/output/template/app-uninherited-${filename}.json"
 
 Write-Output "`ndso template list -b5 -w `"${working_dir}`" -s ${stage} --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso template list -b5 -w "${working_dir}" -s ${stage} --query-all -f yaml} -ErrorAction Stop > "tests/output/template/app-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso template list -b5 -w "${working_dir}" -s ${stage} --query-all -f yaml} -ErrorAction Stop > "tests/output/template/app-stage-all-${filename}.yaml"
 
+Write-Output "`ndso template list -b5 -w `"${working_dir}`" -s ${stage}/2 --query-all -f yaml`n"
+Invoke-Call -ScriptBlock {dso template list -b5 -w "${working_dir}" -s ${stage}/2 --query-all -f yaml} -ErrorAction Stop > "tests/output/template/app-stage2-all-${filename}.yaml"
 
 ##################################
 ### rendering templates
@@ -186,3 +207,6 @@ Invoke-Call -ScriptBlock {dso template render -b5 -w "${working_dir}" -s ${stage
 
 Write-Output "`ndso template render -b5 -w `"${working_dir}`" -s ${stage}`n"
 Invoke-Call -ScriptBlock {dso template render -b5 -w "${working_dir}" -s ${stage}} -ErrorAction Stop > $null
+
+Write-Output "`ndso template render -b5 -w `"${working_dir}`" -s ${stage}/2`n"
+Invoke-Call -ScriptBlock {dso template render -b5 -w "${working_dir}" -s ${stage}/2} -ErrorAction Stop > $null

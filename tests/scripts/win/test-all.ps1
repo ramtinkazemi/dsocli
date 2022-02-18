@@ -57,6 +57,7 @@ $Env:project_secret_overriden='project.secret_overriden'
 $Env:project_stage_secret_overriden='project.stage_secret_overriden'
 $Env:app_secret_overriden='app.secret_overriden'
 $Env:app_stage_secret_overriden='app.stage_secret_overriden'
+$Env:app_stage2_secret_overriden='app.stage2_secret_overriden'
 
 $provider = "shell/v1"
 .\tests\scripts\win\test-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider

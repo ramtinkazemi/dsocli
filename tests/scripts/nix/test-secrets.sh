@@ -60,12 +60,13 @@ export project_secret='project.secret'
 export project_stage_secret='project.stage_secret'
 export app_secret='app.secret'
 export app_stage_secret='app.stage_secret'
-export global_secret_overriden='global.secret_overriden'
-export global_stage_secret_overriden='global.stage.secret_overriden'
-export project_secret_overriden='project.secret_overriden'
-export project_stage_secret_overriden='project.stage_secret_overriden'
-export app_secret_overriden='app.secret_overriden'
-export app_stage_secret_overriden='app.stage_secret_overriden'
+export global_overriden_secret='global.overriden_secret'
+export global_stage_overriden_secret='global.stage.overriden_secret'
+export project_overriden_secret='project.overriden_secret'
+export project_stage_overriden_secret='project.stage_overriden_secret'
+export app_overriden_secret='app.overriden_secret'
+export app_stage_overriden_secret='app.stage_overriden_secret'
+export app_stage2_overriden_secret='app.stage2_overriden_secret'
 
 ###################################
 ### delete existing secrets, in order to also test overriding configurartions, they will be set later
@@ -87,6 +88,9 @@ dso secret list -b5 -w "${working_dir}" --config "namespace=${namespace}, projec
 
 printf "\n\ndso secret list -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --uninherited -f json | dso secret delete -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" -i - -f json\n\n"
 dso secret list -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --uninherited -f json | dso secret delete -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" -i - -f json > /dev/null
+
+printf "\n\ndso secret list -b5 -s ${stage}/2 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --uninherited -f json | dso secret delete -b5 -s ${stage}/2 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" -i - -f json\n\n"
+dso secret list -b5 -s ${stage}/2 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --uninherited -f json | dso secret delete -b5 -s ${stage}/2 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" -i - -f json > /dev/null
 
 
 ###################################
@@ -121,7 +125,6 @@ cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --global-scope -f
 global.stage_secret=global_stage_secret
 EOF
 
-
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --project-scope -f shell -i -
 project.secret=project_secret
 EOF\n\n"
@@ -136,7 +139,6 @@ cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --project-scope -
 project.stage_secret=project_stage_secret
 EOF
 
-
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" -f shell -i -
 app.secret=app_secret
 EOF\n\n"
@@ -151,54 +153,60 @@ cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" -f shell -i - > /
 app.stage_secret=app_stage_secret
 EOF
 
+printf "\n\ndso secret add app.stage2_secret app_stage2_secret -b5 -s ${stage}/2 -w \"${working_dir}\"
+dso secret add app.stage2_secret app_stage2_secret -b5 -s ${stage}/2 -w "${working_dir}" > /dev/null
 
 ###################################
 ### add overriden secrets
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --global-scope -f shell -i -
-overriden_secret=global_secret_overriden
+overriden_secret=global_overriden_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" --global-scope -f shell -i - > /dev/null
-overriden_secret=global_secret_overriden
+overriden_secret=global_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --global-scope -f shell -i -
-overriden_secret=global_stage_secret_overriden
+overriden_secret=global_stage_overriden_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --global-scope -f shell -i - > /dev/null
-overriden_secret=global_stage_secret_overriden
+overriden_secret=global_stage_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --project-scope -f shell -i - 
-overriden_secret=project_secret_overriden
+overriden_secret=project_overriden_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-overriden_secret=project_secret_overriden
+overriden_secret=project_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --project-scope -f shell -i - 
-overriden_secret=project_stage_secret_overriden
+overriden_secret=project_stage_overriden_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-overriden_secret=project_stage_secret_overriden
+overriden_secret=project_stage_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" -f shell -i -
-overriden_secret=app_secret_overriden
+overriden_secret=app_overriden_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" -f shell -i - > /dev/null
-overriden_secret=app_secret_overriden
+overriden_secret=app_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" -f shell -i - 
-overriden_secret=app_stage_secret_overriden
+overriden_secret=app_stage_overriden_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" -f shell -i - > /dev/null
-overriden_secret=app_stage_secret_overriden
+overriden_secret=app_stage_overriden_secret
 EOF
 
+printf "\n\ndso secret add overriden_secret app_stage2_overriden_secret -b5 -s ${stage}/2 -w \"${working_dir}\"
+dso secret add overriden_secret app_stage2_overriden_secret -b5 -s ${stage}/2 -w "${working_dir}" > /dev/null
+
+
 ###################################
-### getting some secrets
+### get some secrets
 
 printf "\n\ndso secret get -b5 -w \"${working_dir}\" overriden_secret -f raw\n\n"
 dso secret get -b5 -w "${working_dir}" overriden_secret -f raw > /dev/null
@@ -211,6 +219,9 @@ dso secret get -b5 -w "${working_dir}" app.secret -s ${stage} -f raw > /dev/null
 
 printf "\n\ndso secret get -b5 -w \"${working_dir}\" app.stage_secret -s ${stage} -f raw\n\n"
 dso secret get -b5 -w "${working_dir}" app.stage_secret -s ${stage} -f raw > /dev/null
+
+printf "\n\ndso secret get -b5 -w \"${working_dir}\" app.stage2_secret -s ${stage}/2 -f raw\n\n"
+dso secret get -b5 -w "${working_dir}" app.stage2_secret -s ${stage}/2 -f raw > /dev/null
 
 
 ###################################
@@ -228,6 +239,9 @@ dso secret edit -b5 -w "${working_dir}" app.secret
 printf "\n\ndso secret edit -b5 -w \"${working_dir}\" app.stage_secret -s ${stage}\n\n"
 dso secret edit -b5 -w "${working_dir}" app.stage_secret -s ${stage}
 
+printf "\n\ndso secret edit -b5 -w \"${working_dir}\" app.stage2_secret -s ${stage}/2\n\n"
+dso secret edit -b5 -w "${working_dir}" app.stage2_secret -s ${stage}/2
+
 
 ###################################
 ### getting history of some secrets
@@ -244,6 +258,9 @@ dso secret history -b5 -w "${working_dir}" app.secret -s ${stage} --query-all -f
 printf "\n\ndso secret history -b5 -w \"${working_dir}\" app.stage_secret -s ${stage} --query-all -f json\n\n"
 dso secret history -b5 -w "${working_dir}" app.stage_secret -s ${stage} --query-all -f json > /dev/null
 
+printf "\n\ndso secret history -b5 -w \"${working_dir}\" app.stage2_secret -s ${stage}/2 --query-all -f json\n\n"
+dso secret history -b5 -w "${working_dir}" app.stage2_secret -s ${stage}/2 --query-all -f json > /dev/null
+
 
 ###################################
 ### listing some secrets
@@ -252,8 +269,10 @@ printf "\n\ndso secret list -b5 -w \"${working_dir}\" -s ${stage} --uninherited 
 dso secret list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all --filter overriden_secret > /dev/null
 
 printf "\n\ndso secret list -b5 -w \"${working_dir}\" -s ${stage} --uninherited -d --query-all -f json\n\n"
-dso secret list -b5 -w "${working_dir}" -s ${stage} --uninherited -d --query-all -f json > tests/output/secret/app-uninherited-${provider%%/*}.json
+dso secret list -b5 -w "${working_dir}" -s ${stage} --uninherited -d --query-all -f json > tests/output/secret/app-stage-uninherited-${provider%%/*}.json
 
 printf "\n\ndso secret list -b5 -w \"${working_dir}\" -s ${stage} -d --query-all -f yaml\n\n"
-dso secret list -b5 -w "${working_dir}" -s ${stage} -d --query-all -f yaml > tests/output/secret/app--query-allll-${provider%%/*}.yaml
+dso secret list -b5 -w "${working_dir}" -s ${stage} -d --query-all -f yaml > tests/output/secret/app-stage-all-${provider%%/*}.yaml
 
+printf "\n\ndso secret list -b5 -w \"${working_dir}\" -s ${stage}/2 -d --query-all -f yaml\n\n"
+dso secret list -b5 -w "${working_dir}" -s ${stage}/2 -d --query-all -f yaml > tests/output/secret/app-stage2-all-${provider%%/*}.yaml
