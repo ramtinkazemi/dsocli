@@ -17,7 +17,7 @@ from .exceptions import DSOException
 
 
 class ContextScope(OrderedEnum):
-    Application = 10
+    App = 10
     Project = 20
     Global = 30
 
@@ -139,7 +139,7 @@ class Context():
     _application = 'default'
     _stage = Stages.default_stage
     _short_stage = Stages.short_default_stage
-    _scope = ContextScope.Application
+    _scope = ContextScope.App
     
     def __init__(self, namespace=None, project=None, application=None, stage=None, scope=None):
         self.set_namespace(namespace)
@@ -212,7 +212,7 @@ class Context():
             if self._scope > ContextScope.Project:
                 result = 'default'
                 if not silent: Logger.warn("Switched to the global scope.")
-            elif self._scope > ContextScope.Application:
+            elif self._scope > ContextScope.App:
                 result = 'default'
                 if not silent: Logger.warn("Switched to the project scope.")
             else:
@@ -262,7 +262,7 @@ class Context():
         if value:
             self._scope = value
         else:
-            self._scope = ContextScope.Application
+            self._scope = ContextScope.App
 
 
 
@@ -324,7 +324,7 @@ class ContextService():
     # merged_config = {}
 
 
-    # def load(self, working_dir, context_name=None, namespace=None, project=None, application=None, stage=None, scope=ContextScope.Application):
+    # def load(self, working_dir, context_name=None, namespace=None, project=None, application=None, stage=None, scope=ContextScope.App):
     #     self.working_dir = working_dir
     #     self.update_merged_config()
     #     self.load_global_config()
