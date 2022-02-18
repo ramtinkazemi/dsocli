@@ -18,7 +18,7 @@ FULL = 8 ### also sets built-in logger level to logging.DEBUG
 
 FIELD_STYLES = dict(
     asctime=dict(color='green', faint=True, bold=BOLD_LOGS),
-    levelname=dict(color='cyan', faint=True, bold=BOLD_LOGS),
+    levelname=dict(color='magenta', faint=True, bold=BOLD_LOGS),
 )
 
 LEVEL_STYLES = dict(
@@ -27,7 +27,7 @@ LEVEL_STYLES = dict(
     warning=dict(color='yellow', bold=BOLD_LOGS),
     info=dict(color='white', bold=BOLD_LOGS),
     detail=dict(color='white', faint=True, bold=BOLD_LOGS),
-    debug=dict(color='white', faint=True, bold=BOLD_LOGS),
+    debug=dict(color='cyan', faint=True, bold=BOLD_LOGS),
 )
 
 ### to control logging verbosity of external libraries
