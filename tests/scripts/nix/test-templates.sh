@@ -148,8 +148,8 @@ dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/tem
 ###################################
 ### get some templates
 
-printf "\n\ndso template get -b5 -w \"${working_dir}\" overriden_template  -scope Global -f raw\n\n"
-dso template get overriden_template -b5 -w "${working_dir}" -scope Global -f raw > /dev/null
+printf "\n\ndso template get -b5 -w \"${working_dir}\" overriden_template --scope Global -f raw\n\n"
+dso template get overriden_template -b5 -w "${working_dir}" --scope Global -f raw > /dev/null
 
 printf "\n\ndso template get -b5 -w \"${working_dir}\" overriden_template -s ${stage} -f raw\n\n"
 dso template get overriden_template -b5 -w "${working_dir}" -s ${stage} -f raw > /dev/null
@@ -225,8 +225,8 @@ dso template list -b5 -w "${working_dir}" -s ${stage}/2 --contents --query-all -
 printf "\n\ndso template render -b5 -w \"${working_dir}\" -s ${stage} --filter overriden_template\n\n"
 dso template render -b5 -w "${working_dir}" -s ${stage} --filter overriden_template > /dev/null 
 
-printf "\n\ndso template render -b5 -w \"${working_dir}\" -s ${stage}\n\n"
-dso template render -b5 -w "${working_dir}" -s ${stage} > /dev/null
+# printf "\n\ndso template render -b5 -w \"${working_dir}\" -s ${stage}\n\n"
+# dso template render -b5 -w "${working_dir}" -s ${stage} > /dev/null
 
 printf "\n\ndso template render -b5 -w \"${working_dir}\" -s ${stage}/2\n\n"
 dso template render -b5 -w "${working_dir}" -s ${stage}/2 > /dev/null
