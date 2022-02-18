@@ -572,7 +572,7 @@ def delete_parameter(stage, scope, global_scope, project_scope, verbosity, confi
 @click.argument('value', required=False)
 @click.option('-k', '--key', 'key_option', required=False, metavar='<key>', help=f"{CLI_PARAMETERS_HELP['secret']['key']}")
 @click.option('-v', '--value', 'value_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['secret']['value']}")
-@click.option('-g', '--ask-password', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
+@click.option('-g', '--ask-password', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['secret']['ask_password']}")
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=f"{CLI_PARAMETERS_HELP['common']['input']}")
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")

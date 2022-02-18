@@ -225,6 +225,7 @@ CLI_PARAMETERS_HELP = {
         'uninherited': "Select only secrets which are specific to the gievn context, i.e. not inherited from the parent contexts.",
         'revision': "The revision ID whose value to be fetched.",
         'history': "Get the revision history of the secret.",
+        'ask_password': "Inputing password from stdin.",
     },
     'template': {
         'type': "Type of the template. Use 'resource' for templates needed at the provision time when provisioning resources required by the application to run such as SQS queus, SNS topics, and CI/CD piplines.\nUse 'package' for templates needed at the build time when generating a package.\nUse 'release' for templates needed at the deploy time when generating a release." ,
