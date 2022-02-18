@@ -82,7 +82,7 @@ dso parameter list -b5 -w "${working_dir}" --config "namespace=${namespace}, pro
 
 
 ###################################
-### Setting confgiurations
+### Setting configurations
 printf "\n\ndso config set -b5 -w \"${working_dir}\" namespace ${namespace}\n\n"
 dso config set -b5 -w "${working_dir}" namespace ${namespace}
 

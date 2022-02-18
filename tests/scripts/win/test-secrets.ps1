@@ -81,17 +81,17 @@ Invoke-Call -ScriptBlock {Write-Output "project.secret=project_secret" | dso sec
 Write-Output "`nWrite-Output `"project.stage_secret=project_stage_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --project-scope -f shell -i -`n"
 Invoke-Call -ScriptBlock {Write-Output "project.stage_secret=project_stage_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} --project-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"app.secret=app_secret`" | dso secret add -b5 -w `"${working_dir}`" `-f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "app.secret=app_secret" | dso secret add -b5 -w "${working_dir}" `-f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"app.secret=app_secret`" | dso secret add -b5 -w `"${working_dir}`" -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "app.secret=app_secret" | dso secret add -b5 -w "${working_dir}" -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"app.stage_secret=app_stage_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} `-f shell -i -`n"
+Write-Output "`nWrite-Output `"app.stage_secret=app_stage_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} -f shell -i -`n"
 Invoke-Call -ScriptBlock {Write-Output "app.stage_secret=app_stage_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} -f shell -i -} -ErrorAction Stop > $null
 
 Write-Output "`ndso secret add app.stage2_secret app_stage2_secret -b5 -w `"${working_dir}`" -s `"${stage}/2`"`n"
 Invoke-Call -ScriptBlock {dso secret add app.stage2_secret app_stage2_secret -b5 -w "${working_dir}" -s "${stage}/2"} -ErrorAction Stop > $null
 
 ##################################
-### Setting confgiurations
+### Setting configurations
 
 Write-Output "`ndso config set -b5 -w `"${working_dir}`" namespace ${namespace}`n"
 Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop > $null
@@ -121,10 +121,10 @@ Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project_overriden_secre
 Write-Output "`nWrite-Output `"overriden_secret=project_stage_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --project-scope -f shell -i -`n"
 Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project_stage_overriden_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} --project-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=app_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" `-f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app_overriden_secret" | dso secret add -b5 -w "${working_dir}" `-f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=app_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app_overriden_secret" | dso secret add -b5 -w "${working_dir}" -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=app_stage_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} `-f shell -i -`n"
+Write-Output "`nWrite-Output `"overriden_secret=app_stage_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} -f shell -i -`n"
 Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app_stage_overriden_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} -f shell -i -} -ErrorAction Stop > $null
 
 Write-Output "`ndso secret add overriden_secret app_stage2_overriden_secret -b5 -w `"${working_dir}`" -s `"${stage}/2`"`n"

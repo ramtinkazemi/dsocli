@@ -83,7 +83,7 @@ printf "\n\ndso template list -b5 -w \"${working_dir}\" --config "namespace=${na
 dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 --uninherited -f json | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 -i - -f json > /dev/null
 
 ###################################
-### Setting confgiurations
+### Setting configurations
 printf "\n\ndso config set -b5 -w \"${working_dir}\" namespace ${namespace}\n\n"
 dso config set -b5 -w "${working_dir}" namespace ${namespace}
 

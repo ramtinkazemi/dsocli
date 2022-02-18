@@ -52,7 +52,7 @@ Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" --namespace ${names
 Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}" -s "${stage}/2" --uninherited | dso parameter delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, parameter.provider.id=${provider}" -s "${stage}/2" -i -} -ErrorAction Stop > $null
 
 ##################################
-### Setting confgiurations
+### Setting configurations
 
 Write-Output "`ndso config set -b5 -w `"${working_dir}`" namespace ${namespace}`n"
 Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop > $null
@@ -91,7 +91,6 @@ Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage_pa
 
 Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.stage2_parameter app_stage2_parameter -s `"${stage}/2`"`n"
 Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage2_parameter app_stage2_parameter -s "${stage}/2"} -ErrorAction Stop > $null
-
 
 ##################################
 ### add overriden parameters

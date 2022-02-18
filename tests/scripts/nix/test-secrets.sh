@@ -94,7 +94,7 @@ dso secret list -b5 -s ${stage}/2 -w "${working_dir}" --config "namespace=${name
 
 
 ###################################
-### Setting confgiurations
+### Setting configurations
 printf "\n\ndso config set -b5 -w \"${working_dir}\" namespace ${namespace}\n\n"
 dso config set -b5 namespace ${namespace} -w "${working_dir}"
 
