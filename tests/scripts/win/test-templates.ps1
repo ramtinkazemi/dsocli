@@ -208,5 +208,6 @@ Invoke-Call -ScriptBlock {dso template render -b5 -w "${working_dir}" -s ${stage
 # Write-Output "`ndso template render -b5 -w `"${working_dir}`" -s ${stage}`n"
 # Invoke-Call -ScriptBlock {dso template render -b5 -w "${working_dir}" -s ${stage}} -ErrorAction Stop > $null
 
+
 Write-Output "`ndso template render -b5 -w `"${working_dir}`" -s `"${stage}/2`"`n"
 Invoke-Call -ScriptBlock {dso template render -b5 -w "${working_dir}" -s "${stage}/2"} -ErrorAction Stop > $null
