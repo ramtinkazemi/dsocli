@@ -1,9 +1,9 @@
 set -e
 
-default_provider=aws/ssm/v1
-default_namespace=test--namespaces
+default_provider=shell/v1
+default_namespace=test-ns
 default_project=test-project
-default_application=test--query-allpplication
+default_application=test-app
 default_stage=test-stage
 default_working_dir=.
 
@@ -54,6 +54,18 @@ else
     rm -rf tests/output/secret/*
 fi
 
+export global_secret='global.secret'
+export global_stage_secret='global.stage_secret'
+export project_secret='project.secret'
+export project_stage_secret='project.stage_secret'
+export app_secret='app.secret'
+export app_stage_secret='app.stage_secret'
+export global_secret_overriden='global.secret_overriden'
+export global_stage_secret_overriden='global.stage.secret_overriden'
+export project_secret_overriden='project.secret_overriden'
+export project_stage_secret_overriden='project.stage_secret_overriden'
+export app_secret_overriden='app.secret_overriden'
+export app_stage_secret_overriden='app.stage_secret_overriden'
 
 ###################################
 ### delete existing secrets, in order to also test overriding configurartions, they will be set later
@@ -96,47 +108,47 @@ dso config set -b5 parameter.provider.id "${provider}" -w "${working_dir}"
 ### add context-specific secrets
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --global-scope -f shell -i -
-global.secret=global.secret-value
+global.secret=global_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" --global-scope -f shell -i - > /dev/null
-global.secret=global.secret-value
+global.secret=global_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --global-scope -f shell -i -
-global.stage_secret=global.stage_secret-value
+global.stage_secret=global_stage_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --global-scope -f shell -i - > /dev/null
-global.stage_secret=global.stage_secret-value
+global.stage_secret=global_stage_secret
 EOF
 
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --project-scope -f shell -i -
-project.secret=project.secret-value
+project.secret=project_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-project.secret=project.secret-value
+project.secret=project_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --project-scope -f shell -i -
-project.stage_secret=project.stage_secret-value
+project.stage_secret=project_stage_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-project.stage_secret=project.stage_secret-value
+project.stage_secret=project_stage_secret
 EOF
 
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" -f shell -i -
-app.secret=app.secret-value
+app.secret=app_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" -f shell -i - > /dev/null
-app.secret=app.secret-value
+app.secret=app_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" -f shell -i - 
-app.stage_secret=app.stage_secret-value
+app.stage_secret=app_stage_secret
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" -f shell -i - > /dev/null
-app.stage_secret=app.stage_secret-value
+app.stage_secret=app_stage_secret
 EOF
 
 
@@ -144,45 +156,45 @@ EOF
 ### add overriden secrets
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --global-scope -f shell -i -
-overriden_secret=global-secret-overriden-value
+overriden_secret=global_secret_overriden
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" --global-scope -f shell -i - > /dev/null
-overriden_secret=global-secret-overriden-value
+overriden_secret=global_secret_overriden
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --global-scope -f shell -i -
-overriden_secret=global-stage-secret-overriden-value
+overriden_secret=global_stage_secret_overriden
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --global-scope -f shell -i - > /dev/null
-overriden_secret=global-stage-secret-overriden-value
+overriden_secret=global_stage_secret_overriden
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --project-scope -f shell -i - 
-overriden_secret=project-secret-overriden-value
+overriden_secret=project_secret_overriden
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-overriden_secret=project-secret-overriden-value
+overriden_secret=project_secret_overriden
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --project-scope -f shell -i - 
-overriden_secret=project-stage-secret-overriden-value
+overriden_secret=project_stage_secret_overriden
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-overriden_secret=project-stage-secret-overriden-value
+overriden_secret=project_stage_secret_overriden
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" -f shell -i -
-overriden_secret=app-secret-overriden-value
+overriden_secret=app_secret_overriden
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -w "${working_dir}" -f shell -i - > /dev/null
-overriden_secret=app-secret-overriden-value
+overriden_secret=app_secret_overriden
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" -f shell -i - 
-overriden_secret=app-stage-secret-overriden-value
+overriden_secret=app_stage_secret_overriden
 EOF\n\n"
 cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" -f shell -i - > /dev/null
-overriden_secret=app-stage-secret-overriden-value
+overriden_secret=app_stage_secret_overriden
 EOF
 
 ###################################

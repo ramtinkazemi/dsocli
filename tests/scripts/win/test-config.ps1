@@ -1,7 +1,7 @@
 param(
     [string]$namespace = "test-ns",
     [string]$project = "test-project",
-    [string]$application = "test-application",
+    [string]$application = "test-app",
     [string]$working_dir = "."
 )
 

@@ -1,10 +1,10 @@
 param(
+    [string]$provider = "local/v1",
     [string]$namespace = "test-ns",
     [string]$project = "test-project",
-    [string]$application = "test-application",
-    [string]$working_dir = ".",
-    [string]$provider = "local/v1",
-    [string]$stage = "test-stage"
+    [string]$application = "test-app",
+    [string]$stage = "test-stage",
+    [string]$working_dir = "."
 
 )
 
@@ -70,53 +70,53 @@ Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" parameter.provi
 ##################################
 ### add context-specific parameters
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" global.parameter global-parameter-value --global-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" global.parameter global-parameter-value --global-scope} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" global.parameter global.parameter --global-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" global.parameter global.parameter --global-scope} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" global.stage_parameter global-stage-parameter-value -s ${stage} --global-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" global.stage_parameter global-stage-parameter-value -s ${stage} --global-scope} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" global.stage_parameter global.stage_parameter -s ${stage} --global-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" global.stage_parameter global.stage_parameter -s ${stage} --global-scope} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" project.parameter project-parameter-value --project-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" project.parameter project-parameter-value --project-scope} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" project.parameter project.parameter --project-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" project.parameter project.parameter --project-scope} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" project.stage_parameter project-stage-parameter-value -s ${stage} --project-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" project.stage_parameter  project-stage-parameter-value -s ${stage} --project-scope} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" project.stage_parameter project.stage_parameter -s ${stage} --project-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" project.stage_parameter  project.stage_parameter -s ${stage} --project-scope} -ErrorAction Stop > $null
 
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.parameter app-parameter-value`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.parameter app-parameter-value} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.parameter app.parameter`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.parameter app.parameter} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.stage_parameter app-stage-parameter-value -s ${stage}`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage_parameter app-stage-parameter-value -s ${stage}} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.stage_parameter app.stage_parameter -s ${stage}`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage_parameter app.stage_parameter -s ${stage}} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.stage_parameter app-stage-parameter-value -s ${stage}/2`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage_parameter app-stage-parameter-value -s ${stage}/2} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" app.stage_parameter app.stage_parameter -s ${stage}/2`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" app.stage_parameter app.stage_parameter -s ${stage}/2} -ErrorAction Stop > $null
 
 ##################################
 ### add overriden parameters
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter global-parameter-overridden-value --global-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter global-parameter-overridden-value --global-scope} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter global.overridden_parameter --global-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter global.overridden_parameter --global-scope} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter global-stage-overridden-parameter-value -s ${stage} --global-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter global-stage-overridden-parameter-value -s ${stage} --global-scope} -ErrorAction Stop > $null
-
-
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter project-overridden-parameter-value --project-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter project-overridden-parameter-value --project-scope} -ErrorAction Stop > $null
-
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter project-stage-overridden-parameter-value -s ${stage} --project-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter project-stage-overridden-parameter-value -s ${stage} --project-scope} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter global.stage_overridden_parameter -s ${stage} --global-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter global.stage_overridden_parameter -s ${stage} --global-scope} -ErrorAction Stop > $null
 
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app-overridden-parameter-value`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app-overridden-parameter-value} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter project_overridden_parameter --project-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter project_overridden_parameter --project-scope} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app-stage-overridden-parameter-value -s ${stage}`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app-stage-overridden-parameter-value -s ${stage}} -ErrorAction Stop > $null
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter project.stage_overridden_parameter -s ${stage} --project-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter project.stage_overridden_parameter -s ${stage} --project-scope} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app-stage-overridden-parameter-value -s ${stage}/2`n"
-Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app-stage-overridden-parameter-value -s ${stage}/2} -ErrorAction Stop > $null
+
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app.overridden_parameter`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app.overridden_parameter} -ErrorAction Stop > $null
+
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app.stage_overridden_parameter -s ${stage}`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app.stage_overridden_parameter -s ${stage}} -ErrorAction Stop > $null
+
+Write-Output "`ndso parameter add -b5 -w `"${working_dir}`" overriden_parameter app.stage_overridden_parameter -s ${stage}/2`n"
+Invoke-Call -ScriptBlock {dso parameter add -b5 -w "${working_dir}" overriden_parameter app.stage_overridden_parameter -s ${stage}/2} -ErrorAction Stop > $null
 
 
 ##################################
@@ -179,10 +179,10 @@ Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" -s ${stage} --uninh
 Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all --filter ovverriden_parameter} -ErrorAction Stop > $null
 
 Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" -s ${stage} --uninherited --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > "tests/output/parameter/app-stage-uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > "tests/output/parameter/app.stage_uninherited-${filename}.json"
 
 Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" -s ${stage} --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage} --query-all -f yaml} -ErrorAction Stop > "tests/output/parameter/app-stage-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage} --query-all -f yaml} -ErrorAction Stop > "tests/output/parameter/app.stage_all-${filename}.yaml"
 
 Write-Output "`ndso parameter list -b5 -w `"${working_dir}`" -s ${stage}/2 --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage}/2 --query-all -f yaml} -ErrorAction Stop > "tests/output/parameter/app-stage2-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso parameter list -b5 -w "${working_dir}" -s ${stage}/2 --query-all -f yaml} -ErrorAction Stop > "tests/output/parameter/app.stage2-all-${filename}.yaml"

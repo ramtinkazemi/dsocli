@@ -1,10 +1,10 @@
 param(
+    [string]$provider = "local/v1",
     [string]$namespace = "test-ns",
     [string]$project = "test-project",
-    [string]$application = "test-application",
-    [string]$working_dir = ".",
-    [string]$provider = "local/v1",
-    [string]$stage = "test-stage"
+    [string]$application = "test-app",
+    [string]$stage = "test-stage",
+    [string]$working_dir = "."
 
 )
 

@@ -3,7 +3,7 @@ set -e
 default_provider=local/v1
 default_namespace=test-ns
 default_project=test-project
-default_application=test-application
+default_application=test-app
 default_stage=test-stage
 default_working_dir=.
 
@@ -96,47 +96,47 @@ dso config set -b5 -w "${working_dir}" parameter.provider.id "${provider}"
 ###################################
 ### add context-specific parameters
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" global.parameter global.parameter-value --global-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" global.parameter global.parameter-value --global-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" global.parameter global.parameter --global-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" global.parameter global.parameter --global-scope > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" global.stage_parameter global.stage_parameter-value -s ${stage} --global-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" global.stage_parameter global.stage_parameter-value -s ${stage} --global-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" global.stage_parameter global.stage_parameter -s ${stage} --global-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" global.stage_parameter global.stage_parameter -s ${stage} --global-scope > /dev/null
 
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" project.parameter project.parameter-value --project-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" project.parameter project.parameter-value --project-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" project.parameter project.parameter --project-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" project.parameter project.parameter --project-scope > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" project.stage_parameter project.stage_parameter-value -s ${stage} --project-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" project.stage_parameter project.stage_parameter-value -s ${stage} --project-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" project.stage_parameter project.stage_parameter -s ${stage} --project-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" project.stage_parameter project.stage_parameter -s ${stage} --project-scope > /dev/null
 
 
 printf "\n\ndso parameter add -b5 -w \"${working_dir}\" app.parameter app.parameter-value\n\n"
-dso parameter add -b5 -w "${working_dir}" app.parameter app.parameter-value > /dev/null
+dso parameter add -b5 -w "${working_dir}" app.parameter app.parameter > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" app.stage_parameter app.stage_parameter-value -s ${stage}\n\n"
-dso parameter add -b5 -w "${working_dir}" app.stage_parameter app.stage_parameter-value -s ${stage} > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" app.stage_parameter app.stage_parameter -s ${stage}\n\n"
+dso parameter add -b5 -w "${working_dir}" app.stage_parameter app.stage_parameter -s ${stage} > /dev/null
 
 
 ###################################
 ### add overriden parameters
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter global-parameter-overriden-value --global-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" overriden_parameter global-parameter-overriden-value --global-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter global.overriden_parameter --global-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" overriden_parameter global.overriden_parameter --global-scope > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter global-stage_parameter-overriden-value -s ${stage} --global-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" overriden_parameter global-stage-parameter-overriden-value -s ${stage} --global-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter global-stage_overriden_parameter -s ${stage} --global-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" overriden_parameter global.stage_overriden_parameter -s ${stage} --global-scope > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter project-parameter-overriden-value --project-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" overriden_parameter project-parameter-overriden-value --project-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter project.overriden_parameter --project-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" overriden_parameter project.overriden_parameter --project-scope > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter project-stage_parameter-overriden-value -s ${stage} --project-scope\n\n"
-dso parameter add -b5 -w "${working_dir}" overriden_parameter project-stage-parameter-overriden-value -s ${stage} --project-scope > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter project-stage_overriden_parameter -s ${stage} --project-scope\n\n"
+dso parameter add -b5 -w "${working_dir}" overriden_parameter project.stage_overriden_parameter -s ${stage} --project-scope > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter app-parameter-overriden-value\n\n"
-dso parameter add -b5 -w "${working_dir}" overriden_parameter app-parameter-overriden-value > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter app.overriden_parameter-value\n\n"
+dso parameter add -b5 -w "${working_dir}" overriden_parameter app.overriden_parameter > /dev/null
 
-printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter app-stage-parameter-overriden-value -s ${stage}\n\n"
-dso parameter add -b5 -w "${working_dir}" overriden_parameter app-stage-parameter-overriden-value -s ${stage} > /dev/null
+printf "\n\ndso parameter add -b5 -w \"${working_dir}\" overriden_parameter app.stage_overriden_parameter -s ${stage}\n\n"
+dso parameter add -b5 -w "${working_dir}" overriden_parameter app.stage_overriden_parameter -s ${stage} > /dev/null
 
 
 ###################################

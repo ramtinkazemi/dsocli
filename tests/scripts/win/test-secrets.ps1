@@ -1,13 +1,26 @@
 param(
+    [string]$provider = "shell/v1",
     [string]$namespace = "test-ns",
     [string]$project = "test-project",
-    [string]$application = "test-application",
-    [string]$working_dir = ".",
-    [string]$provider = "aws/ssm/v1",
-    [string]$stage = "test-stage"
+    [string]$application = "test-app",
+    [string]$stage = "test-stage",
+    [string]$working_dir = "."
 
 )
 
+
+$Env:global_secret='global.secret'
+$Env:global_stage_secret='global.stage_secret'
+$Env:project_secret='project.secret'
+$Env:project_stage_secret='project.stage_secret'
+$Env:app_secret='app.secret'
+$Env:app_stage_secret='app.stage_secret'
+$Env:global_secret_overriden='global.secret_overriden'
+$Env:global_stage_secret_overriden='global.stage_secret_overriden'
+$Env:project_secret_overriden='project.secret_overriden'
+$Env:project_stage_secret_overriden='project.stage_secret_overriden'
+$Env:app_secret_overriden='app.secret_overriden'
+$Env:app_stage_secret_overriden='app.stage_secret_overriden'
 
 $ErrorActionPreference = "Stop"
 
@@ -53,23 +66,23 @@ Invoke-Call -ScriptBlock {dso secret list -b5 -w "${working_dir}" --config "name
 ##################################
 ### add context-specific secrets
 
-Write-Output "`nWrite-Output `"global.secret=global-secret-value`" | dso secret add -b5 -w `"${working_dir}`" --global-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "global.secret=global-secret-value" | dso secret add -b5 -w "${working_dir}" --global-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"global.secret=global.secret`" | dso secret add -b5 -w `"${working_dir}`" --global-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "global.secret=global.secret" | dso secret add -b5 -w "${working_dir}" --global-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"global.stage_secret=global-stage-secret-value`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --global-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "global.stage_secret=global-stage-secret-value" | dso secret add -b5 -w "${working_dir}" -s ${stage} --global-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"global.stage_secret=global.stage_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --global-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "global.stage_secret=global.stage_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} --global-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"project.secret=project-secret-value`" | dso secret add -b5 -w `"${working_dir}`" --project-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "project.secret=project-secret-value" | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"project.secret=project.secret`" | dso secret add -b5 -w `"${working_dir}`" --project-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "project.secret=project.secret" | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"project.stage_secret=project-stage-secret-value`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --project-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "project.stage_secret=project-stage-secret-value" | dso secret add -b5 -w "${working_dir}" -s ${stage} --project-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"project.stage_secret=project.stage_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --project-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "project.stage_secret=project.stage_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} --project-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"app.secret=app-secret-value`" | dso secret add -b5 -w `"${working_dir}`" `-f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "app.secret=app-secret-value" | dso secret add -b5 -w "${working_dir}" `-f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"app.secret=app.secret`" | dso secret add -b5 -w `"${working_dir}`" `-f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "app.secret=app.secret" | dso secret add -b5 -w "${working_dir}" `-f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"app.stage_secret=app-stage-secret-value`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} `-f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "app.stage_secret=app-stage-secret-value" | dso secret add -b5 -w "${working_dir}" -s ${stage} -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"app.stage_secret=app.stage_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} `-f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "app.stage_secret=app.stage_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} -f shell -i -} -ErrorAction Stop > $null
 
 
 ##################################
@@ -91,23 +104,23 @@ Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" secret.provider
 ##################################
 ### add overriden secrets
 
-Write-Output "`nWrite-Output `"overriden_secret=global-overriden-secret-value`" | dso secret add -b5 -w `"${working_dir}`" --global-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=global-overriden-secret-value" | dso secret add -b5 -w "${working_dir}" --global-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=global.overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" --global-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=global.overriden_secret" | dso secret add -b5 -w "${working_dir}" --global-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=global-stage-overriden-secret-value`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --global-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=global-stage-overriden-secret-value" | dso secret add -b5 -w "${working_dir}" -s ${stage} --global-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=global.stage_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --global-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=global.stage_overriden_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} --global-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=project-overriden-secret-value`" | dso secret add -b5 -w `"${working_dir}`" --project-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project-overriden-secret-value" | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=project.overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" --project-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project.overriden_secret" | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=project-stage-overriden-secret-value`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --project-scope -f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project-stage-overriden-secret-value" | dso secret add -b5 -w "${working_dir}" -s ${stage} --project-scope -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=project.stage_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} --project-scope -f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project.stage_overriden_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} --project-scope -f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=app-overriden-secret-value`" | dso secret add -b5 -w `"${working_dir}`" `-f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app-overriden-secret-value" | dso secret add -b5 -w "${working_dir}" `-f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=app.overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" `-f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app.overriden_secret" | dso secret add -b5 -w "${working_dir}" `-f shell -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=app-stage-overriden-secret-value`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} `-f shell -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app-stage-overriden-secret-value" | dso secret add -b5 -w "${working_dir}" -s ${stage} -f shell -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=app.stage_overriden_secret`" | dso secret add -b5 -w `"${working_dir}`" -s ${stage} `-f shell -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app.stage_overriden_secret" | dso secret add -b5 -w "${working_dir}" -s ${stage} -f shell -i -} -ErrorAction Stop > $null
 
 
 ##################################
@@ -167,7 +180,7 @@ Write-Output "`ndso secret list -b5 -w `"${working_dir}`" -s ${stage} --uninheri
 Invoke-Call -ScriptBlock {dso secret list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all --filter ovverriden_secret} -ErrorAction Stop > $null
 
 Write-Output "`ndso secret list -b5 -w `"${working_dir}`" -s ${stage} --uninherited --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso secret list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > "tests/output/secret/app-stage-uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso secret list -b5 -w "${working_dir}" -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > "tests/output/secret/app.stage_uninherited-${filename}.json"
 
 Write-Output "`ndso secret list -b5 -w `"${working_dir}`" -s ${stage} --config `"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso secret list -b5 -w "${working_dir}" -s ${stage} --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > "tests/output/secret/app-stage-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso secret list -b5 -w "${working_dir}" -s ${stage} --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > "tests/output/secret/app.stage_all-${filename}.yaml"

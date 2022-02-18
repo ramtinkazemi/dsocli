@@ -2,7 +2,7 @@ set -e
 
 default_namespace=test-ns
 default_project=test-project
-default_application=test-application
+default_application=test-app
 default_stage=test-stage
 default_working_dir=.
 
