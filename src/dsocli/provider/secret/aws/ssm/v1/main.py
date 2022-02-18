@@ -75,7 +75,7 @@ class AwsSsmSecretProvider(SecretProvider):
         return result
 
 
-    def get(self, key, decrypt=False, revision=None, uninherited=False, editing=False):
+    def get(self, key, revision=None, uninherited=False, decrypt=False):
         Logger.debug(f"Locating SSM secret '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:

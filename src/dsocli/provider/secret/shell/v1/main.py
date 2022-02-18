@@ -65,11 +65,11 @@ class ShellSecretProvider(SecretProvider):
         return result
 
 
-    def get(self, key, decrypt=False, revision=None, uninherited=False, editable=False):
+    def get(self, key, revision=None, uninherited=False, decrypt=False):
         if revision:
             Logger.warn(f"Secret provider 'shell/v1' does not support versioning.")
         Logger.debug(f"Getting shell secret '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
-        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, raw=not editable)
+        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, raw=decrypt)
         if not found:
             if uninherited:
                 raise DSOException(f"Secret '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
