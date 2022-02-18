@@ -28,21 +28,21 @@ if (!(Test-Path tests\output)) {
 if(!$?) { exit $? }
 
 
-# $provider = "aws/ssm/v1"
-# .\tests\scripts\win\test-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
-# if(!$?) { exit $? }
+$provider = "aws/ssm/v1"
+.\tests\scripts\win\test-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
+if(!$?) { exit $? }
 
-# .\tests\scripts\win\test-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
-# if(!$?) { exit $? }
+.\tests\scripts\win\test-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
+if(!$?) { exit $? }
 
-# .\tests\scripts\win\test-templates.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
-# if(!$?) { exit $? }
+.\tests\scripts\win\test-templates.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
+if(!$?) { exit $? }
 
 
 
-# $provider = "local/v1"
-# .\tests\scripts\win\test-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
-# if(!$?) { exit $? }
+$provider = "local/v1"
+.\tests\scripts\win\test-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -working_dir "$working_dir" -provider $provider
+if(!$?) { exit $? }
 
 
 $Env:global_secret='global.secret'
