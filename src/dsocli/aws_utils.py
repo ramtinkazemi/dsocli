@@ -64,7 +64,7 @@ def load_ssm_path(result, path, parameter_type, path_prefix='', decrypt=False, f
         if key in result:
             Logger.warn("Inherited {0} '{1}' was overridden.".format(ssm_resource_type[parameter_type] , key))
         ctx_path = path[len(path_prefix):]
-        ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+        ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
         details = {
                     'Value': unescape_curly_brackets(parameter['Value']) if parameter_type == 'StringList' else decode_nulls(parameter['Value']), 
                     'Path': parameter['Name'],
@@ -104,7 +104,7 @@ def locate_ssm_parameter_in_context_hierachy(key, path_prefix='', uninherited=Fa
         response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Values':[path]}])
         if len(response['Parameters']) > 0:
             ctx_path = path[len(path_prefix):]
-            ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+            ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
             result = response['Parameters'][0]
             result['Stage'] = ctx.short_stage
             result['Scope'] = ctx.scope_translation
