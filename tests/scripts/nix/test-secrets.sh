@@ -143,7 +143,7 @@ cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" -f shell -i - > /
 app.stage_secret=app_stage_secret
 EOF
 
-printf "\n\ndso secret add app.stage2_secret app_stage2_secret -b5 -s ${stage}/2 -w \"${working_dir}\""
+printf "\n\ndso secret add app.stage2_secret app_stage2_secret -b5 -s ${stage}/2 -w \"${working_dir}\"\n\n"
 dso secret add app.stage2_secret app_stage2_secret -b5 -s ${stage}/2 -w "${working_dir}" > /dev/null
 
 ###################################
