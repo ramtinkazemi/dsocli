@@ -7,37 +7,32 @@ default_application=test-app
 default_stage=test-stage
 default_working_dir=.
 
-printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <project [${default_project}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]>\n\n"
+printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]>\n\n"
 
 if [ $1 ]; then
-  namespace="$1"
+    namespace=$1
 else
-  namespace="${default_namespace}"
+    namespace=${default_namespace}
 fi
 
 if [ $2 ]; then
-  project="$2"
+    application=$2
 else
-  project="${default_project}"
+    application=${default_application}
 fi
 
 if [ $3 ]; then
-  application="$3"
+    stage=$3
 else
-  application="${default_application}"
+    stage=${default_stage}
 fi
 
 if [ $4 ]; then
-  stage="$4"
+    working_dir=$4
 else
-  stage="${default_stage}"
+    working_dir=${default_working_dir}
 fi
 
-if [ $5 ]; then
-  working_dir="$5"
-else
-  working_dir="${default_working_dir}"
-fi
 
 if [ ! -d tests/output ]; then
     mkdir tests/output
@@ -71,9 +66,6 @@ dso config unset -b5 -w "${working_dir}" test.local-config
 
 printf "\n\ndso config set -b5 -w \"${working_dir}\" namespace ${namespace}\n\n"
 dso config set -b5 -w "${working_dir}" namespace ${namespace}
-
-printf "\n\ndso config set -b5 -w \"${working_dir}\" project ${project}\n\n"
-dso config set -b5 -w "${working_dir}" project ${project}
 
 printf "\n\ndso config set -b5 -w \"${working_dir}\" application ${application}\n\n"
 dso config set -b5 -w "${working_dir}" application ${application}

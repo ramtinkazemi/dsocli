@@ -46,7 +46,6 @@ def get_s3_path(context, path_prefix='', key=None):
 #                     'Scope': ctx.scope_translation,
 #                     'Origin': {
 #                         'Namespace': ctx.namespace,
-#                         'Project': ctx.project,
 #                         'Application': ctx.application,
 #                         'Stage': ctx.stage,
 #                     },

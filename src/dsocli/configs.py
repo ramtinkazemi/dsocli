@@ -27,7 +27,7 @@ class ConfigService():
     def list(self, service, uninherited=False, filter=None):
         self.service = service
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Listing configurations: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.debug(f"Listing configurations: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         response = provider.list(service=service, uninherited=uninherited, filter=filter)
         return response
 
@@ -37,28 +37,28 @@ class ConfigService():
         if not key: key = os.path.basename(filepath)
         # self.validate_key(key)
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Setting configuration '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.debug(f"Setting configuration '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         return provider.set(key=key, value=value, service=service)
 
 
     def get(self, key, service):
         self.service = service
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Getting configuration '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.debug(f"Getting configuration '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         return provider.get(key=key, service=service)
 
 
     # def history(self, key):
     #     self.config = config
     #     provider = Providers.ConfigProvider()
-    #     Logger.debug(f"Getting the history of configuration '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+    #     Logger.debug(f"Getting the history of configuration '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
     #     return provider.history(service=service, key)
 
 
     def uset(self, key, service):
         self.service = service
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Unsetting configuration '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.debug(f"Unsetting configuration '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         return provider.unset(key=key, service=service)
 
 

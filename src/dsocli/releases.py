@@ -106,7 +106,7 @@ class ReleaseService():
 
     def list(self, filter=None):
         provider = Providers.ReleaseProvider()
-        Logger.info(f"Listing releases: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Listing releases: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         response = ArtifactStore.list(service=self.service_name, filter=filter)
         result = {'Releases': response['Artifacts']}
         return result
@@ -114,7 +114,7 @@ class ReleaseService():
 
     def create(self):
         provider = Providers.ReleaseProvider()
-        Logger.info(f"Creating release: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Creating release: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         artifact = provider.create()
         major = self.version_major
         minor = self.version_minor
@@ -133,7 +133,7 @@ class ReleaseService():
 
 
     def get(self, key):
-        Logger.info(f"Getting release '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Getting release '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         response = ArtifactStore.get(key=key, service=self.service_name)
         return response
 
@@ -141,12 +141,12 @@ class ReleaseService():
     # def history(self, key):
     #     self.config = config
     #     provider = Providers.ReleaseProvider()
-    #     Logger.info(f"Getting the history of release '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+    #     Logger.info(f"Getting the history of release '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
     #     return provider.history(key)
 
 
     def delete(self, key):
-        Logger.info(f"Deleting release '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Deleting release '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         response = ArtifactStore.delete(key=key, service=self.service_name)
         return response
 

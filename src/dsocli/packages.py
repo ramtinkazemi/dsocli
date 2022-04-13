@@ -107,7 +107,7 @@ class PackageService():
 
     def list(self, filter=None):
         provider = Providers.PackageProvider()
-        Logger.info(f"Listing packages: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Listing packages: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         response = ArtifactStore.list(service=self.service_name, filter=filter)
         result = {'Packages': response['Artifacts']}
         return result
@@ -115,7 +115,7 @@ class PackageService():
 
     def build(self):
         provider = Providers.PackageProvider()
-        Logger.info(f"Building package: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Building package: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         artifact = provider.build()
         major = self.version_major
         minor = self.version_minor
@@ -134,7 +134,7 @@ class PackageService():
 
 
     def get(self, key):
-        Logger.info(f"Getting package '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Getting package '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         response = ArtifactStore.get(key=key, service=self.service_name)
         return response
 
@@ -142,12 +142,12 @@ class PackageService():
     # def history(self, key):
     #     self.config = config
     #     provider = Providers.PackageProvider()
-    #     Logger.info(f"Getting the history of package '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+    #     Logger.info(f"Getting the history of package '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
     #     return provider.history(key)
 
 
     def delete(self, key):
-        Logger.info(f"Deleting package '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Deleting package '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         response = ArtifactStore.delete(key=key, service=self.service_name)
         return response
 

@@ -26,7 +26,7 @@ class AwsCfnReleaseProvider(ReleaseProvider):
         super().__init__('release/aws/cfn/v1')
 
     def create(self):
-        Logger.debug(f"Building CFN release: namespace:{AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Building CFN release: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         return 'release1.zip'
 
 

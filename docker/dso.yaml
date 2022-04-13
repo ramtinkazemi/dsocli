@@ -1,6 +1,6 @@
 kind: dso/application/v1
 version: 1
-project: {{ project }}
+namespace: {{ namespace }}
 application: {{ application }}
 parameter:
   provider:

@@ -49,14 +49,14 @@ class LocalParameterProvider(ParameterProvider):
 
     def add(self, config, key, value):
         self.config = config
-        Logger.debug(f"Adding local parameter '{key}': namespace={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Adding local parameter '{key}': namespace={config.namespace}, application={config.application}, stage={config.stage}")
         response = add_local_parameter(config=config, key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
         return response
 
 
     def list(self, config, uninherited=False, filter=None):
         self.config = config
-        Logger.debug(f"Listing local parameters: namespace={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Listing local parameters: namespace={config.namespace}, application={config.application}, stage={config.stage}")
         parameters = load_context_local_parameters(config=config, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
         result = {'Parameters': []}
         for key, details in parameters.items():
@@ -74,7 +74,7 @@ class LocalParameterProvider(ParameterProvider):
         self.config = config
         if revision:
             Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting parameter '{key}': namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Getting parameter '{key}': namesape={config.namespace}, application={config.application}, stage={config.stage}")
         found = locate_parameter_in_context_hierachy(config=config, key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
             raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: stage={Stages.shorten(config.short_stage)}")
@@ -90,7 +90,7 @@ class LocalParameterProvider(ParameterProvider):
         self.config = config
         Logger.warn(f"Parameter provider 'local/v1' does not support versioning.")
 
-        Logger.debug(f"Getting parameter '{key}': namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Getting parameter '{key}': namesape={config.namespace}, application={config.application}, stage={config.stage}")
         found = locate_parameter_in_context_hierachy(config=config, key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
             raise DSOException(f"Parameter '{key}' not found nor inherited in the given context: stage={Stages.shorten(config.short_stage)}")
@@ -107,11 +107,11 @@ class LocalParameterProvider(ParameterProvider):
 
     def delete(self, config, key):
         self.config = config
-        Logger.debug(f"Locating parameter '{key}': namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Locating parameter '{key}': namesape={config.namespace}, application={config.application}, stage={config.stage}")
         ### only parameters owned by the config can be deleted, hence uninherited=True
         found = locate_parameter_in_context_hierachy(config=config, key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found in the given context: namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.short_stage}")
+            raise DSOException(f"Parameter '{key}' not found in the given context: namesape={config.namespace}, application={config.application}, stage={config.short_stage}")
         Logger.info(f"Deleting parameter: path={found[key]['Path']}")
         delete_local_parameter(found[key]['Path'], key=key)
         result = {

@@ -73,7 +73,6 @@ def load_ssm_path(result, path, parameter_type, path_prefix='', decrypt=False, f
                     'Scope': ctx.scope_translation,
                     'Origin': {
                         'Namespace': ctx.namespace,
-                        'Project': ctx.project,
                         'Application': ctx.application,
                         'Stage': ctx.stage,
                     },
@@ -111,7 +110,6 @@ def locate_ssm_parameter_in_context_hierachy(key, path_prefix='', uninherited=Fa
             result['Scope'] = ctx.scope_translation
             result['Origin']= {
                 'Namespace': ctx.namespace,
-                'Project': ctx.project,
                 'Application': ctx.application,
                 'Stage': ctx.stage,
             }

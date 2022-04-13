@@ -2,13 +2,11 @@ set -e
 
 default_provider=shell/v1
 default_namespace=test-ns
-default_project=test-project
 default_application=test-app
 default_stage=test-stage
 default_working_dir=.
 
-printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <project [${default_project}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]> <provider [${default_provider}]>\n\n"
-
+printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]> <provider [${default_provider}]>\n\n"
 
 if [ $1 ]; then
     namespace=$1
@@ -17,34 +15,29 @@ else
 fi
 
 if [ $2 ]; then
-    project=$2
-else
-    project=${default_project}
-fi
-
-if [ $3 ]; then
-    application=$3
+    application=$2
 else
     application=${default_application}
 fi
 
-if [ $4 ]; then
-    stage=$4
+if [ $3 ]; then
+    stage=$3
 else
     stage=${default_stage}
 fi
 
-if [ $5 ]; then
-    working_dir=$5
+if [ $4 ]; then
+    working_dir=$4
 else
     working_dir=${default_working_dir}
 fi
 
-if [ $6 ]; then
-    provider=$6
+if [ $5 ]; then
+    provider=$5
 else
     provider=${default_provider}
 fi
+
 
 ###################################
 
@@ -56,14 +49,14 @@ fi
 
 export global_secret='global.secret'
 export global_stage_secret='global.stage_secret'
-export project_secret='project.secret'
-export project_stage_secret='project.stage_secret'
+export namespace_secret='namespace.secret'
+export namespace_stage_secret='namespace.stage_secret'
 export app_secret='app.secret'
 export app_stage_secret='app.stage_secret'
 export global_overriden_secret='global.overriden_secret'
 export global_stage_overriden_secret='global.stage.overriden_secret'
-export project_overriden_secret='project.overriden_secret'
-export project_stage_overriden_secret='project.stage_overriden_secret'
+export namespace_overriden_secret='namespace.overriden_secret'
+export namespace_stage_overriden_secret='namespace.stage_overriden_secret'
 export app_overriden_secret='app.overriden_secret'
 export app_stage_overriden_secret='app.stage_overriden_secret'
 export app_stage2_overriden_secret='app.stage2_overriden_secret'
@@ -71,35 +64,32 @@ export app_stage2_overriden_secret='app.stage2_overriden_secret'
 ###################################
 ### delete existing secrets, in order to also test overriding configurartions, they will be set later
 
-printf "\n\ndso secret list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --global-scope --uninherited | dso secret delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --global-scope -i -\n\n"
-dso secret list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --global-scope --uninherited | dso secret delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --global-scope -i - > /dev/null
+printf "\n\ndso secret list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --global-scope --uninherited | dso secret delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --global-scope -i -\n\n"
+dso secret list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --global-scope --uninherited | dso secret delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --global-scope -i - > /dev/null
 
-printf "\n\ndso secret list -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --global-scope --uninherited | dso secret delete -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --global-scope -i -\n\n"
-dso secret list -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --global-scope --uninherited | dso secret delete -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --global-scope -i - > /dev/null
+printf "\n\ndso secret list -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --global-scope --uninherited | dso secret delete -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --global-scope -i -\n\n"
+dso secret list -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --global-scope --uninherited | dso secret delete -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --global-scope -i - > /dev/null
 
-printf "\n\ndso secret list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --project-scope --uninherited -f shell | dso secret delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --project-scope -i - -f shell\n\n"
-dso secret list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --project-scope --uninherited -f shell | dso secret delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --project-scope -i - -f shell > /dev/null
+printf "\n\ndso secret list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope --uninherited -f shell | dso secret delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope -i - -f shell\n\n"
+dso secret list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope --uninherited -f shell | dso secret delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope -i - -f shell > /dev/null
 
-printf "\n\ndso secret list -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --project-scope --uninherited -f json | dso secret delete -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --project-scope -i - -f json\n\n"
-dso secret list -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --project-scope --uninherited -f json | dso secret delete -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --project-scope -i - -f json > /dev/null
+printf "\n\ndso secret list -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope --uninherited -f json | dso secret delete -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope -i - -f json\n\n"
+dso secret list -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope --uninherited -f json | dso secret delete -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope -i - -f json > /dev/null
 
-printf "\n\ndso secret list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --uninherited -f yaml | dso secret delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" -i - -f yaml\n\n"
-dso secret list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --uninherited -f yaml | dso secret delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" -i - -f yaml > /dev/null
+printf "\n\ndso secret list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --uninherited -f yaml | dso secret delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" -i - -f yaml\n\n"
+dso secret list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --uninherited -f yaml | dso secret delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" -i - -f yaml > /dev/null
 
-printf "\n\ndso secret list -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --uninherited -f json | dso secret delete -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" -i - -f json\n\n"
-dso secret list -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --uninherited -f json | dso secret delete -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" -i - -f json > /dev/null
+printf "\n\ndso secret list -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --uninherited -f json | dso secret delete -b5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" -i - -f json\n\n"
+dso secret list -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --uninherited -f json | dso secret delete -b5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" -i - -f json > /dev/null
 
-printf "\n\ndso secret list -b5 -s ${stage}/2 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" --uninherited -f json | dso secret delete -b5 -s ${stage}/2 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}\" -i - -f json\n\n"
-dso secret list -b5 -s ${stage}/2 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" --uninherited -f json | dso secret delete -b5 -s ${stage}/2 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, secret.provider.id=${provider}" -i - -f json > /dev/null
+printf "\n\ndso secret list -b5 -s ${stage}/2 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --uninherited -f json | dso secret delete -b5 -s ${stage}/2 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" -i - -f json\n\n"
+dso secret list -b5 -s ${stage}/2 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --uninherited -f json | dso secret delete -b5 -s ${stage}/2 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" -i - -f json > /dev/null
 
 
 ###################################
 ### Setting configurations
 printf "\n\ndso config set -b5 -w \"${working_dir}\" namespace ${namespace}\n\n"
 dso config set -b5 namespace ${namespace} -w "${working_dir}"
-
-printf "\n\ndso config set -b5 -w \"${working_dir}\" project ${project}\n\n"
-dso config set -b5 project ${project} -w "${working_dir}"
 
 printf "\n\ndso config set -b5 -w \"${working_dir}\" application ${application}\n\n"
 dso config set -b5 application ${application} -w "${working_dir}"
@@ -125,18 +115,18 @@ cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --global-scope -f
 global.stage_secret=global_stage_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --project-scope -f shell -i -
-project.secret=project_secret
+printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --namespace-scope -f shell -i -
+namespace.secret=namespace_secret
 EOF\n\n"
-cat <<EOF | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-project.secret=project_secret
+cat <<EOF | dso secret add -b5 -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+namespace.secret=namespace_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --project-scope -f shell -i -
-project.stage_secret=project_stage_secret
+printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --namespace-scope -f shell -i -
+namespace.stage_secret=namespace_stage_secret
 EOF\n\n"
-cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-project.stage_secret=project_stage_secret
+cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+namespace.stage_secret=namespace_stage_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" -f shell -i -
@@ -173,18 +163,18 @@ cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --global-scope -f
 overriden_secret=global_stage_overriden_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --project-scope -f shell -i - 
-overriden_secret=project_overriden_secret
+printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" --namespace-scope -f shell -i - 
+overriden_secret=namespace_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -b5 -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-overriden_secret=project_overriden_secret
+cat <<EOF | dso secret add -b5 -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+overriden_secret=namespace_overriden_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --project-scope -f shell -i - 
-overriden_secret=project_stage_overriden_secret
+printf "\n\ncat <<EOF | dso secret add -b5 -s ${stage} -w \"${working_dir}\" --namespace-scope -f shell -i - 
+overriden_secret=namespace_stage_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --project-scope -f shell -i - > /dev/null
-overriden_secret=project_stage_overriden_secret
+cat <<EOF | dso secret add -b5 -s ${stage} -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+overriden_secret=namespace_stage_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -b5 -w \"${working_dir}\" -f shell -i -
@@ -230,8 +220,8 @@ dso secret get -b5 -w "${working_dir}" app.stage2_secret -s ${stage}/2 -f raw > 
 printf "\n\ndso secret edit -b5 -w \"${working_dir}\" overriden_secret --global-scope\n\n"
 dso secret edit -b5 -w "${working_dir}" overriden_secret --global-scope -b5
 
-printf "\n\ndso secret edit -b5 -w \"${working_dir}\" overriden_secret -s ${stage} --project-scope\n\n"
-dso secret edit -b5 -w "${working_dir}" overriden_secret -s ${stage} --project-scope
+printf "\n\ndso secret edit -b5 -w \"${working_dir}\" overriden_secret -s ${stage} --namespace-scope\n\n"
+dso secret edit -b5 -w "${working_dir}" overriden_secret -s ${stage} --namespace-scope
 
 printf "\n\ndso secret edit -b5 -w \"${working_dir}\" app.secret\n\n"
 dso secret edit -b5 -w "${working_dir}" app.secret
