@@ -45,25 +45,16 @@ context_translation_matrix = {
                 '0': "Global Stage",
                 'n': "Global Numbered Stage",
             },
-        },
-        'application': {
-            'default': {
-                '0': "Application",
-            },
-            'stage': {
-                '0': "Application Stage",
-                'n': "Application Numbered Stage",
-            },
-        },
+        }
     },
     'namespace': {
         'default': {
             'default': {
-                '0': "Global",
+                '0': "Namespace",
             },
             'stage': {
-                '0': "Global Stage",
-                'n': "Global Numbered Stage",
+                '0': "Namespace Stage",
+                'n': "Namespace Numbered Stage",
             },
         },
         'application': {
