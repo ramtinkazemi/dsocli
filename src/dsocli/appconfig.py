@@ -388,9 +388,9 @@ class AppConfigService:
 
     def get_application(self, source=ContextSource.Effective):
         if source == ContextSource.Target:
-            result = self.context.target[2]
+            result = self.context.target[1]
         elif source == ContextSource.Effective:
-            result = self.context.effective[2]
+            result = self.context.effective[1]
         
         return result
 
@@ -401,9 +401,9 @@ class AppConfigService:
 
     def get_stage(self, source=ContextSource.Effective, short=False):
         if source == ContextSource.Target:
-            result = self.context.target[3]
+            result = self.context.target[2]
         elif source == ContextSource.Effective:
-            result = self.context.effective[3]
+            result = self.context.effective[2]
         
         if short:
             result = Stages.shorten(result)

@@ -68,7 +68,6 @@ class AwsSsmTemplateProvider(TemplateProvider):
                 'Scope': AppConfig.context.scope_translation,
                 'Origin': {
                     'Namespace': AppConfig.namespace,
-                    'Project': AppConfig.project,
                     'Application': AppConfig.application,
                     'Stage': AppConfig.stage,
                 },
