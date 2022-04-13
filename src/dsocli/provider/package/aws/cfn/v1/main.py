@@ -25,7 +25,7 @@ class AwsCfnPackageProvider(PackageProvider):
         super().__init__('package/aws/cfn/v1')
 
     def build(self):
-        Logger.debug(f"Building CFN package: namespace:{AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Building CFN package: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         return 'package1.zip'
 
 

@@ -2,12 +2,12 @@ set -e
 
 default_provider=local/v1
 default_namespace=test-ns
-default_project=test-project
+default_namespace=test-namespace
 default_application=test-app
 default_stage=test-stage
 default_working_dir=.
 
-printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <project [${default_project}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]> <provider [${default_provider}]>\n\n"
+printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]> <provider [${default_provider}]>\n\n"
 
 if [ $1 ]; then
     namespace=$1
@@ -16,31 +16,25 @@ else
 fi
 
 if [ $2 ]; then
-    project=$2
-else
-    project=${default_project}
-fi
-
-if [ $3 ]; then
-    application=$3
+    application=$2
 else
     application=${default_application}
 fi
 
-if [ $4 ]; then
-    stage=$4
+if [ $3 ]; then
+    stage=$3
 else
     stage=${default_stage}
 fi
 
-if [ $5 ]; then
-    working_dir=$5
+if [ $4 ]; then
+    working_dir=$4
 else
     working_dir=${default_working_dir}
 fi
 
-if [ $6 ]; then
-    provider=$6
+if [ $5 ]; then
+    provider=$5
 else
     provider=${default_provider}
 fi
@@ -61,34 +55,31 @@ export DSO_ALLOW_STAGE_TEMPLATES=yes
 ###################################
 ### delete existing templates, in order to also test overriding configurartions, they will be set later
 
-printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" --global-scope --uninherited | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" --global-scope -i -\n\n"
-dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" --global-scope --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" --global-scope -i - > /dev/null
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" --global-scope --uninherited | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" --global-scope -i -\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" --global-scope --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" --global-scope -i - > /dev/null
 
-printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage} --global-scope --uninherited | dso template delete  -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage} -global-scope -i -\n\n"
-dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --global-scope --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --global-scope -i -> /dev/null
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage} --global-scope --uninherited | dso template delete  -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage} -global-scope -i -\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage} --global-scope --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage} --global-scope -i -> /dev/null
 
-printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" --project-scope --uninherited | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" --project-scope -i -\n\n"
-dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" --project-scope --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" --project-scope -i - -b5 > /dev/null
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" --namespace-scope --uninherited | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" --namespace-scope -i -\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" --namespace-scope --uninherited | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" --namespace-scope -i - -b5 > /dev/null
 
-printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage} --project-scope --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage} --project-scope -i - -f json\n\n"
-dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --project-scope --uninherited -f json | dso template delete -b5  -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --project-scope -i - -f json> /dev/null
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage} --namespace-scope --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage} --namespace-scope -i - -f json\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage} --namespace-scope --uninherited -f json | dso template delete -b5  -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage} --namespace-scope -i - -f json> /dev/null
 
-printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" --uninherited -f yaml | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -i - -f yaml\n\n"
-dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" --uninherited -f yaml | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -i - -f yaml> /dev/null
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" --uninherited -f yaml | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -i - -f yaml\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" --uninherited -f yaml | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -i - -f yaml> /dev/null
 
-printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage} --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage} -i - -f json\n\n"
-dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} --uninherited -f json | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage} -i - -f json > /dev/null
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage} --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage} -i - -f json\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage} --uninherited -f json | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage} -i - -f json > /dev/null
 
-printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage}/2 --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}\" -s ${stage}/2 -i - -f json\n\n"
-dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 --uninherited -f json | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, project=${project}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 -i - -f json > /dev/null
+printf "\n\ndso template list -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage}/2 --uninherited -f json | dso template delete -b5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, template.provider.id=${provider}\" -s ${stage}/2 -i - -f json\n\n"
+dso template list -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 --uninherited -f json | dso template delete -b5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, template.provider.id=${provider}" -s ${stage}/2 -i - -f json > /dev/null
 
 ###################################
 ### Setting configurations
 printf "\n\ndso config set -b5 -w \"${working_dir}\" namespace ${namespace}\n\n"
 dso config set -b5 -w "${working_dir}" namespace ${namespace}
-
-printf "\n\ndso config set -b5 -w \"${working_dir}\" project ${project}\n\n"
-dso config set -b5 -w "${working_dir}" project ${project}
 
 printf "\n\ndso config set -b5 -w \"${working_dir}\" application ${application}\n\n"
 dso config set -b5 -w "${working_dir}" application ${application}
@@ -106,11 +97,11 @@ dso template add -b5 -w "${working_dir}" global.template -r 'tests/output/templa
 printf "\n\ndso template add -b5 -w \"${working_dir}\" global.stage_template -r 'tests/output/template/*' -s ${stage} --global-scope -c tests/sample-templates/global-stage-template\n\n"
 dso template add -b5 -w "${working_dir}" global.stage_template -r 'tests/output/template/*' -s ${stage} --global-scope -c tests/sample-templates/global-stage-template > /dev/null
 
-printf "\n\ndso template add -b5 -w \"${working_dir}\" project.template -r 'tests/output/template/*' --project-scope -c tests/sample-templates/project-template\n\n"
-dso template add -b5 -w "${working_dir}" project.template -r 'tests/output/template/*' --project-scope -c tests/sample-templates/project-template > /dev/null
+printf "\n\ndso template add -b5 -w \"${working_dir}\" namespace.template -r 'tests/output/template/*' --namespace-scope -c tests/sample-templates/namespace-template\n\n"
+dso template add -b5 -w "${working_dir}" namespace.template -r 'tests/output/template/*' --namespace-scope -c tests/sample-templates/namespace-template > /dev/null
 
-printf "\n\ndso template add -b5 -w \"${working_dir}\" project.stage_template -r 'tests/output/template/*' -s ${stage} --project-scope -c tests/sample-templates/project-stage-template\n\n"
-dso template add -b5 -w "${working_dir}" project.stage_template -r 'tests/output/template/*' -s ${stage} --project-scope -c tests/sample-templates/project-stage-template > /dev/null
+printf "\n\ndso template add -b5 -w \"${working_dir}\" namespace.stage_template -r 'tests/output/template/*' -s ${stage} --namespace-scope -c tests/sample-templates/namespace-stage-template\n\n"
+dso template add -b5 -w "${working_dir}" namespace.stage_template -r 'tests/output/template/*' -s ${stage} --namespace-scope -c tests/sample-templates/namespace-stage-template > /dev/null
 
 printf "\n\ndso template add -b5 -w \"${working_dir}\" app.template -r 'tests/output/template/*' -c tests/sample-templates/app-template\n\n"
 dso template add -b5 -w "${working_dir}" app.template -r 'tests/output/template/*' -c tests/sample-templates/app-template > /dev/null
@@ -130,11 +121,11 @@ dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/tem
 printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' -s ${stage} --global-scope -c tests/sample-templates/global-stage-template-overriden\n\n"
 dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' -s ${stage} --global-scope -c tests/sample-templates/global-stage-template-overriden > /dev/null
 
-printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' --project-scope -c tests/sample-templates/project-template-overriden\n\n"
-dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' --project-scope -c tests/sample-templates/project-template-overriden > /dev/null
+printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' --namespace-scope -c tests/sample-templates/namespace-template-overriden\n\n"
+dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' --namespace-scope -c tests/sample-templates/namespace-template-overriden > /dev/null
 
-printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' -s ${stage} --project-scope -c tests/sample-templates/project-stage-template-overriden\n\n"
-dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' -s ${stage} --project-scope -c tests/sample-templates/project-stage-template-overriden > /dev/null
+printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' -s ${stage} --namespace-scope -c tests/sample-templates/namespace-stage-template-overriden\n\n"
+dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' -s ${stage} --namespace-scope -c tests/sample-templates/namespace-stage-template-overriden > /dev/null
 
 printf "\n\ndso template add -b5 -w \"${working_dir}\" overriden_template -r 'tests/output/template/*' -c tests/sample-templates/app-template-overriden\n\n"
 dso template add -b5 -w "${working_dir}" overriden_template -r 'tests/output/template/*' -c tests/sample-templates/app-template-overriden > /dev/null
@@ -173,8 +164,8 @@ dso template get -b5 -w "${working_dir}" app.stage2_template -s ${stage}/2 -f ra
 printf "\n\ndso template edit -b5 -w \"${working_dir}\" overriden_template --global-scope\n\n"
 dso template edit overriden_template -b5 -w "${working_dir}" --global-scope
 
-printf "\n\ndso template edit -b5 -w \"${working_dir}\" overriden_template  -s ${stage} --project-scope\n\n"
-dso template edit overriden_template -b5 -w "${working_dir}"  -s ${stage} --project-scope
+printf "\n\ndso template edit -b5 -w \"${working_dir}\" overriden_template  -s ${stage} --namespace-scope\n\n"
+dso template edit overriden_template -b5 -w "${working_dir}"  -s ${stage} --namespace-scope
 
 printf "\n\ndso template edit -b5 -w \"${working_dir}\" app.template\n\n"
 dso template edit -b5 -w "${working_dir}" app.template

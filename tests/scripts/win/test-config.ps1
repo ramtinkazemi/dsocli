@@ -59,8 +59,8 @@ Invoke-Call -ScriptBlock {dso config unset -b5 -w "${working_dir}" test.local-co
 Write-Output "`ndso config set -b5 -w `"${working_dir}`" namespace ${namespace}`n"
 Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop > $null
 
-Write-Output "`ndso config set -b5 -w `"${working_dir}`" project ${project}`n"
-Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" project ${project}} -ErrorAction Stop > $null
+Write-Output "`ndso config set -b5 -w `"${working_dir}`"`n"
+Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}"} -ErrorAction Stop > $null
 
 Write-Output "`ndso config set -b5 -w `"${working_dir}`" application ${application}`n"
 Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" application ${application}} -ErrorAction Stop > $null

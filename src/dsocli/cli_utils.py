@@ -393,18 +393,13 @@ def validate_query_argument(query, query_all, default_query):
 
 
 
-def transform_context_overrides(namespace, project, application):
+def transform_context_overrides(namespace, application):
     result = ''
     if namespace: 
         result += f"namespace={namespace},"
     elif 'DSO_NAMESPACE' in os.environ:
         Logger.debug("Environment variable 'DSO_NAMESPACE' found.")
         result += f"namespace={os.getenv('DSO_NAMESPACE')},"
-    if project: 
-        result += f"project={project},"
-    elif 'DSO_PROJECT' in os.environ:
-        Logger.debug("Environment variable 'DSO_PROJECT' found.")
-        result += f"project={os.getenv('DSO_PROJECT')},"
     if application: 
         result += f"application={application},"
     elif 'DSO_APPLICATION' in os.environ:

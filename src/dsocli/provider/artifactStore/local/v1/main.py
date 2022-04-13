@@ -39,7 +39,7 @@ class LocalTemplateProvider(TemplateProvider):
 
     def list(self, config, uninherited=False, include_contents=False, filter=None):
         self.config = config
-        Logger.debug(f"Listing local parameters: namespace={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Listing local parameters: namespace={config.namespace}, application={config.application}, stage={config.stage}")
         templates = load_context_templates(config=config, path_prefix=self.get_path_prefix(), uninherited=uninherited, include_contents=include_contents, filter=filter)
         result = {'Templates': []}
         for key, details in templates.items():
@@ -53,7 +53,7 @@ class LocalTemplateProvider(TemplateProvider):
         self.config = config
         if not Stages.is_default(config.stage) and not ALLOW_STAGE_TEMPLATES:
             raise DSOException(f"Templates may not be added to stage scopes, as the feature is currently disabled. It may be enabled by adding 'ALLOW_STAGE_TEMPLATES=yes' to the DSO global settings, or adding environment variable 'DSO_ALLOW_STAGE_TEMPLATES=yes'.")
-        Logger.debug(f"Adding local template '{key}': namespace={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Adding local template '{key}': namespace={config.namespace}, application={config.application}, stage={config.stage}")
         response = add_local_template(config=config, key=key, path_prefix=self.get_path_prefix(), contents=contents)
         result = {
                 'Key': key,
@@ -68,7 +68,7 @@ class LocalTemplateProvider(TemplateProvider):
         self.config = config
         if revision:
             Logger.warn(f"Template provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting template '{key}': namespace={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Getting template '{key}': namespace={config.namespace}, application={config.application}, stage={config.stage}")
         found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), include_contents=True)
         if not found:
             raise DSOException(f"Template '{key}' not found nor inherited in the given context: stage={config.short_stage}")
@@ -82,7 +82,7 @@ class LocalTemplateProvider(TemplateProvider):
     def history(self, config, key, include_contents=False):
         self.config = config
         Logger.warn(f"Template provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting template '{key}': namesape={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Getting template '{key}': namesape={config.namespace}, application={config.application}, stage={config.stage}")
         found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), include_contents=True)
         if not found:
             raise DSOException(f"Template '{key}' not found nor inherited in the given context: stage={config.short_stage}")
@@ -98,7 +98,7 @@ class LocalTemplateProvider(TemplateProvider):
 
     def delete(self, config, key):
         self.config = config
-        Logger.debug(f"Locating template: namespace={config.namespace}, project={config.project}, application={config.application}, stage={config.stage}")
+        Logger.debug(f"Locating template: namespace={config.namespace}, application={config.application}, stage={config.stage}")
         ### only parameters owned by the context can be deleted, hence uninherited=True
         found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:

@@ -151,17 +151,16 @@ def version():
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-# @click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), default=str(ContextScope.App), show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+# @click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), default=str(ContextScope.App), show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def add_parameter(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, input, format):
+def add_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, input, format):
     
     parameters = []
 
@@ -170,11 +169,11 @@ def add_parameter(stage, scope, global_scope, project_scope, verbosity, config_o
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -203,7 +202,7 @@ def add_parameter(stage, scope, global_scope, project_scope, verbosity, config_o
         # Contexts.load(working_dir=working_dir)
         AppConfig.load(working_dir, config_override, stage, scope)
         # ctx = ContextService()
-        # ctx.load(working_dir=working_dir, context_name=context_name, namespace=namespace, project=project, application=application, stage=stage, scope=scope)
+        # ctx.load(working_dir=working_dir, context_name=context_name, namespace=namespace, application=application, stage=stage, scope=scope)
         # cfg = ConfigService()
         # cfg.load(working_dir=working_dir, config_overrides_string=config_override, context_service=ctx)
 
@@ -246,27 +245,26 @@ def add_parameter(stage, scope, global_scope, project_scope, verbosity, config_o
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def list_parameter(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, uninherited, filter, query_all, query, format):
+def list_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, uninherited, filter, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, query, scope
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Parameters: Parameters[*].{Key: Key, Value: Value, Stage: Stage, Scope: Scope}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -311,16 +309,15 @@ def list_parameter(stage, scope, global_scope, project_scope, verbosity, config_
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw', 'csv']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def get_parameter(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, revision, query_all, query, format):
+def get_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, revision, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, query, scope
@@ -328,11 +325,11 @@ def get_parameter(stage, scope, global_scope, project_scope, verbosity, config_o
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -365,16 +362,15 @@ def get_parameter(stage, scope, global_scope, project_scope, verbosity, config_o
 @click.option('-k', '--key', 'key_option', metavar='<key>', required=False, help=f"{CLI_PARAMETERS_HELP['template']['key']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def edit_parameter(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option):
+def edit_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, scope
@@ -382,11 +378,11 @@ def edit_parameter(stage, scope, global_scope, project_scope, verbosity, config_
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
         Logger.set_verbosity(verbosity)
@@ -416,7 +412,7 @@ def edit_parameter(stage, scope, global_scope, project_scope, verbosity, config_
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, AppConfig.get_namespace(ContextSource.Target), AppConfig.get_project(ContextSource.Target), AppConfig.get_application(ContextSource.Target), AppConfig.get_stage(ContextSource.Target, short=True), AppConfig.scope))
+            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, AppConfig.get_namespace(ContextSource.Target), AppConfig.get_application(ContextSource.Target), AppConfig.get_stage(ContextSource.Target, short=True), AppConfig.scope))
 
 
     except DSOException as e:
@@ -441,16 +437,15 @@ def edit_parameter(stage, scope, global_scope, project_scope, verbosity, config_
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def history_parameter(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
+def history_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, query, scope
@@ -458,11 +453,11 @@ def history_parameter(stage, scope, global_scope, project_scope, verbosity, conf
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Revisions: Revisions[*].{RevisionId: RevisionId, Date: Date, Value: Value}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -496,16 +491,15 @@ def history_parameter(stage, scope, global_scope, project_scope, verbosity, conf
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def delete_parameter(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, input, format):
+def delete_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, input, format):
 
     parameters = []
 
@@ -514,11 +508,11 @@ def delete_parameter(stage, scope, global_scope, project_scope, verbosity, confi
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -577,16 +571,15 @@ def delete_parameter(stage, scope, global_scope, project_scope, verbosity, confi
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def add_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, ask_password, input, format):
+def add_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, ask_password, input, format):
 
     secrets = []
 
@@ -595,11 +588,11 @@ def add_secret(stage, scope, global_scope, project_scope, verbosity, config_over
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -676,27 +669,26 @@ def add_secret(stage, scope, global_scope, project_scope, verbosity, config_over
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def list_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, uninherited, decrypt, filter, query_all, query, format):
+def list_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, uninherited, decrypt, filter, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, query, scope
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Secrets: Secrets[*].{Key: Key, Value: Value, Scope: Scope, Origin: Origin}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -741,16 +733,15 @@ def list_secret(stage, scope, global_scope, project_scope, verbosity, config_ove
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw', 'csv']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def get_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, revision, query_all, query, format):
+def get_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, revision, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, query, scope
@@ -758,11 +749,11 @@ def get_secret(stage, scope, global_scope, project_scope, verbosity, config_over
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -796,16 +787,15 @@ def get_secret(stage, scope, global_scope, project_scope, verbosity, config_over
 @click.option('-k', '--key', 'key_option', metavar='<key>', required=False, help=f"{CLI_PARAMETERS_HELP['template']['key']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def edit_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option):
+def edit_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, scope
@@ -813,11 +803,11 @@ def edit_secret(stage, scope, global_scope, project_scope, verbosity, config_ove
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
         Logger.set_verbosity(verbosity)
@@ -848,7 +838,7 @@ def edit_secret(stage, scope, global_scope, project_scope, verbosity, config_ove
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['SecretNotFound'].format(key, AppConfig.get_namespace(ContextSource.Target), AppConfig.get_project(ContextSource.Target), AppConfig.get_application(ContextSource.Target), AppConfig.get_stage(ContextSource.Target, short=True), AppConfig.scope))
+            raise DSOException(CLI_MESSAGES['SecretNotFound'].format(key, AppConfig.get_namespace(ContextSource.Target), AppConfig.get_application(ContextSource.Target), AppConfig.get_stage(ContextSource.Target, short=True), AppConfig.scope))
 
 
     except DSOException as e:
@@ -874,16 +864,15 @@ def edit_secret(stage, scope, global_scope, project_scope, verbosity, config_ove
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def history_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, decrypt, query_all, query, format):
+def history_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, decrypt, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, query, scope
@@ -891,11 +880,11 @@ def history_secret(stage, scope, global_scope, project_scope, verbosity, config_
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Revisions: Revisions[*].{RevisionId: RevisionId, Date: Date, Value: Value}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -930,16 +919,15 @@ def history_secret(stage, scope, global_scope, project_scope, verbosity, config_
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'shell']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def delete_secret(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, input, format):
+def delete_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, input, format):
 
     secrets = []
 
@@ -948,11 +936,11 @@ def delete_secret(stage, scope, global_scope, project_scope, verbosity, config_o
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -1010,16 +998,15 @@ def delete_secret(stage, scope, global_scope, project_scope, verbosity, config_o
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def add_template(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, render_path, contents_path, recursive, input, format):
+def add_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, render_path, contents_path, recursive, input, format):
 
     templates = []
 
@@ -1081,11 +1068,11 @@ def add_template(stage, scope, global_scope, project_scope, verbosity, config_ov
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -1168,27 +1155,26 @@ def add_template(stage, scope, global_scope, project_scope, verbosity, config_ov
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def list_template(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, uninherited, include_contents, filter, query_all, query, format):
+def list_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, uninherited, include_contents, filter, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, query, scope
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if include_contents:
             defaultQuery = '{Templates: Templates[*].{Key: Key, Stage: Stage, Scope: Scope, RenderPath: RenderPath, Contents: Contents}}'
@@ -1240,16 +1226,15 @@ def list_template(stage, scope, global_scope, project_scope, verbosity, config_o
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def get_template(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, revision, include_contents, query_all, query, format):
+def get_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, revision, include_contents, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, query, scope
@@ -1257,11 +1242,11 @@ def get_template(stage, scope, global_scope, project_scope, verbosity, config_ov
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Contents: Contents}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1294,16 +1279,15 @@ def get_template(stage, scope, global_scope, project_scope, verbosity, config_ov
 @click.option('-k', '--key', 'key_option', metavar='<key>', required=False, help=f"{CLI_PARAMETERS_HELP['template']['key']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def edit_template(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option):
+def edit_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, scope
@@ -1311,11 +1295,11 @@ def edit_template(stage, scope, global_scope, project_scope, verbosity, config_o
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
         Logger.set_verbosity(verbosity)
@@ -1346,7 +1330,7 @@ def edit_template(stage, scope, global_scope, project_scope, verbosity, config_o
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['TemplateNotFound'].format(key, AppConfig.get_namespace(ContextSource.Target), AppConfig.get_project(ContextSource.Target), AppConfig.get_application(ContextSource.Target), AppConfig.get_stage(ContextSource.Target, short=True), AppConfig.scope))
+            raise DSOException(CLI_MESSAGES['TemplateNotFound'].format(key, AppConfig.get_namespace(ContextSource.Target), AppConfig.get_application(ContextSource.Target), AppConfig.get_stage(ContextSource.Target, short=True), AppConfig.scope))
 
     except DSOException as e:
         Logger.error(e.message)
@@ -1371,16 +1355,15 @@ def edit_template(stage, scope, global_scope, project_scope, verbosity, config_o
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def history_template(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, include_contents, query_all, query, format):
+def history_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, include_contents, query_all, query, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, key, query, scope
@@ -1388,11 +1371,11 @@ def history_template(stage, scope, global_scope, project_scope, verbosity, confi
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if include_contents:
             defaultQuery = '{Revisions: Revisions[*].{RevisionId: RevisionId, Date: Date, Contents: Contents}}'
@@ -1431,16 +1414,15 @@ def history_template(stage, scope, global_scope, project_scope, verbosity, confi
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def delete_template(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, input, format):
+def delete_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, input, format):
 
     templates = []
 
@@ -1449,11 +1431,11 @@ def delete_template(stage, scope, global_scope, project_scope, verbosity, config
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -1505,26 +1487,25 @@ def delete_template(stage, scope, global_scope, project_scope, verbosity, config
 @click.option('--filter', required=False, metavar='<regex>', help=f"{CLI_PARAMETERS_HELP['common']['filter']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def render_template(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, filter):
+def render_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, filter):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, scope
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if filter:
             try:
@@ -1565,7 +1546,6 @@ def render_template(stage, scope, global_scope, project_scope, verbosity, config
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1578,7 +1558,7 @@ def list_package(stage, verbosity, config_override, working_dir, filter, query_a
 
         if not working_dir: working_dir = os.getcwd()
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Packages: Packages[*].{Key: Key, Date: Date}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1623,7 +1603,6 @@ def list_package(stage, verbosity, config_override, working_dir, filter, query_a
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1637,7 +1616,7 @@ def get_package(stage, verbosity, config_override, working_dir, key, key_option,
         if not working_dir: working_dir = os.getcwd()
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{FilePath: FilePath}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1671,7 +1650,6 @@ def get_package(stage, verbosity, config_override, working_dir, key, key_option,
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1684,7 +1662,7 @@ def build_package(stage, verbosity, config_override, working_dir, filter, query_
 
         if not working_dir: working_dir = os.getcwd()
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Key: Key}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1725,7 +1703,6 @@ def build_package(stage, verbosity, config_override, working_dir, filter, query_
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1740,7 +1717,7 @@ def delete_package(stage, verbosity, config_override, working_dir, key, key_opti
 
         if not working_dir: working_dir = os.getcwd()
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -1797,7 +1774,6 @@ def delete_package(stage, verbosity, config_override, working_dir, key, key_opti
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1810,7 +1786,7 @@ def list_release(stage, verbosity, config_override, working_dir, filter, query_a
 
         if not working_dir: working_dir = os.getcwd()
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Releases: Releases[*].{Key: Key, Date: Date}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1855,7 +1831,6 @@ def list_release(stage, verbosity, config_override, working_dir, filter, query_a
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1869,7 +1844,7 @@ def get_release(stage, verbosity, config_override, working_dir, key, key_option,
         if not working_dir: working_dir = os.getcwd()
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{FilePath: FilePath}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1903,7 +1878,6 @@ def get_release(stage, verbosity, config_override, working_dir, key, key_option,
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1916,7 +1890,7 @@ def create_release(stage, verbosity, config_override, working_dir, filter, query
 
         if not working_dir: working_dir = os.getcwd()
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Key: Key}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1957,7 +1931,6 @@ def create_release(stage, verbosity, config_override, working_dir, filter, query
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
@@ -1972,7 +1945,7 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 
         if not working_dir: working_dir = os.getcwd()
 
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([key, key_option], ["KEY", "'-k' / '--key'"], ["'-i' / '--input'"])
@@ -2028,16 +2001,15 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def get_config(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, local, global_):
+def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_):
 
     configScope = None
 
@@ -2048,9 +2020,9 @@ def get_config(stage, scope, global_scope, project_scope, verbosity, config_over
 
         key = validate_not_all_provided([key, key_option], ["KEY", "'-k' / '--key'"])
         validate_not_all_provided([local, global_], ["'--local'", "'--global'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
         configScope = ConfigScope.Local if local else ConfigScope.Global if global_ else ConfigScope.Merged
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
         Logger.set_verbosity(verbosity)
@@ -2091,16 +2063,15 @@ def get_config(stage, scope, global_scope, project_scope, verbosity, config_over
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=f"{CLI_PARAMETERS_HELP['config']['input']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def set_config(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, global_, input):
+def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, global_, input):
 
     configScope = None
 
@@ -2110,9 +2081,9 @@ def set_config(stage, scope, global_scope, project_scope, verbosity, config_over
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
         configScope = ConfigScope.Global if global_ else ConfigScope.Local
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             validate_none_provided([value, value_option], ["VALUE", "'-v' / '--value'"], ["'-i' / '--input'"])
@@ -2151,16 +2122,15 @@ def set_config(stage, scope, global_scope, project_scope, verbosity, config_over
 @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def unset_config(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, key, key_option, global_):
+def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, global_):
 
     configScope = None
 
@@ -2170,9 +2140,9 @@ def unset_config(stage, scope, global_scope, project_scope, verbosity, config_ov
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
         configScope = ConfigScope.Global if global_ else ConfigScope.Local
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
         Logger.set_verbosity(verbosity)
@@ -2202,16 +2172,15 @@ def unset_config(stage, scope, global_scope, project_scope, verbosity, config_ov
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=f"{CLI_PARAMETERS_HELP['config']['input']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def init_config(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, setup, override_inherited, global_, input):
+def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, setup, override_inherited, global_, input):
 
     init_config = None
     configScope = None
@@ -2220,9 +2189,9 @@ def init_config(stage, scope, global_scope, project_scope, verbosity, config_ove
         nonlocal working_dir, config_override, scope, init_config, configScope
 
         if not working_dir: working_dir = os.getcwd()
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
         configScope = ConfigScope.Global if global_ else ConfigScope.Local
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
             # if local:
@@ -2236,7 +2205,7 @@ def init_config(stage, scope, global_scope, project_scope, verbosity, config_ove
         Logger.set_verbosity(verbosity)
         validate_command_usage()
         # AppConfig.load(working_dir if working_dir else os.getcwd(),
-        #                 'global' if global_scope else 'project' if project_scope else 'application',
+        #                 'global' if global_scope else 'namespace' if namespace_scope else 'application',
         #                 config_override)
         AppConfig.init(working_dir, custom_init_config=init_config, config_overrides_string=config_override, override_inherited=override_inherited, config_scope=configScope)
 
@@ -2261,27 +2230,26 @@ def init_config(stage, scope, global_scope, project_scope, verbosity, config_ove
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
-# @click.option('--project', metavar='<project]', required=False, help=f"{CLI_PARAMETERS_HELP['common']['project']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
-@click.option('--scope', required=False, type=click.Choice(['App', 'Project', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
-@click.option('-p', '--project-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['project_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-b', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def network_subnet(stage, scope, global_scope, project_scope, verbosity, config_override, working_dir, mode, format):
+def network_subnet(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, mode, format):
 
     def validate_command_usage():
         nonlocal working_dir, config_override, scope
 
         if not working_dir: working_dir = os.getcwd()
 
-        validate_not_all_provided([global_scope, project_scope], ["-g' / '--global-scope'", "'-p' / '--project-scope'"])
-        validate_not_all_provided([scope, project_scope], ["'--scope'", "'-p' / '--project-scope'"])
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Project if project_scope else ContextScope.from_str(scope)
-        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, project, application)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
         Logger.set_verbosity(verbosity)

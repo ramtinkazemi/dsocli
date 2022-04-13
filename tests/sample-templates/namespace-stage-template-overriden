@@ -1,21 +1,19 @@
-Project Template
+Namespace Stage Overriden Template
 
 Parameter:
 ----------
-global.parameter = {{global.parameter}}
-project.parameter = {{project.parameter}}
 overriden_parameter = {{overriden_parameter}}
+namespace.stage_parameter = {{namespace.stage_parameter}}
 
 Secrets:
 --------
-global.secret = {{global.secret}}
-project.secret = {{project.secret}}
 overriden_secret = {{overriden_secret}}
+namespace.stage_secret = {{namespace.stage_secret}}
 
 DSO Meta:
 ---------
 Namespace is {{dso.namespace}}
-Project is {{dso.project}}
+namespace is {{dso.namespace}}
 Application is {{dso.application}}
 Stage is {{dso.stage}}
 Parameter provider is {{dso.parameter.provider.id}}

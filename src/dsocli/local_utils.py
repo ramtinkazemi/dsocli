@@ -53,7 +53,6 @@ def load_templates_from_path(result, path, path_prefix='', include_contents=Fals
                 'Scope': ctx.scope_translation,
                 'Origin': {
                     'Namespace': ctx.namespace,
-                    'Project': ctx.project,
                     'Application': ctx.application,
                     'Stage': ctx.stage,
                 },
@@ -104,7 +103,6 @@ def add_local_template(key, path_prefix, contents):
         'Scope': ctx.scope_translation,
         'Origin': {
             'Namespace': ctx.namespace,
-            'Project': ctx.project,
             'Application': ctx.application,
             'Stage': ctx.stage,
         },
@@ -134,8 +132,7 @@ def load_parameter_store(result, path, path_prefix='', filter=None):
             'Scope': ctx.scope_translation,
             'Origin': {
                 'Namespace': ctx.namespace,
-                'Project': ctx.project,
-                'Application': ctx.application,
+                    'Application': ctx.application,
                 'Stage': ctx.stage,
             },
             'Path': path,
@@ -155,8 +152,7 @@ def get_context_hierachy_parameter_stores(context, store_name, path_prefix='', u
             'Stage': ctx.short_stage,
             'Origin': {
                 'Namespace': ctx.namespace,
-                'Project': ctx.project,
-                'Application': ctx.application,
+                    'Application': ctx.application,
                 'Stage': ctx.stage,
             },
             'Path': os.path.join(path, store_name),
@@ -204,7 +200,6 @@ def add_local_parameter(key, value, store_name, path_prefix=''):
         'Scope': AppConfig.context.scope_translation,
         'Origin': {
             'Namespace': ctx.namespace,
-            'Project': ctx.project,
             'Application': ctx.application,
             'Stage': ctx.stage,
         },

@@ -4,8 +4,8 @@ Parameter:
 ----------
 global.parameter = {{global.parameter}}
 global.stage_parameter = {{global.stage_parameter}}
-project.parameter = {{project.parameter}}
-project.stage_parameter = {{project.stage_parameter}}
+namespace.parameter = {{namespace.parameter}}
+namespace.stage_parameter = {{namespace.stage_parameter}}
 app.parameter = {{app.parameter}}
 app.stage_parameter = {{app.stage_parameter}}
 app.stage2_parameter = {{app.stage2_parameter}}
@@ -15,8 +15,8 @@ Secrets:
 --------
 global.secret = {{global.secret}}
 global.stage_secret = {{global.stage_secret}}
-project.secret = {{project.secret}}
-project.stage_secret = {{project.stage_secret}}
+namespace.secret = {{namespace.secret}}
+namespace.stage_secret = {{namespace.stage_secret}}
 app.secret = {{app.secret}}
 app.stage_secret = {{app.stage_secret}}
 app.stage2_secret = {{app.stage2_secret}}
@@ -25,7 +25,6 @@ overriden_secret = {{overriden_secret}}
 DSO Meta:
 ---------
 Namespace is {{dso.namespace}}
-Project is {{dso.project}}
 Application is {{dso.application}}
 Stage is {{dso.stage}}
 Parameter provider is {{dso.parameter.provider.id}}

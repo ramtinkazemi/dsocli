@@ -18,7 +18,7 @@ from .exceptions import DSOException
 
 class ContextScope(OrderedEnum):
     App = 10
-    Project = 20
+    Namespace = 20
     Global = 30
 
     @classmethod
@@ -39,70 +39,43 @@ context_translation_matrix = {
     'default': {
         'default': {
             'default': {
-                'default': {
-                    '0': "Global",
-                },
-                'stage': {
-                    '0': "Global Stage",
-                    'n': "Global Numbered Stage",
-                },
+                '0': "Global",
+            },
+            'stage': {
+                '0': "Global Stage",
+                'n': "Global Numbered Stage",
             },
         },
-        'project': {
+        'application': {
             'default': {
-                'default': {
-                    '0': "Project",
-                },
-                'stage': {
-                    '0': "Project Stage",
-                    'n': "Project Numbered Stage",
-                },
+                '0': "Application",
             },
-            'application': {
-                'default': {
-                    '0': "Application",
-                },
-                'stage': {
-                    '0': "Application Stage",
-                    'n': "Application Numbered Stage",
-                },
+            'stage': {
+                '0': "Application Stage",
+                'n': "Application Numbered Stage",
             },
         },
     },
     'namespace': {
         'default': {
             'default': {
-                'default': {
-                    '0': "Global",
-                },
-                'stage': {
-                    '0': "Global Stage",
-                    'n': "Global Numbered Stage",
-                },
+                '0': "Global",
+            },
+            'stage': {
+                '0': "Global Stage",
+                'n': "Global Numbered Stage",
             },
         },
-        'project': {
+        'application': {
             'default': {
-                'default': {
-                    '0': "Project",
-                },
-                'stage': {
-                    '0': "Project Stage",
-                    'n': "Project Numbered Stage",
-                },
+                '0': "Application",
             },
-            'application': {
-                'default': {
-                    '0': "Application",
-                },
-                'stage': {
-                    '0': "Application Stage",
-                    'n': "Application Numbered Stage",
-                },
+            'stage': {
+                '0': "Application Stage",
+                'n': "Application Numbered Stage",
             },
         },
     }
-
 }
 
 
@@ -110,7 +83,6 @@ context_translation_matrix = {
 #     'kind': 'dso/config',
 #     'version': 1,
 #     # 'namespace': 'default',
-#     # 'project': 'default',
 #     # 'application': 'default',
 #     # 'stage': 'default',
 #     'contexts': [
@@ -118,7 +90,6 @@ context_translation_matrix = {
 #             'name': 'default',
 #             'spec': {
 #                 'namespace': 'default',
-#                 'project': 'default',
 #                 'application': 'default',
 #                 'stage': 'default',
 #             }
@@ -135,28 +106,26 @@ context_translation_matrix = {
 class Context():
 
     _namespace = 'default'
-    _project = 'default'
     _application = 'default'
     _stage = Stages.default_stage
     _short_stage = Stages.short_default_stage
     _scope = ContextScope.App
     
-    def __init__(self, namespace=None, project=None, application=None, stage=None, scope=None):
+    def __init__(self, namespace=None, application=None, stage=None, scope=None):
         self.set_namespace(namespace)
-        self.set_project(project)
         self.set_application(application)
         self.set_stage(stage)
         self.set_scope(scope)
 
     def __str__(self):
-        return f"namespace={self.namespace}, project={self.project}, application={self.application}, stage={self.stage}"
+        return f"namespace={self.namespace}, application={self.application}, stage={self.stage}"
 
 
     def ToString(self, short=True):
         if short:
-            return f"namespace={self.namespace}, project={self.project}, application={self.application}, stage={self.short_stage}, scope={self.scope}"
+            return f"namespace={self.namespace}, application={self.application}, stage={self.short_stage}, scope={self.scope}"
         else:
-            return f"namespace={self.namespace}, project={self.project}, application={self.application}, stage={self.stage}, scope={self.scope}"
+            return f"namespace={self.namespace}, application={self.application}, stage={self.stage}, scope={self.scope}"
 
 
     @property
@@ -165,8 +134,15 @@ class Context():
 
 
     def get_namespace(self, ignore_scope=False, silent=True):
-        return self._namespace
-
+        if ignore_scope:
+            result = self._namespace
+        else:
+            if self._scope > ContextScope.Namespace:
+                result = 'default'
+                if not silent: Logger.warn("Switched to the global scope.")
+            else:
+                result = self._namespace
+        return result
 
     def set_namespace(self, value):
         if self._namespace == value: return
@@ -175,30 +151,6 @@ class Context():
         else:
             self._namespace = 'default'
         # self._namespace = value
-
-    @property
-    def project(self):
-        return self.get_project()
-
-    def get_project(self, ignore_scope=False, silent=True):
-        if ignore_scope:
-            result = self._project
-        else:
-            if self._scope > ContextScope.Project:
-                result = 'default'
-                if not silent: Logger.warn("Switched to the global scope.")
-            else:
-                result = self._project
-        return result
-
-
-    def set_project(self, value):
-        if self._project == value: return
-        if value:
-            self._project = value
-        else:
-            self._project = 'default'
-        # self._project = value
 
 
     @property
@@ -209,12 +161,12 @@ class Context():
         if ignore_scope:
             result = self._application
         else:
-            if self._scope > ContextScope.Project:
+            if self._scope > ContextScope.Namespace:
                 result = 'default'
                 if not silent: Logger.warn("Switched to the global scope.")
             elif self._scope > ContextScope.App:
                 result = 'default'
-                if not silent: Logger.warn("Switched to the project scope.")
+                if not silent: Logger.warn("Switched to the namespace scope.")
             else:
                 result = self._application
         
@@ -269,11 +221,10 @@ class Context():
     @property
     def scope_translation(self):
         namespace_idx = 'default' if self.namespace == 'default' else 'namespace'
-        project_idx = 'default' if self.project == 'default' else 'project'
         application_idx = 'default' if self.application == 'default' else 'application'
         stage_idx = 'default' if Stages.is_default(self.stage) else 'stage'
         n_idx = '0' if Stages.is_default_env(self.stage) else 'n'
-        return context_translation_matrix[namespace_idx][project_idx][application_idx][stage_idx][n_idx]
+        return context_translation_matrix[namespace_idx][application_idx][stage_idx][n_idx]
 
     @property
     def path(self):
@@ -281,24 +232,18 @@ class Context():
 
 
     def get_path(self, key=None):
-        result = f"/{self.namespace}/{self.project}"
-        ### every application must belong to a project, no application overrides allowed in the default project
-        if not self.project == 'default':
-            result += f"/{self.application}"
-        else:
-            result += "/default"
-        result += f"/{self.stage}"
+        result = f"/{self.namespace}/{self.application}/{self.stage}"
         if key:
             result += f"/{key}"
         return result
 
     @property
     def effective(self):
-        return self.get_namespace(), self.get_project(), self.get_application(), self.get_stage(), str(self.scope)
+        return self.get_namespace(), self.get_application(), self.get_stage(), str(self.scope)
 
     @property
     def target(self):
-        return self.get_namespace(ignore_scope=True), self.get_project(ignore_scope=True), self.get_application(ignore_scope=True), self.get_stage(ignore_scope=True), str(self.scope)
+        return self.get_namespace(ignore_scope=True), self.get_application(ignore_scope=True), self.get_stage(ignore_scope=True), str(self.scope)
 
 
 class ContextService():
@@ -324,13 +269,13 @@ class ContextService():
     # merged_config = {}
 
 
-    # def load(self, working_dir, context_name=None, namespace=None, project=None, application=None, stage=None, scope=ContextScope.App):
+    # def load(self, working_dir, context_name=None, namespace=None, application=None, stage=None, scope=ContextScope.App):
     #     self.working_dir = working_dir
     #     self.update_merged_config()
     #     self.load_global_config()
     #     self.load_inherited_config()
     #     self.load_local_config()
-    #     self.load_context(context_name, namespace, project, application, stage, scope)
+    #     self.load_context(context_name, namespace, application, stage, scope)
     #     self.check_version()
 
 
@@ -339,19 +284,17 @@ class ContextService():
     #     return {'dso': self.merged_config}
 
 
-    # def load_context(self, context_name, namespace, project, application, stage, scope):
+    # def load_context(self, context_name, namespace, application, stage, scope):
 
     #     if context_name:
     #         found = self.get_contexts(context_name)
     #         if not found:
     #             raise DSOException(f"Context '{context_name}' not found.")
     #         self._namespace = found[-1]['spec']['namespace']
-    #         self._project = found[-1]['spec']['project']
     #         self._application = found[-1]['spec']['application']
     #         self._stage = found[-1]['spec']['stage']
     #     else:
     #         self._namespace = 'default'
-    #         self._project = 'default'
     #         self._application = 'default'
     #         self._stage = 'default'
 
@@ -736,16 +679,15 @@ class ContextService():
 
     def parse_path(self, path):
         """
-            path is in the form of [/]namespace/project/application/stage/env_no/[key]
+            path is in the form of [/]namespace/application/stage/env_no/[key]
         """
         parts = path.split('/')
         if not parts[0]: parts.pop(0)
         namespace = parts[0]
-        project = parts[1]
-        application = parts[2]
-        stage = f"{parts[3]}/{parts[4]}"
-        key = '/'.join(parts[5:]) if len(parts) > 5 else None
-        return namespace, project, application, stage, key
+        application = parts[1]
+        stage = f"{parts[2]}/{parts[3]}"
+        key = '/'.join(parts[4:]) if len(parts) > 4 else None
+        return namespace, application, stage, key
 
 
     def get_hierachy_paths(self, context, key=None, path_prefix=None, ignore_stage=False, uninherited=False, reverse=False):
@@ -755,33 +697,33 @@ class ContextService():
             result.append(path_prefix + context.get_path(key))
         else:
             ### Add the global context: /default/default/default/0
-            result.append(path_prefix + Context(context.namespace, 'default', 'default', 'default/0').get_path(key))
+            result.append(path_prefix + Context('default', 'default', 'default/0').get_path(key))
             if not ignore_stage and not Stages.is_default(context.stage):
                 ### Add global stage context
-                result.append(path_prefix + Context(context.namespace, 'default', 'default', Stages.get_default_env(context.stage)).get_path(key))
+                result.append(path_prefix + Context('default', 'default', Stages.get_default_env(context.stage)).get_path(key))
                 ### Add global numbered stage context
                 if not Stages.is_default_env(context.stage):
-                    result.append(path_prefix + Context(context.namespace, 'default', 'default', context.stage).get_path(key))
+                    result.append(path_prefix + Context('default', 'default', context.stage).get_path(key))
 
-            if not context.project == 'default':
-                ### Add the project context: /project/default/default/0
-                result.append(path_prefix + Context(context.namespace, context.project, 'default', 'default/0').get_path(key))
+            if not context.namespace == 'default':
+                ### Add the namespace context: /namespace/default/default/0
+                result.append(path_prefix + Context(context.namespace, 'default', 'default/0').get_path(key))
                 if not ignore_stage and not Stages.is_default(context.stage):
-                    ### Add the project stage context: /project/default/stage/0
-                    result.append(path_prefix + Context(context.namespace, context.project, 'default', Stages.get_default_env(context.stage)).get_path(key))
-                    ### Add the project numbered stage context: /project/default/stage/env
+                    ### Add the namespace stage context: /namespace/default/stage/0
+                    result.append(path_prefix + Context(context.namespace, 'default', Stages.get_default_env(context.stage)).get_path(key))
+                    ### Add the namespace numbered stage context: /namespace/default/stage/env
                     if not Stages.is_default_env(context.stage):
-                        result.append(path_prefix + Context(context.namespace, context.project, 'default', context.stage).get_path(key))
+                        result.append(path_prefix + Context(context.namespace, 'default', context.stage).get_path(key))
                 
                 if not context.application == 'default':
-                    ### Add the application context: /project/application/default/0
-                    result.append(path_prefix + Context(context.namespace, context.project, context.application, 'default/0').get_path(key))
+                    ### Add the application context: /namespace/application/default/0
+                    result.append(path_prefix + Context(context.namespace, context.application, 'default/0').get_path(key))
                     if not ignore_stage and not Stages.is_default(context.stage):
-                        ### Add the project stage context: /project/application/stage/0
-                        result.append(path_prefix + Context(context.namespace, context.project, context.application, Stages.get_default_env(context.stage)).get_path(key))
-                        ### Add the application numbered stage context: /dso/project/application/stage/env
+                        ### Add the application stage context: /namespace/application/stage/0
+                        result.append(path_prefix + Context(context.namespace, context.application, Stages.get_default_env(context.stage)).get_path(key))
+                        ### Add the application numbered stage context: /dso/namespace/application/stage/env
                         if not Stages.is_default_env(context.stage):
-                            result.append(path_prefix + Context(context.namespace, context.project, context.application, context.stage).get_path(key))
+                            result.append(path_prefix + Context(context.namespace, context.application, context.stage).get_path(key))
 
         return list(reversed(result)) if reverse else result
 

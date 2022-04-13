@@ -3,21 +3,20 @@ Application Template
 Parameter:
 ----------
 global.parameter = {{global.parameter}}
-project.parameter = {{project.parameter}}
+namespace.parameter = {{namespace.parameter}}
 app.parameter = {{app.parameter}}
 overriden_parameter = {{overriden_parameter}}
 
 Secrets:
 --------
 global.secret = {{global.secret}}
-project.secret = {{project.secret}}
+namespace.secret = {{namespace.secret}}
 app.secret = {{app.secret}}
 overriden_secret = {{overriden_secret}}
 
 DSO Meta:
 ---------
 Namespace is {{dso.namespace}}
-Project is {{dso.project}}
 Application is {{dso.application}}
 Stage is {{dso.stage}}
 Parameter provider is {{dso.parameter.provider.id}}

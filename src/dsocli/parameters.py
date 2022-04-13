@@ -39,31 +39,31 @@ class ParameterService():
             
     def list(self, uninherited=False, filter=None):
         provider = Providers.ParameterProvider()
-        Logger.info(f"Listing parameters: namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Listing parameters: namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
         return provider.list(uninherited, filter)
 
     def add(self, key, value):
         self.validate_key(key)
         provider = Providers.ParameterProvider()
-        Logger.info(f"Adding parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Adding parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
         return provider.add(key, value)
 
     def get(self, key, revision=None, uninherited=False, editable=False):
         # self.validate_key(key)
         provider = Providers.ParameterProvider()
-        Logger.info(f"Getting parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Getting parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
         return provider.get(key, revision, uninherited, editable)
 
     def history(self, key):
         # self.validate_key(key)
         provider = Providers.ParameterProvider()
-        Logger.info(f"Getting the history of parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Getting the history of parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
         return provider.history(key)
 
     def delete(self, key):
         # self.validate_key(key)
         provider = Providers.ParameterProvider()
-        Logger.info(f"Deleting parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, project={AppConfig.get_project(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Deleting parameter '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
         return provider.delete(key)
 
 Parameters = ParameterService()

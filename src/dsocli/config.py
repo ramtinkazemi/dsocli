@@ -13,7 +13,7 @@ from .exceptions import DSOException
 _default_config = {
     'kind': 'dso/application',
     'version': 1,
-    'project': 'default',
+    'namespace': 'default',
     'application': 'default',
     'parameter': {
         'provider': {
@@ -168,11 +168,11 @@ class ConfigManager:
     def get_config_overrides(self, scope, config_overrides_string):
         _config = {}
         if scope == 'global':
-            _config['project'] = 'default'
+            _config['namespace'] = 'default'
             Logger.warn("Switched to the global context.")
-        elif scope == 'project':
+        elif scope == 'namespace':
             _config['application'] = 'default'
-            Logger.warn(f"Switched to project context '{self.project}'.")
+            Logger.warn(f"Switched to namespace context '{self.namespace}'.")
         elif scope == 'application':
             pass
         return merge_dicts(self.config_string_to_dict(config_overrides_string), _config)
@@ -236,18 +236,18 @@ class ConfigManager:
             yaml.dump(self.global_config, outfile, sort_keys=False, indent=2)
 
     @property
-    def project(self):
-        if 'project' in self.overriden_config:
-            result = self.overriden_config['project'].lower() or 'default'
+    def namespace(self):
+        if 'namespace' in self.overriden_config:
+            result = self.overriden_config['namespace'].lower() or 'default'
         
-        elif 'project' in self.local_config:
-            result = self.local_config['project'].lower() or 'default'
+        elif 'namespace' in self.local_config:
+            result = self.local_config['namespace'].lower() or 'default'
 
-        elif 'DSO_PROJECT' in os.environ:
-            result = os.getenv('DSO_PROJECT').lower() or 'default'
+        elif 'DSO_NAMESPACE' in os.environ:
+            result = os.getenv('DSO_NAMESPACE').lower() or 'default'
 
-        elif 'project' in self.merged_config:
-            result = self.merged_config['project'].lower() or 'default'
+        elif 'namespace' in self.merged_config:
+            result = self.merged_config['namespace'].lower() or 'default'
 
         else:
             result = 'default'
@@ -272,7 +272,7 @@ class ConfigManager:
         else:
             result = 'default'
         
-        if not result == 'default' and self.project == 'default':
+        if not result == 'default' and self.namespace == 'default':
             Logger.debug(f"Application '{result}' was ignored because the global context is being used.")
             result = 'default'
 

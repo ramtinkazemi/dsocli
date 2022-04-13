@@ -46,13 +46,13 @@ class ShellSecretProvider(SecretProvider):
 
 
     def add(self, key, value):
-        Logger.debug(f"Adding shell secret '{key}': namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Adding shell secret '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         response = add_shell_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
         return response
 
 
     def list(self, uninherited=False, decrypt=False, filter=None):
-        Logger.debug(f"Listing shell secrets: namespace={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Listing shell secrets: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         secrets = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
         result = {'Secrets': []}
         for key, details in secrets.items():
@@ -68,13 +68,13 @@ class ShellSecretProvider(SecretProvider):
     def get(self, key, revision=None, uninherited=False, decrypt=False):
         if revision:
             Logger.warn(f"Secret provider 'shell/v1' does not support versioning.")
-        Logger.debug(f"Getting shell secret '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Getting shell secret '{key}': namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, raw=decrypt)
         if not found:
             if uninherited:
-                raise DSOException(f"Secret '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+                raise DSOException(f"Secret '{key}' not found in the given context: namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
             else:
-                raise DSOException(f"Secret '{key}' not found nor inherited in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+                raise DSOException(f"Secret '{key}' not found nor inherited in the given context: namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         if len(found) > 1:
             raise DSOException(f"Mutiple secrets found with the same key '{key}' in the given context.")
         result = {
@@ -87,7 +87,7 @@ class ShellSecretProvider(SecretProvider):
     def history(self, key, decrypt=False):
         Logger.warn(f"Secret provider 'shell/v1' does not support versioning.")
 
-        Logger.debug(f"Getting shell secret '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Getting shell secret '{key}': namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
             raise DSOException(f"Secret '{key}' not found nor inherited in the given context: stage={Stages.shorten(AppConfig.short_stage)}")
@@ -103,11 +103,11 @@ class ShellSecretProvider(SecretProvider):
 
 
     def delete(self, key):
-        Logger.debug(f"Locating secret '{key}': namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Locating secret '{key}': namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
         ### only secrets owned by the config can be deleted, hence uninherited=True
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Secret '{key}' not found in the given context: namesape={AppConfig.namespace}, project={AppConfig.project}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            raise DSOException(f"Secret '{key}' not found in the given context: namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
         Logger.info(f"Deleting secret: path={found[key]['Path']}")
         delete_shell_parameter(found[key]['Path'], key=key)
         result = {

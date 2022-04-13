@@ -13,7 +13,6 @@ app.stage2_secret = {{app.stage2_secret}}
 DSO Meta:
 ---------
 Namespace is {{dso.namespace}}
-Project is {{dso.project}}
 Application is {{dso.application}}
 Stage is {{dso.stage}}
 Parameter provider is {{dso.parameter.provider.id}}

@@ -30,7 +30,7 @@ class ConfigScope(OrderedEnum):
 _init_config = {
     'kind': 'dso/application',
     'version': 1,
-    'project': 'myproject',
+    'namespace': 'myns',
     'application': 'myapp',
     'parameter': {
         'provider': {
@@ -53,7 +53,6 @@ _default_config = {
     'kind': 'dso/application',
     'version': 1,
     'namespace': 'default',
-    'project': 'default',
     'application': 'default',
     'config': {
         'provider': {
@@ -143,7 +142,7 @@ class AppConfigService:
     def load(self, working_dir, config_overrides_string='', stage=None, scope=None):
         self.working_dir = working_dir
         ### start off with given stage, scope, and overriden config to set meta_data for subsequent rendering
-        self.context = Context('default', 'default', 'default', stage, scope)
+        self.context = Context('default', 'default', stage, scope)
         self.apply_config_overrides(config_overrides_string)
 
         ### now start the normal loading process
@@ -279,7 +278,7 @@ class AppConfigService:
                 config_overrides = self.config_string_to_dict(config_overrides)
             configs = flatten_dict(config_overrides)
             not_alllowed_configs = ['stage', 'scope']
-            check_default_configs = ['namespace', 'project', 'application']
+            check_default_configs = ['namespace', 'application']
             for key, value in configs.items():
                 # if key in unpermiited:
                 #     Logger.warn(f"Ignored overriding configuration '{key}', the following DSO configurations cannot be overriden: {unpermiited}")
@@ -327,11 +326,10 @@ class AppConfigService:
                     self.merged_config[provider]['provider']['spec'] = self.get_provider_default_spec(provider, providerId)
 
         merge_dicts(self.overriden_config, self.merged_config)
-        self.context = Context(self.merged_config['namespace'], self.merged_config['project'], self.merged_config['application'], self.stage, self.scope)
+        self.context = Context(self.merged_config['namespace'], self.merged_config['application'], self.stage, self.scope)
 
         self.merged_config['context'] = {
             'namespace': self.namespace,
-            'project': self.project,
             'application': self.application,
             'stage': self.short_stage,
             'scope': str(self.scope)
@@ -384,28 +382,15 @@ class AppConfigService:
 
 
     @property
-    def project(self):
-        return self.get_project()
-
-    def get_project(self, source=ContextSource.Effective):
-        if source == ContextSource.Target:
-            result = self.context.target[1]
-        elif source == ContextSource.Effective:
-            result = self.context.effective[1]
-        
-        return result
-
-
-    @property
     def application(self):
         return self.get_application()
 
 
     def get_application(self, source=ContextSource.Effective):
         if source == ContextSource.Target:
-            result = self.context.target[2]
+            result = self.context.target[1]
         elif source == ContextSource.Effective:
-            result = self.context.effective[2]
+            result = self.context.effective[1]
         
         return result
 
@@ -416,9 +401,9 @@ class AppConfigService:
 
     def get_stage(self, source=ContextSource.Effective, short=False):
         if source == ContextSource.Target:
-            result = self.context.target[3]
+            result = self.context.target[2]
         elif source == ContextSource.Effective:
-            result = self.context.effective[3]
+            result = self.context.effective[2]
         
         if short:
             result = Stages.shorten(result)
