@@ -133,14 +133,11 @@ class Context():
         return self.get_namespace()
 
 
-    @property
-    def namespace(self):
-        return self.get_namespace()
-
     def get_namespace(self, ignore_scope=False, silent=True):
         if ignore_scope:
             result = self._namespace
         else:
+            print(type(self._scope),self._scope)
             if self._scope > ContextScope.Namespace:
                 result = 'default'
                 if not silent: Logger.warn("Switched to the global scope.")

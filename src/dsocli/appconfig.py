@@ -30,7 +30,7 @@ class ConfigScope(OrderedEnum):
 _init_config = {
     'kind': 'dso/application',
     'version': 1,
-    'namespace': 'default',
+    'namespace': 'myns',
     'application': 'myapp',
     'parameter': {
         'provider': {
@@ -142,7 +142,7 @@ class AppConfigService:
     def load(self, working_dir, config_overrides_string='', stage=None, scope=None):
         self.working_dir = working_dir
         ### start off with given stage, scope, and overriden config to set meta_data for subsequent rendering
-        self.context = Context('default', 'default', 'default', stage, scope)
+        self.context = Context('default', 'default', stage, scope)
         self.apply_config_overrides(config_overrides_string)
 
         ### now start the normal loading process

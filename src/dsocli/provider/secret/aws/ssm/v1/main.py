@@ -12,7 +12,7 @@ from dsocli.appconfig import AppConfig
 
 
 __default_spec = {
-    'pathPrefix': '/dso/v1/secret/',
+    'pathPrefix': '/dso/secret/',
     # 'namnespace': 'default',
 }
 
