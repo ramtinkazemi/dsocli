@@ -396,7 +396,7 @@ class ConfigManager:
         else:
             Logger.info(f"Setting '{key}' to '{value}' in the local DSO configurations...")
             if not os.path.exists(self.local_config_file_path):
-                raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to initialize it.")
+                raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
 
             set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=True, overwrite_children=True)
             self.update_merged_config()
