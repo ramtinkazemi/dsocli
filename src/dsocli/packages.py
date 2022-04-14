@@ -1,6 +1,4 @@
 
-import os
-import re
 from .constants import *
 from .providers import ProviderBase, Providers
 from .artifacts import ArtifactStore

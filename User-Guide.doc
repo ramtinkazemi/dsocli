@@ -869,7 +869,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -880,7 +880,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -986,7 +986,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -997,7 +997,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -1109,7 +1109,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -1120,7 +1120,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -1254,7 +1254,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -1265,7 +1265,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -1381,7 +1381,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -1392,7 +1392,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -1496,7 +1496,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -1507,7 +1507,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -1623,7 +1623,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -1634,7 +1634,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -1768,7 +1768,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -1779,7 +1779,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -1918,7 +1918,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -1929,7 +1929,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -2087,7 +2087,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -2098,7 +2098,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -2210,7 +2210,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -2221,7 +2221,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>
@@ -2356,7 +2356,7 @@ onfiguration. This takes effect only for the executing command.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: </em>No</p>
 <p style=3D"margin-left: 60.0px;"><code>--scope</code></p>
 <p style=3D"margin-left: 90.0px;">Change the scope for the executing comman=
-d. Options <code>--global-scope</code> and <code>--project-scope</code> can=
+d. Options <code>--global-scope</code> and <code>--namespace-scope</code> can=
  also be used for this purpose. It can be combined with <code>--uninherited=
 </code> option to limit the context to the scope owned resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em><br><em>Default: </e=
@@ -2367,7 +2367,7 @@ m>Application<br><em>Allowed Values: </em>Application | Project | Global</p=
 global scope. It can be combined with <code>--uninherited</code> option to =
 limit the context to the global resources only.</p>
 <p style=3D"margin-left: 90.0px;"><em>Required: No</em></p>
-<p style=3D"margin-left: 60.0px;"><code>--project-scope</code></p>
+<p style=3D"margin-left: 60.0px;"><code>--namespace-scope</code></p>
 <p style=3D"margin-left: 90.0px;">Switch from the application scope to the =
 project scope. It can be combined with <code>--uninherited</code> option to=
  limit the context to the projects owned resources only.</p>

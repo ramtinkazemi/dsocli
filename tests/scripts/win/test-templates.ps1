@@ -1,7 +1,6 @@
 param(
     [string]$provider = "local/v1",
     [string]$namespace = "test-ns",
-    [string]$namespace = "test-namespace",
     [string]$application = "test-app",
     [string]$stage = "test-stage",
     [string]$working_dir = "."

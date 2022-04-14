@@ -1,5 +1,3 @@
-import sys
-import os
 import ipaddress
 import re
 from .logger import Logger

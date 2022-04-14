@@ -121,8 +121,8 @@ Invoke-Call -ScriptBlock {dso parameter add -v5 -w "${working_dir}" overriden_pa
 Write-Output "`ndso parameter get -v5 -w `"${working_dir}`" overriden_parameter --scope Global -f raw`n"
 Invoke-Call -ScriptBlock {dso parameter get -v5 -w "${working_dir}" overriden_parameter --scope Global -f raw} -ErrorAction Stop > $null
 
-Write-Output "`ndso parameter get -v5 -w `"${working_dir}`" overriden_parameter --scope namespace -f raw`n"
-Invoke-Call -ScriptBlock {dso parameter get -v5 -w "${working_dir}" overriden_parameter  --scope namespace -f raw} -ErrorAction Stop > $null
+Write-Output "`ndso parameter get -v5 -w `"${working_dir}`" overriden_parameter --scope Namespace -f raw`n"
+Invoke-Call -ScriptBlock {dso parameter get -v5 -w "${working_dir}" overriden_parameter  --scope Namespace -f raw} -ErrorAction Stop > $null
 
 Write-Output "`ndso parameter get -v5 -w `"${working_dir}`" overriden_parameter -s ${stage} -f raw`n"
 Invoke-Call -ScriptBlock {dso parameter get -v5 -w "${working_dir}" overriden_parameter -s ${stage} -f raw} -ErrorAction Stop > $null
