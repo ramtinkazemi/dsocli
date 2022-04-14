@@ -26,43 +26,43 @@ if(!(Test-Path tests\output\))
 
 ##################################
 
-Write-Output "`ndso config init -b5 --global`n"
-Invoke-Call -ScriptBlock {dso config init -b5 --global} -ErrorAction Stop > $null
+Write-Output "`ndso config init -v5 --global`n"
+Invoke-Call -ScriptBlock {dso config init -v5 --global} -ErrorAction Stop > $null
 
-Write-Output "`ndso config get -b5 --global`n"
-Invoke-Call -ScriptBlock {dso config get -b5 --global} -ErrorAction Stop > $null
+Write-Output "`ndso config get -v5 --global`n"
+Invoke-Call -ScriptBlock {dso config get -v5 --global} -ErrorAction Stop > $null
 
-Write-Output "`ndso config set -b5  test.global-config some-value --global`n"
-Invoke-Call -ScriptBlock {dso config set -b5 test.global-config some-value --global} -ErrorAction Stop > $null
+Write-Output "`ndso config set -v5  test.global-config some-value --global`n"
+Invoke-Call -ScriptBlock {dso config set -v5 test.global-config some-value --global} -ErrorAction Stop > $null
 
-Write-Output "`ndso config get -b5  test.global-config some-value --global`n"
-Invoke-Call -ScriptBlock {dso config get -b5  test.global-config --global} -ErrorAction Stop > $null
+Write-Output "`ndso config get -v5  test.global-config some-value --global`n"
+Invoke-Call -ScriptBlock {dso config get -v5  test.global-config --global} -ErrorAction Stop > $null
 
-Write-Output "`ndso config init -b5 -w `"${working_dir}`"`n"
-Invoke-Call -ScriptBlock {dso config init -b5 -w "${working_dir}"} -ErrorAction Stop > $null
+Write-Output "`ndso config init -v5 -w `"${working_dir}`"`n"
+Invoke-Call -ScriptBlock {dso config init -v5 -w "${working_dir}"} -ErrorAction Stop > $null
 
-Write-Output "`ndso config get -b5 -w `"${working_dir}`"`n"
-Invoke-Call -ScriptBlock {dso config get -b5 -w "${working_dir}"} -ErrorAction Stop > $null
+Write-Output "`ndso config get -v5 -w `"${working_dir}`"`n"
+Invoke-Call -ScriptBlock {dso config get -v5 -w "${working_dir}"} -ErrorAction Stop > $null
 
-Write-Output "`ndso config set -b5 -w `"${working_dir}`" test.local-config some-value`n"
-Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" test.local-config some-value} -ErrorAction Stop > $null
+Write-Output "`ndso config set -v5 -w `"${working_dir}`" test.local-config some-value`n"
+Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" test.local-config some-value} -ErrorAction Stop > $null
 
-Write-Output "`ndso config get -b5 -w `"${working_dir}`" test.local-config`n"
-Invoke-Call -ScriptBlock {dso config get -b5 -w "${working_dir}" test.local-config} -ErrorAction Stop > $null
+Write-Output "`ndso config get -v5 -w `"${working_dir}`" test.local-config`n"
+Invoke-Call -ScriptBlock {dso config get -v5 -w "${working_dir}" test.local-config} -ErrorAction Stop > $null
 
-Write-Output "`ndso config unset -b5  test.global-config some-value --global`n"
-Invoke-Call -ScriptBlock {dso config unset -b5  test.global-config --global} -ErrorAction Stop > $null
+Write-Output "`ndso config unset -v5  test.global-config some-value --global`n"
+Invoke-Call -ScriptBlock {dso config unset -v5  test.global-config --global} -ErrorAction Stop > $null
 
-Write-Output "`ndso config unset -b5 -w `"${working_dir}`" test.local-config`n"
-Invoke-Call -ScriptBlock {dso config unset -b5 -w "${working_dir}" test.local-config} -ErrorAction Stop > $null
+Write-Output "`ndso config unset -v5 -w `"${working_dir}`" test.local-config`n"
+Invoke-Call -ScriptBlock {dso config unset -v5 -w "${working_dir}" test.local-config} -ErrorAction Stop > $null
 
-Write-Output "`ndso config set -b5 -w `"${working_dir}`" namespace ${namespace}`n"
-Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop > $null
+Write-Output "`ndso config set -v5 -w `"${working_dir}`" namespace ${namespace}`n"
+Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop > $null
 
-Write-Output "`ndso config set -b5 -w `"${working_dir}`"`n"
-Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}"} -ErrorAction Stop > $null
+Write-Output "`ndso config set -v5 -w `"${working_dir}`"`n"
+Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}"} -ErrorAction Stop > $null
 
-Write-Output "`ndso config set -b5 -w `"${working_dir}`" application ${application}`n"
-Invoke-Call -ScriptBlock {dso config set -b5 -w "${working_dir}" application ${application}} -ErrorAction Stop > $null
+Write-Output "`ndso config set -v5 -w `"${working_dir}`" application ${application}`n"
+Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" application ${application}} -ErrorAction Stop > $null
 
 

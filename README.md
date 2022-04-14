@@ -71,7 +71,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a parameter to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a parameter to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
@@ -119,7 +119,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a parameter to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a parameter to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
@@ -159,7 +159,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a parameter to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a parameter to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
@@ -221,7 +221,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a parameter to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a parameter to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different parameter provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
@@ -271,7 +271,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a secret to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config secret.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a secret to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config secret.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
@@ -319,7 +319,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a secret to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config secret.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a secret to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config secret.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
@@ -359,7 +359,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a secret to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config secret.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a secret to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config secret.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
@@ -423,7 +423,7 @@ Specify the logging verbosity, where 0 is for logging critical fatal errors only
 
 Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.
 
-For example, you may want to change the context from the current application to the global scope to add a secret to all projects. This can be achieved by using ```--config project=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
+For example, you may want to change the context from the current application to the global scope to add a secret to all namespaces. This can be achieved by using ```--config namespace=default```. Another example is to temporarily use a different secret provider, let’s say ```local/v1``` without editing the current DSO application configuration (using  dso config command). To achieve this one can use ```--config parameter.provider.id=local/v1```.
 
 ```-w, --working-dir <path>```
 
