@@ -28,7 +28,7 @@ class ConfigScope(OrderedEnum):
 _init_config = {
     'kind': 'dso/application',
     'version': 1,
-    'namespace': '',
+    'namespace': 'generic',
     'application': '',
     'parameter': {
         'provider': {
