@@ -24,8 +24,8 @@ class StageService():
         env = int(m.groups()[1]) if len(m.groups()) > 1 and m.groups()[1] else ''
         return stage, env
 
-    def normalize(self, stage):
-        stage, env = Stages.raw_parse(stage)
+    def normalize(self, value):
+        stage, env = Stages.raw_parse(value)
         # stage = stage or 'default'
         ### force dafault env if stage is default: default/env not allowed
         env = env if env and not stage == self.short_default_stage else 0

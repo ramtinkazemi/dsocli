@@ -172,7 +172,7 @@ def add_parameter(stage, scope, global_scope, namespace_scope, verbosity, config
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -216,6 +216,9 @@ def add_parameter(stage, scope, global_scope, namespace_scope, verbosity, config
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -246,7 +249,7 @@ def add_parameter(stage, scope, global_scope, namespace_scope, verbosity, config
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
-@click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
+@click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
@@ -263,7 +266,7 @@ def list_parameter(stage, scope, global_scope, namespace_scope, verbosity, confi
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Parameters: Parameters[*].{Key: Key, Value: Value, Stage: Stage, Scope: Scope}}'
@@ -289,6 +292,9 @@ def list_parameter(stage, scope, global_scope, namespace_scope, verbosity, confi
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -328,7 +334,7 @@ def get_parameter(stage, scope, global_scope, namespace_scope, verbosity, config
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Value: Value}'
@@ -345,6 +351,9 @@ def get_parameter(stage, scope, global_scope, namespace_scope, verbosity, config
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -381,7 +390,7 @@ def edit_parameter(stage, scope, global_scope, namespace_scope, verbosity, confi
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
@@ -417,6 +426,9 @@ def edit_parameter(stage, scope, global_scope, namespace_scope, verbosity, confi
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -456,7 +468,7 @@ def history_parameter(stage, scope, global_scope, namespace_scope, verbosity, co
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Revisions: Revisions[*].{RevisionId: RevisionId, Date: Date, Value: Value}}'
@@ -473,6 +485,9 @@ def history_parameter(stage, scope, global_scope, namespace_scope, verbosity, co
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -511,7 +526,7 @@ def delete_parameter(stage, scope, global_scope, namespace_scope, verbosity, con
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -540,6 +555,9 @@ def delete_parameter(stage, scope, global_scope, namespace_scope, verbosity, con
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -591,7 +609,7 @@ def add_secret(stage, scope, global_scope, namespace_scope, verbosity, config_ov
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -639,6 +657,9 @@ def add_secret(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -687,7 +708,7 @@ def list_secret(stage, scope, global_scope, namespace_scope, verbosity, config_o
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Secrets: Secrets[*].{Key: Key, Value: Value, Scope: Scope, Origin: Origin}}'
@@ -713,6 +734,9 @@ def list_secret(stage, scope, global_scope, namespace_scope, verbosity, config_o
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -752,7 +776,7 @@ def get_secret(stage, scope, global_scope, namespace_scope, verbosity, config_ov
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Value: Value}'
@@ -770,6 +794,9 @@ def get_secret(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -806,7 +833,7 @@ def edit_secret(stage, scope, global_scope, namespace_scope, verbosity, config_o
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
@@ -843,6 +870,9 @@ def edit_secret(stage, scope, global_scope, namespace_scope, verbosity, config_o
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -883,7 +913,7 @@ def history_secret(stage, scope, global_scope, namespace_scope, verbosity, confi
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Revisions: Revisions[*].{RevisionId: RevisionId, Date: Date, Value: Value}}'
@@ -901,6 +931,9 @@ def history_secret(stage, scope, global_scope, namespace_scope, verbosity, confi
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -939,7 +972,7 @@ def delete_secret(stage, scope, global_scope, namespace_scope, verbosity, config
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -968,6 +1001,9 @@ def delete_secret(stage, scope, global_scope, namespace_scope, verbosity, config
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1071,7 +1107,7 @@ def add_template(stage, scope, global_scope, namespace_scope, verbosity, config_
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -1125,6 +1161,9 @@ def add_template(stage, scope, global_scope, namespace_scope, verbosity, config_
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1173,7 +1212,7 @@ def list_template(stage, scope, global_scope, namespace_scope, verbosity, config
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if include_contents:
@@ -1203,6 +1242,9 @@ def list_template(stage, scope, global_scope, namespace_scope, verbosity, config
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1245,7 +1287,7 @@ def get_template(stage, scope, global_scope, namespace_scope, verbosity, config_
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         defaultQuery = '{Contents: Contents}'
@@ -1262,6 +1304,9 @@ def get_template(stage, scope, global_scope, namespace_scope, verbosity, config_
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1298,7 +1343,7 @@ def edit_template(stage, scope, global_scope, namespace_scope, verbosity, config
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
@@ -1334,6 +1379,9 @@ def edit_template(stage, scope, global_scope, namespace_scope, verbosity, config
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1374,7 +1422,7 @@ def history_template(stage, scope, global_scope, namespace_scope, verbosity, con
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if include_contents:
@@ -1395,6 +1443,9 @@ def history_template(stage, scope, global_scope, namespace_scope, verbosity, con
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1434,7 +1485,7 @@ def delete_template(stage, scope, global_scope, namespace_scope, verbosity, conf
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -1462,6 +1513,9 @@ def delete_template(stage, scope, global_scope, namespace_scope, verbosity, conf
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1504,7 +1558,7 @@ def render_template(stage, scope, global_scope, namespace_scope, verbosity, conf
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if filter:
@@ -1525,6 +1579,9 @@ def render_template(stage, scope, global_scope, namespace_scope, verbosity, conf
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1583,6 +1640,9 @@ def list_package(stage, verbosity, config_override, working_dir, filter, query_a
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1632,6 +1692,9 @@ def get_package(stage, verbosity, config_override, working_dir, key, key_option,
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1684,6 +1747,9 @@ def build_package(stage, verbosity, config_override, working_dir, filter, query_
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1745,6 +1811,9 @@ def delete_package(stage, verbosity, config_override, working_dir, key, key_opti
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1811,6 +1880,9 @@ def list_release(stage, verbosity, config_override, working_dir, filter, query_a
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1860,6 +1932,9 @@ def get_release(stage, verbosity, config_override, working_dir, key, key_option,
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1912,6 +1987,9 @@ def create_release(stage, verbosity, config_override, working_dir, filter, query
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -1973,6 +2051,9 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -2020,14 +2101,14 @@ def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 
         key = validate_not_all_provided([key, key_option], ["KEY", "'-k' / '--key'"])
         validate_not_all_provided([local, global_], ["'--local'", "'--global'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         configScope = ConfigScope.Local if local else ConfigScope.Global if global_ else ConfigScope.Merged
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfig.load(working_dir, config_override, stage, scope)
+        AppConfig.load(working_dir, config_override, stage, scope, ignore_config_errors=True)
 
         result = AppConfig.get(key, configScope)
         if result:
@@ -2043,6 +2124,9 @@ def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -2064,7 +2148,7 @@ def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
-@click.option('-s', '--stage', metavar='<name>[/<number>]', default='default', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
+@click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
@@ -2081,7 +2165,7 @@ def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         configScope = ConfigScope.Global if global_ else ConfigScope.Local
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
@@ -2099,12 +2183,15 @@ def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
         Logger.set_verbosity(verbosity)
         validate_command_usage()
 
-        AppConfig.load(working_dir, config_override, stage, scope)
+        AppConfig.load(working_dir, config_override, stage, scope, ignore_config_errors=True)
 
         AppConfig.set(key, value, configScope)
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -2140,7 +2227,7 @@ def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'-k' / '--key'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         configScope = ConfigScope.Global if global_ else ConfigScope.Local
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
@@ -2148,12 +2235,15 @@ def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_
         Logger.set_verbosity(verbosity)
         validate_command_usage()
 
-        AppConfig.load(working_dir, config_override, stage, scope)
+        AppConfig.load(working_dir, config_override, stage, scope, ignore_config_errors=True)
 
         AppConfig.unset(key, configScope)
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -2189,7 +2279,7 @@ def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_o
         nonlocal working_dir, config_override, scope, init_config, configScope
 
         if not working_dir: working_dir = os.getcwd()
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         configScope = ConfigScope.Global if global_ else ConfigScope.Local
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
@@ -2211,6 +2301,9 @@ def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_o
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
@@ -2248,7 +2341,7 @@ def network_subnet(stage, scope, global_scope, namespace_scope, verbosity, confi
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
-        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope)
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
@@ -2269,6 +2362,9 @@ def network_subnet(stage, scope, global_scope, namespace_scope, verbosity, confi
 
     except DSOException as e:
         Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(1)
     except Exception as e:
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
