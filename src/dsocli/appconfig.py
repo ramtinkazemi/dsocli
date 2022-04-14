@@ -31,8 +31,8 @@ class ConfigScope(OrderedEnum):
 _init_config = {
     'kind': 'dso/application',
     'version': 1,
-    'namespace': 'myns',
-    'application': 'myapp',
+    'namespace': '',
+    'application': '',
     'parameter': {
         'provider': {
             'id': 'local/v1',
