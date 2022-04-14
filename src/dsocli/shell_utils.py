@@ -1,5 +1,4 @@
 import os
-import re
 from .contexts import Context, Contexts
 from .logger import Logger
 from .stages import Stages

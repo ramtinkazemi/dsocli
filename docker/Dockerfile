@@ -14,7 +14,7 @@ RUN apk add --no-cache python3 py3-pip && pip install dsocli
 #     dso config set parameter.provider.id aws/ssm/v1 && \
 #     dso config set secret.provider.id aws/ssm/v1 && \
 #     dso config set template.provider.id aws/ssm/v1 && \
-#     dso template render -s staging --project-scope --filter -rails
+#     dso template render -s staging --namespace-scope --filter -rails
 RUN cat <<EOF | dso config init --input - \n\
 project: ${DSO_PROJECT}\n\
 application: ${DSO_APPLICATION}\n\

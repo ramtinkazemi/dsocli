@@ -1,6 +1,4 @@
-
 import logging
-import colorama
 import coloredlogs
 from .settings import *
 

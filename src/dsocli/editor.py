@@ -1,7 +1,3 @@
-import os
-import sys
-import signal
-import contextlib
 from subprocess import Popen, PIPE
 from .logger import Logger
 from .settings import *

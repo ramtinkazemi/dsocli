@@ -1,7 +1,6 @@
 param(
     [string]$provider = "local/v1",
     [string]$namespace = "test-ns",
-    [string]$namespace = "test-namespace",
     [string]$application = "test-app",
     [string]$stage = "test-stage",
     [string]$working_dir = "."
@@ -164,8 +163,8 @@ Invoke-Call -ScriptBlock {dso template edit -v5 -w "${working_dir}" app.stage2_t
 Write-Output "`ndso template history -v5 -w `"${working_dir}`" overriden_template -g -f json`n"
 Invoke-Call -ScriptBlock {dso template history -v5 -w "${working_dir}" overriden_template -g -f json} -ErrorAction Stop > $null
 
-Write-Output "`ndso template history -v5 -w `"${working_dir}`" overriden_template -p -f json`n"
-Invoke-Call -ScriptBlock {dso template history -v5 -w "${working_dir}" overriden_template -p -f json} -ErrorAction Stop > $null
+Write-Output "`ndso template history -v5 -w `"${working_dir}`" overriden_template -n -f json`n"
+Invoke-Call -ScriptBlock {dso template history -v5 -w "${working_dir}" overriden_template -n -f json} -ErrorAction Stop > $null
 
 Write-Output "`ndso template history -v5 -w `"${working_dir}`" overriden_template -s ${stage} -f yaml`n"
 Invoke-Call -ScriptBlock {dso template history -v5 -w "${working_dir}" overriden_template -s ${stage} -f json} -ErrorAction Stop > $null

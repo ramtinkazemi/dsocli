@@ -3,9 +3,6 @@ import os
 import sys
 import imp
 from turtle import st
-import yaml
-import jinja2
-from jinja2 import meta
 from .constants import *
 from .logger import Logger
 from .dict_utils import *
@@ -31,7 +28,7 @@ class ConfigScope(OrderedEnum):
 _init_config = {
     'kind': 'dso/application',
     'version': 1,
-    'namespace': '',
+    'namespace': 'generic',
     'application': '',
     'parameter': {
         'provider': {

@@ -1,5 +1,4 @@
 import os
-import re
 import imp
 from .appconfig import AppConfig
 from .constants import *

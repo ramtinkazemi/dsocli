@@ -1,5 +1,4 @@
 import re
-
 from jinja2.runtime import unicode_join
 from .logger import Logger
 from .providers import KeyValueStoreProvider, Providers
