@@ -2,6 +2,7 @@
 import os
 import sys
 import imp
+from turtle import st
 import yaml
 import jinja2
 from jinja2 import meta
@@ -52,8 +53,8 @@ _init_config = {
 _default_config = {
     'kind': 'dso/application',
     'version': 1,
-    'namespace': 'default',
-    'application': 'default',
+    'namespace': '',
+    'application': '',
     'config': {
         'provider': {
             'id': '',
@@ -139,7 +140,12 @@ class AppConfigService:
 
 
 
-    def load(self, working_dir, config_overrides_string='', stage=None, scope=None):
+    def load(self, working_dir, config_overrides_string='', stage=None, scope=ContextScope.App, ignore_config_errors=False):
+        if stage == 'default':
+            raise DSOException("Stage name cannot be 'default'. If you intend to target all the stages, remove '-s/--stage' and try again.")
+
+        if stage is None: stage = 'default'
+
         self.working_dir = working_dir
         ### start off with given stage, scope, and overriden config to set meta_data for subsequent rendering
         self.context = Context('default', 'default', stage, scope)
@@ -151,6 +157,22 @@ class AppConfigService:
         self.load_local_config()
         self.check_version()
 
+        if not ignore_config_errors:
+            if scope == ContextScope.Global and not Stages.is_default_env(stage):
+                raise DSOException("Numbered environments are not allowd when using global scope. Remove the number from the given satge and try again.")
+
+            if self.merged_config['namespace'] == 'default':
+                raise DSOException("Namespace name cannot be 'default'.")
+            if scope == ContextScope.Namespace and not self.merged_config['namespace']:
+                raise DSOException("Namespace has not been set. Run 'dso config set namespace <name>' to do so.")
+            if scope == ContextScope.Namespace and not Stages.is_default_env(stage):
+                raise DSOException("Numbered environments are not allowd when using namespace scope. Remove the number from the given satge and try again.")
+
+            if self.merged_config['application'] == 'default':
+                raise DSOException("Application name cannot be 'default'.")
+            if scope == ContextScope.App and not self.merged_config['application']:
+                raise DSOException("Application name has not been set. Run 'dso config set application <name>' to do so.")
+        
 
     @property
     def meta_vars(self):
@@ -331,7 +353,7 @@ class AppConfigService:
         self.merged_config['context'] = {
             'namespace': self.namespace,
             'application': self.application,
-            'stage': self.short_stage,
+            'stage': self.stage,
             'scope': str(self.scope)
         }
 

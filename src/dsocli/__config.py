@@ -258,23 +258,29 @@ class ConfigManager:
     @property
     def application(self):
         if 'application' in self.overriden_config:
-            result = self.overriden_config['application'].lower() or 'default'
-        
+            result = self.overriden_config['application'].lower()
+
         elif 'application' in self.local_config:
-            result = self.local_config['application'].lower() or 'default'
+            result = self.local_config['application'].lower()
 
         elif 'DSO_APPLICATION' in os.environ:
-            result = os.getenv('DSO_APPLICATION').lower() or 'default'
+            result = os.getenv('DSO_APPLICATION').lower()
 
         elif 'application' in self.merged_config:
-            result = self.merged_config['application'].lower() or 'default'
+            result = self.merged_config['application'].lower()
         
-        else:
-            result = 'default'
+        # else:
+        #     result = 'default'
         
-        if not result == 'default' and self.namespace == 'default':
-            Logger.debug(f"Application '{result}' was ignored because the global context is being used.")
-            result = 'default'
+        if not result:
+            raise DSOException("Application name has not been set.")
+
+        if result == 'default':
+            raise DSOException("Application name cannot be 'default', as it is reserved.")
+
+        # if not result == 'default' and self.namespace == 'default':
+        #     Logger.debug(f"Application '{result}' was ignored because the global context is being used.")
+        #     result = 'default'
 
         return result
 

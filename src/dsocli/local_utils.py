@@ -47,7 +47,7 @@ def load_templates_from_path(result, path, path_prefix='', include_contents=Fals
             if key in result:
                 Logger.warn(f"Inherited template '{key}' was overridden.")
             ctx_path = os.path.abspath(filePath)[len(os.path.abspath(AppConfig.working_dir)) + 1 + len(path_prefix):].replace(os.sep, '/')
-            ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+            ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
             result[key] = {
                 'Stage': ctx.short_stage,
                 'Scope': ctx.scope_translation,
@@ -96,7 +96,7 @@ def add_local_template(key, path_prefix, contents):
     with open(fullPath, 'w', encoding='utf-8') as f:
         f.write(contents)
     ctx_path = path[len(path_prefix):].replace(os.sep, '/')
-    ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+    ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
     result = {
         'Contents': contents,
         'Stage': ctx.short_stage,
@@ -125,7 +125,7 @@ def load_parameter_store(result, path, path_prefix='', filter=None):
         if key in result:
             Logger.warn(f"Inherited parameter '{key}' was overridden.")
         ctx_path = path[len(path_prefix):].replace(os.sep, '/')
-        ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+        ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
         result[key] = {
             'Value': value,
             'Stage': ctx.short_stage,
@@ -146,7 +146,7 @@ def get_context_hierachy_parameter_stores(context, store_name, path_prefix='', u
     stores = []
     for path in paths:
         ctx_path = path[len(path_prefix):].replace(os.sep, '/')
-        ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+        ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
         stores.append({
             'Stage': ctx.short_stage,
             'Stage': ctx.short_stage,
@@ -192,7 +192,7 @@ def add_local_parameter(key, value, store_name, path_prefix=''):
     set_dict_value(dic=params, keys=key.split('.'), value=value, overwrite_parent=False, overwrite_children=False)
     save_data(data=params, file_path=fullPath)
     ctx_path = path[len(path_prefix):].replace(os.sep, '/')
-    ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+    ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
     result = {
         'Key': key,
         'Value': value,

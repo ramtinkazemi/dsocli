@@ -37,7 +37,7 @@ def get_s3_path(context, path_prefix='', key=None):
 #         if key in result:
 #             Logger.warn(f"Inherited {object_kind} '{key}' was overridden.")
 #         ctx_path = path[len(used_path_prefix):]
-#         ctx = Context(*Contexts.parse_path(ctx_path)[0:4])
+#         ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
 #         details = {
 #                     'Bucket': bucket,
 #                     'Path': archive['Key'],
