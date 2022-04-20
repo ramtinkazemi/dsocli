@@ -99,6 +99,66 @@ CLI_COMMANDS_HELP = {
                         The option '--working-dir' can be used to specify a different working directory than the current directory where dso is running in.\n
                         """,
         },
+        'parameter': {
+                'get': """Get parameter provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+                'set': """Set parameter provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset parameter provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+        },
+        'secret': {
+                'get': """Get secret provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+                'set': """Set secret provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset secret provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+        },           
+        'template': {
+                'get': """Get template provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+                'set': """Set template provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset template provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+        },   
+        'package': {
+                'get': """Get package provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+                'set': """Set package provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset package provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+        },  
         'release': {
                 'get': """Get release provider configuration.\n
                         ** Tips: 1) Use --local or --global to get local or global configuration only.\n
@@ -113,8 +173,7 @@ CLI_COMMANDS_HELP = {
                         ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                         KEY: The key of the configuration
                         """,
-        }        
-    },
+        }      },
     'network': {
         'subnet': """Get subnet plan layout of the applcation.\n
                 """,
@@ -195,40 +254,40 @@ CLI_COMMANDS_SHORT_HELP = {
     },
     'config': {
         'app': {
-                'self': "Manage application configurations.",
-                'get': "Get DSO application configuration(s).",
-                'set': "Set DSO application configuration(s).",
+                'self': "Manage application configuration.",
+                'get': "Get DSO application configuration.",
+                'set': "Set DSO application configuration.",
                 'unset': "Delete a DSO application configuration.",
                 'init': "Initialize DSO application in the working directory.",
         },
-        'param': {
-                'self': "Manage parameter provider configurations.",
-                'get': "Get parameter provider configuration(s).",
-                'set': "Set parameter provider configuration(s).",
+        'parameter': {
+                'self': "Manage parameter provider configuration.",
+                'get': "Get parameter provider configuration.",
+                'set': "Set parameter provider configuration.",
                 'unset': "Delete parameter provider configuration.",
         },
         'secret': {
-                'self': "Manage secret provider configurations.",
-                'get': "Get secret provider configuration(s).",
-                'set': "Set secret provider configuration(s).",
+                'self': "Manage secret provider configuration.",
+                'get': "Get secret provider configuration.",
+                'set': "Set secret provider configuration.",
                 'unset': "Delete secret provider configuration.",
         },
         'template': {
-                'self': "Manage template provider configurations.",
-                'get': "Get template provider configuration(s).",
-                'set': "Set template provider configuration(s).",
+                'self': "Manage template provider configuration.",
+                'get': "Get template provider configuration.",
+                'set': "Set template provider configuration.",
                 'unset': "Delete template provider configuration.",
         },
         'package': {
-                'self': "Manage package provider configurations.",
-                'get': "Get package provider configuration(s).",
-                'set': "Set package provider configuration(s).",
+                'self': "Manage package provider configuration.",
+                'get': "Get package provider configuration.",
+                'set': "Set package provider configuration.",
                 'unset': "Delete package provider configuration.",
         },
         'release': {
-                'self': "Manage release provider configurations.",
-                'get': "Get release provider configuration(s).",
-                'set': "Set release provider configuration(s).",
+                'self': "Manage release provider configuration.",
+                'get': "Get release provider configuration.",
+                'set': "Set release provider configuration.",
                 'unset': "Delete release provider configuration.",
         },
 
@@ -246,7 +305,7 @@ CLI_PARAMETERS_HELP = {
         'stage' : "Target a specific stage using the stage identifier, which is combination of a name and an optional number, where name must conform to ^([a-zA-Z][a-zA-Z0-9]+)$ regex expression. If no /<number> is specified, the default environment (/0) in the given context will be target.",
         'input' : "Path to a (local) file defining the input data. Use '-' to read from the shell pipe or stdin. Use '--format' to specify the format if needed.",
         'format': "Specify the format of the output or the input if mixed with the '--input' option.",
-        'config': "Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.",
+        'config': "Comma separated list of key/value pairs to temporarily override the current DSO application configuration. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.",
         'query': "Customize output using JMESPath query language.",
         'query_all': "Include all the available fields in the ouput.",
         'global_scope': "Use the global scope.",
@@ -291,12 +350,12 @@ CLI_PARAMETERS_HELP = {
 
     },
     'config': {
-        'key': "The key of the configuration",
-        'value': 'Value for the configuration key',
+        'key': "The key of the configuration setting",
+        'value': 'Value for the configuration setting',
         'input' : "Path to a local (yaml) file inputing the configuration. Use '-' to read from the shell pipe or stdin.",
-        'local': "Select the local DSO configurations, i.e. existing in the working directory.",
-        'global': "Select the global DSO configurations, i.e. user-wide configuration.",
-        'override_inherited': "Explicitly override inherited configurations locally.",
+        'local': "Select the local DSO configuration, i.e. existing in the working directory.",
+        'global': "Select the global DSO configuration, i.e. user-wide configuration.",
+        'override_inherited': "Explicitly override inherited configuration locally.",
         'setup': "Run a setup wizard to assist configuring the DSO application.",
 
     },

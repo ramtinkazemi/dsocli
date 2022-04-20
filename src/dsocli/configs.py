@@ -54,7 +54,7 @@ class ConfigService():
     #     return provider.history(service=service, key)
 
 
-    def uset(self, key, service):
+    def unset(self, key, service):
         self.service = service
         provider = Providers.ConfigProvider()
         Logger.debug(f"Unsetting configuration '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")

@@ -111,7 +111,7 @@ def format_data(data, query, format, compress=True):
 
     ### expects list(dict), or a dict
     ### take first key as name and second key as value, and form name=value
-    elif format == 'shell':
+    elif format == 'flat':
 
         def quote(value):
             if not value: return ''
@@ -130,13 +130,13 @@ def format_data(data, query, format, compress=True):
         if isinstance(result, list) and len(result):
             if isinstance(result[0], dict):
                 if len(result[0].keys()) < 2:
-                    raise DSOException(f"Unable to format data as it is incompatible with the 'shell' format.")
+                    raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
                 for item in result:
                     key = item[list(item.keys())[0]]
                     value = quote(item[list(item.keys())[1]])
                     outputStream += f"{key}={value}\n"
             else:
-                raise DSOException(f"Unable to format data as it is incompatible with the 'shell' format.")
+                raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
         elif isinstance(result, dict):
             keys = list(result.keys())
             ### if data is dictionary with single key whose value is a list, process the child list instead
@@ -145,7 +145,7 @@ def format_data(data, query, format, compress=True):
                 if isinstance(childList, list):
                     if childList:
                         if len(childList[0].keys()) < 2:
-                            raise DSOException(f"Unable to format data as it is incompatible with the 'shell' format.")
+                            raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
                         for item in childList:
                             key = item[list(item.keys())[0]]
                             value = quote(item[list(item.keys())[1]])
@@ -155,7 +155,7 @@ def format_data(data, query, format, compress=True):
             elif len(keys) > 1:
                 raise NotImplementedError()
         else:
-            raise DSOException(f"Unable to format data as it is incompatible with the 'shell' format.")
+            raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
         return outputStream
 
     else:
@@ -261,7 +261,7 @@ def read_data(input, parent_key, keys, format):
         except:
             raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
 
-    elif format == 'shell':
+    elif format == 'flat':
         if keys == ['*']: 
             raise NotImplementedError()
 

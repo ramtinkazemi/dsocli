@@ -58,13 +58,13 @@ class LocalConfigProvider(ConfigProvider):
         self.config = config
         Logger.debug(f"Listing local configs: namespace={config.namespace}, application={config.application}, stage={config.stage}")
         configs = load_context_local_parameters(config=config, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
-        result = {'Configs': []}
+        result = {'Configuration': []}
         for key, details in configs.items():
             item = {
                 'Key': key,
             }
             item.update(details)
-            result['Configs'].append(item)
+            result['Configuration'].append(item)
 
         return result
 
