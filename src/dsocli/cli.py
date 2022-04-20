@@ -30,7 +30,7 @@ from pathlib import Path
 from .dict_utils import *
 from .settings import *
 from .contexts import Context, ContextService, Contexts, ContextScope
-
+from .configs import Configs
 
 modify_click_usage_error()
 
@@ -47,10 +47,33 @@ def cli():
 @cli.group(context_settings=DEFAULT_CLICK_CONTEXT)
 def config():
     """
-    Manage DSO application configuration.
+    Manage DSO configurations.
     """
     pass
 
+@config.group('app', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['app']['self']}")
+def config_app():
+    pass
+
+@config.group('param', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['param']['self']}")
+def config_param():
+    pass
+
+@config.group('secret', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['secret']['self']}")
+def config_secret():
+    pass
+
+@config.group('template', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['template']['self']}")
+def config_template():
+    pass
+
+@config.group('package', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['package']['self']}")
+def config_package():
+    pass
+
+@config.group('release', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['release']['self']}")
+def config_release():
+    pass
 
 
 @cli.group(context_settings=DEFAULT_CLICK_CONTEXT)
@@ -59,7 +82,6 @@ def parameter():
     Manage parameters.
     """
     pass
-
 
 
 @cli.group(context_settings=DEFAULT_CLICK_CONTEXT)
@@ -2074,8 +2096,8 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 
 
 
-@config.command('get', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['get']}")
-@command_doc(CLI_COMMANDS_HELP['config']['get'])
+@config_app.command('get', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['app']['get']}")
+@command_doc(CLI_COMMANDS_HELP['config']['app']['get'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
 @click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
@@ -2090,7 +2112,7 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_):
+def config_app_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_):
 
     configScope = None
 
@@ -2137,8 +2159,9 @@ def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
         sys.exit(2)
 
 
-@config.command('set', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['set']}")
-@command_doc(CLI_COMMANDS_HELP['config']['set'])
+
+@config_app.command('set', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['app']['set']}")
+@command_doc(CLI_COMMANDS_HELP['config']['app']['set'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
 @click.argument('value', required=False)
@@ -2155,7 +2178,7 @@ def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, global_, input):
+def config_app_set(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, global_, input):
 
     configScope = None
 
@@ -2202,8 +2225,8 @@ def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
         sys.exit(2)
 
 
-@config.command('unset', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['unset']}")
-@command_doc(CLI_COMMANDS_HELP['config']['unset'])
+@config_app.command('unset', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['app']['unset']}")
+@command_doc(CLI_COMMANDS_HELP['config']['app']['unset'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
 @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
@@ -2217,7 +2240,7 @@ def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, global_):
+def config_app_unset(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, global_):
 
     configScope = None
 
@@ -2254,8 +2277,8 @@ def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_
         sys.exit(2)
 
 
-@config.command('init', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['init']}")
-@command_doc(CLI_COMMANDS_HELP['config']['init'])
+@config_app.command('init', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['app']['init']}")
+@command_doc(CLI_COMMANDS_HELP['config']['app']['init'])
 @click.option('--setup', is_flag=True, required=False, help=f"{CLI_PARAMETERS_HELP['config']['setup']}")
 @click.option('--override-inherited', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['override_inherited']}")
 @click.option('-g', '--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
@@ -2270,7 +2293,7 @@ def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, setup, override_inherited, global_, input):
+def config_app_init(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, setup, override_inherited, global_, input):
 
     init_config = None
     configScope = None
@@ -2313,6 +2336,70 @@ def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_o
             traceback.print_exc() ### FIXME to print to logger instead of stdout
         sys.exit(2)
 
+
+@config_release.command('get', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['config']['release']['get']}")
+@command_doc(CLI_COMMANDS_HELP['config']['release']['get'])
+@click.argument('key', required=False)
+@click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
+@click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
+@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
+# @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
+# @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
+@click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
+@click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
+@click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
+@click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
+def config_release_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_):
+
+    configScope = None
+
+    def validate_command_usage():
+        nonlocal working_dir, config_override, key, scope, configScope
+
+        if not working_dir: working_dir = os.getcwd()
+
+        key = validate_not_all_provided([key, key_option], ["KEY", "'--key'"])
+        validate_not_all_provided([local, global_], ["'--local'", "'--global'"])
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
+        configScope = ConfigScope.Local if local else ConfigScope.Global if global_ else ConfigScope.Merged
+        # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
+
+    try:
+        Logger.set_verbosity(verbosity)
+        validate_command_usage()
+        AppConfig.load(working_dir, config_override, stage, scope, ignore_config_errors=True)
+
+        result = AppConfig.get(key, configScope)
+        result = Configs.list(service='release')
+
+        if result:
+            ### pyyaml adding three trailing dots issue workaround
+            if not isinstance(result, dict):
+                output = yaml.dump(result, default_style='"', sort_keys=False, indent=2).rstrip()
+                ### remove enclosing "
+                output = output[1:len(output)-1]
+            else:
+                output = yaml.dump(result, sort_keys=False, indent=2).rstrip()
+
+            Pager.page(output)
+
+    except DSOException as e:
+        Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
+        sys.exit(1)
+    except Exception as e:
+        msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
+        Logger.fatal(msg)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
+        sys.exit(2)
 
 
 

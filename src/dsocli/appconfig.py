@@ -30,6 +30,11 @@ _init_config = {
     'version': 1,
     'namespace': 'generic',
     'application': '',
+    'config': {
+        'provider': {
+            'id': 'local/v1',
+        },
+    },
     'parameter': {
         'provider': {
             'id': 'local/v1',
@@ -558,7 +563,7 @@ class AppConfigService:
         if key:
             Logger.info("Getting '{0}' from DSO configurations...".format(key))
         else:
-            Logger.info("Getting DSO configurations...")
+            Logger.info("Getting application configuration...")
 
         if config_scope == ConfigScope.Local:
             usedConfig = merge_dicts(self.overriden_config, self.local_config_rendered.copy())

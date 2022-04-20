@@ -80,23 +80,40 @@ CLI_COMMANDS_HELP = {
                     """,
         },
     'config': {
-        'get': """Get DSO application configuration.\n
-                ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                KEY: The key of the configuration
-                """,
-        'set': """Set DSO application configuration.\n
-                ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                """,
-        'unset': """Unset DSO application configuration.\n
-                ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                KEY: The key of the configuration
-                """,
-        'init': """Initialize DSO configuration for the working directory.\n
-                ** Tips: 1) Use --input to load connfiguration from a file.\n
-                The option '--working-dir' can be used to specify a different working directory than the current directory where dso is running in.\n
-                """,
+        'app': {
+                'get': """Get DSO application configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+                'set': """Set DSO application configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset DSO application configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+                'init': """Initialize DSO configuration for the working directory.\n
+                        ** Tips: 1) Use --input to load connfiguration from a file.\n
+                        The option '--working-dir' can be used to specify a different working directory than the current directory where dso is running in.\n
+                        """,
+        },
+        'release': {
+                'get': """Get release provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+                'set': """Set release provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset release provider configuration.\n
+                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                        KEY: The key of the configuration
+                        """,
+        }        
     },
     'network': {
         'subnet': """Get subnet plan layout of the applcation.\n
@@ -177,10 +194,44 @@ CLI_COMMANDS_SHORT_HELP = {
         'delete': "Delete a deployment release from the application.",
     },
     'config': {
-        'get': "Get DSO application configuration(s).",
-        'set': "Set the DSO application configuration(s).",
-        'unset': "Delete a DSO application configuration.",
-        'init': "Initialize DSO configuration for the working directory.",
+        'app': {
+                'self': "Manage application configurations.",
+                'get': "Get DSO application configuration(s).",
+                'set': "Set DSO application configuration(s).",
+                'unset': "Delete a DSO application configuration.",
+                'init': "Initialize DSO application in the working directory.",
+        },
+        'param': {
+                'self': "Manage parameter provider configurations.",
+                'get': "Get parameter provider configuration(s).",
+                'set': "Set parameter provider configuration(s).",
+                'unset': "Delete parameter provider configuration.",
+        },
+        'secret': {
+                'self': "Manage secret provider configurations.",
+                'get': "Get secret provider configuration(s).",
+                'set': "Set secret provider configuration(s).",
+                'unset': "Delete secret provider configuration.",
+        },
+        'template': {
+                'self': "Manage template provider configurations.",
+                'get': "Get template provider configuration(s).",
+                'set': "Set template provider configuration(s).",
+                'unset': "Delete template provider configuration.",
+        },
+        'package': {
+                'self': "Manage package provider configurations.",
+                'get': "Get package provider configuration(s).",
+                'set': "Set package provider configuration(s).",
+                'unset': "Delete package provider configuration.",
+        },
+        'release': {
+                'self': "Manage release provider configurations.",
+                'get': "Get release provider configuration(s).",
+                'set': "Set release provider configuration(s).",
+                'unset': "Delete release provider configuration.",
+        },
+
     },
     'network': {
         'subnet': "Get subnet plan layout of the application.",

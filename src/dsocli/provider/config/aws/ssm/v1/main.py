@@ -35,7 +35,7 @@ class AwsSsmConfigProvider(ConfigProvider):
     def list(self, service, uninherited=False, filter=None):
         self.service = service
         Logger.debug(f"Listing configuration on SSM: service={service}")
-        configuration = load_context_ssm_configuration(parameter_type='String', path_prefix=self.get_path_prefix(service), uninherited=uninherited, filter=filter)
+        configuration = load_context_ssm_parameters(parameter_type='String', path_prefix=self.get_path_prefix(service), uninherited=uninherited, filter=filter)
         result = {'Parameters': []}
         for key, details in configuration.items():
             item = {
