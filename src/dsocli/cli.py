@@ -158,7 +158,7 @@ def version():
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def add_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, input, format):
     
@@ -254,7 +254,7 @@ def add_parameter(stage, scope, global_scope, namespace_scope, verbosity, config
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def list_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, uninherited, filter, query_all, query, format):
 
@@ -321,7 +321,7 @@ def list_parameter(stage, scope, global_scope, namespace_scope, verbosity, confi
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def get_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, revision, query_all, query, format):
 
@@ -377,7 +377,7 @@ def get_parameter(stage, scope, global_scope, namespace_scope, verbosity, config
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def edit_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option):
 
@@ -455,7 +455,7 @@ def edit_parameter(stage, scope, global_scope, namespace_scope, verbosity, confi
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def history_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
@@ -512,7 +512,7 @@ def history_parameter(stage, scope, global_scope, namespace_scope, verbosity, co
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def delete_parameter(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, input, format):
 
@@ -595,7 +595,7 @@ def delete_parameter(stage, scope, global_scope, namespace_scope, verbosity, con
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def add_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, ask_password, input, format):
 
@@ -696,7 +696,7 @@ def add_secret(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def list_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, uninherited, decrypt, filter, query_all, query, format):
 
@@ -763,7 +763,7 @@ def list_secret(stage, scope, global_scope, namespace_scope, verbosity, config_o
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def get_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, revision, query_all, query, format):
 
@@ -820,7 +820,7 @@ def get_secret(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def edit_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option):
 
@@ -900,7 +900,7 @@ def edit_secret(stage, scope, global_scope, namespace_scope, verbosity, config_o
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def history_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, decrypt, query_all, query, format):
 
@@ -958,7 +958,7 @@ def history_secret(stage, scope, global_scope, namespace_scope, verbosity, confi
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def delete_secret(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, input, format):
 
@@ -1040,7 +1040,7 @@ def delete_secret(stage, scope, global_scope, namespace_scope, verbosity, config
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def add_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, render_path, contents_path, recursive, input, format):
 
@@ -1200,7 +1200,7 @@ def add_template(stage, scope, global_scope, namespace_scope, verbosity, config_
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def list_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, uninherited, include_contents, filter, query_all, query, format):
 
@@ -1274,7 +1274,7 @@ def list_template(stage, scope, global_scope, namespace_scope, verbosity, config
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def get_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, revision, include_contents, query_all, query, format):
 
@@ -1330,7 +1330,7 @@ def get_template(stage, scope, global_scope, namespace_scope, verbosity, config_
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def edit_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option):
 
@@ -1409,7 +1409,7 @@ def edit_template(stage, scope, global_scope, namespace_scope, verbosity, config
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def history_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, include_contents, query_all, query, format):
 
@@ -1471,7 +1471,7 @@ def history_template(stage, scope, global_scope, namespace_scope, verbosity, con
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def delete_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, input, format):
 
@@ -1547,7 +1547,7 @@ def delete_template(stage, scope, global_scope, namespace_scope, verbosity, conf
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def render_template(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, filter):
 
@@ -1606,7 +1606,7 @@ def render_template(stage, scope, global_scope, namespace_scope, verbosity, conf
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def list_package(stage, verbosity, config_override, working_dir, filter, query_all, query, format):
     
@@ -1666,7 +1666,7 @@ def list_package(stage, verbosity, config_override, working_dir, filter, query_a
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def get_package(stage, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
@@ -1716,7 +1716,7 @@ def get_package(stage, verbosity, config_override, working_dir, key, key_option,
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def build_package(stage, verbosity, config_override, working_dir, filter, query_all, query, format):
 
@@ -1772,7 +1772,7 @@ def build_package(stage, verbosity, config_override, working_dir, filter, query_
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def delete_package(stage, verbosity, config_override, working_dir, key, key_option, input, format):
 
@@ -1846,7 +1846,7 @@ def delete_package(stage, verbosity, config_override, working_dir, key, key_opti
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def list_release(stage, verbosity, config_override, working_dir, filter, query_all, query, format):
     
@@ -1906,7 +1906,7 @@ def list_release(stage, verbosity, config_override, working_dir, filter, query_a
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def get_release(stage, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
@@ -1956,7 +1956,7 @@ def get_release(stage, verbosity, config_override, working_dir, key, key_option,
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def create_release(stage, verbosity, config_override, working_dir, filter, query_all, query, format):
 
@@ -2012,7 +2012,7 @@ def create_release(stage, verbosity, config_override, working_dir, filter, query
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def delete_release(stage, verbosity, config_override, working_dir, key, key_option, input, format):
 
@@ -2088,7 +2088,7 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_):
 
@@ -2153,7 +2153,7 @@ def get_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, global_, input):
 
@@ -2215,7 +2215,7 @@ def set_config(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, global_):
 
@@ -2268,7 +2268,7 @@ def unset_config(stage, scope, global_scope, namespace_scope, verbosity, config_
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, setup, override_inherited, global_, input):
 
@@ -2320,7 +2320,7 @@ def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_o
 @command_doc(CLI_COMMANDS_HELP['network']['subnet'])
 @click.option('-m', '--mode', required=False, type=click.Choice(['app', 'full', 'summary']), default='app', show_default=True, help=f"{CLI_PARAMETERS_HELP['network']['subnet_layout_mode']}")
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='yaml', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['format']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2329,7 +2329,7 @@ def init_config(stage, scope, global_scope, namespace_scope, verbosity, config_o
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
-@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='2', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
 def network_subnet(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, mode, format):
 
