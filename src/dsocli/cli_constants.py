@@ -24,6 +24,18 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The parameter may be inherited from the parent contexts or owned by the given context.\n
                 KEY: The identifier of the parameter. It may also be provided using the '--key' option.\n
                 """,
+        'config': {
+                'get': """Get parameter provider configuration setting(s).\n
+                        KEY: The key of the configuration setting
+                        """,
+                'set': """Set parameter provider configuration setting(s).\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset parameter provider configuration setting(s).\n
+                        KEY: The key of the configuration
+                        """,
+        },
     },
     'secret': {
         'add': """Add a secret to a context, or update a secret if it is already existing in the context.\n
@@ -50,7 +62,18 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The secret may be inherited from the parent contexts or owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
-
+        'config': {
+                'get': """Get secret provider configuration setting(s).\n
+                        KEY: The key of the configuration setting
+                        """,
+                'set': """Set secret provider configuration setting(s).\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset secret provider configuration setting(s).\n
+                        KEY: The key of the configuration
+                        """,
+        },
     },
     'template': {
         'add': """Add a template to a context, or update the contents if it is already existing in the context.\n
@@ -78,107 +101,38 @@ CLI_COMMANDS_HELP = {
                 """,
         'render': """Render templates in a context.\n
                     """,
-        },
-    'config': {
-        'app': {
-                'get': """Get DSO application configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
+        'config': {
+                'get': """Get template provider configuration setting(s).\n
+                        KEY: The key of the configuration setting
                         """,
-                'set': """Set DSO application configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                'set': """Set template provider configuration setting(s).\n
                         KEY: The key of the configuration. It may also be provided using the '--key' option.\n
                         VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
                         """,
-                'unset': """Unset DSO application configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                'unset': """Unset template provider configuration setting(s).\n
                         KEY: The key of the configuration
                         """,
-                'init': """Initialize DSO configuration for the working directory.\n
-                        ** Tips: 1) Use --input to load connfiguration from a file.\n
-                        The option '--working-dir' can be used to specify a different working directory than the current directory where dso is running in.\n
-                        """,
-        },
-        'parameter': {
-                'get': """Get parameter provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-                'set': """Set parameter provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset parameter provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-        },
-        'secret': {
-                'get': """Get secret provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-                'set': """Set secret provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset secret provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-        },           
-        'template': {
-                'get': """Get template provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-                'set': """Set template provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset template provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-        },   
-        'package': {
-                'get': """Get package provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-                'set': """Set package provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset package provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-        },  
-        'release': {
-                'get': """Get release provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-                'set': """Set release provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset release provider configuration.\n
-                        ** Tips: 1) Use --local or --global to get local or global configuration only.\n
-                        KEY: The key of the configuration
-                        """,
-        }      },
-    'network': {
-        'subnet': """Get subnet plan layout of the applcation.\n
-                """,
-
+        },                
     },
+    'config': {
+        'get': """Get DSO application configuration.\n
+                ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                KEY: The key of the configuration
+                """,
+        'set': """Set DSO application configuration.\n
+                ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                """,
+        'unset': """Unset DSO application configuration.\n
+                ** Tips: 1) Use --local or --global to get local or global configuration only.\n
+                KEY: The key of the configuration
+                """,
+        'init': """Initialize DSO configuration for the working directory.\n
+                ** Tips: 1) Use --input to load connfiguration from a file.\n
+                The option '--working-dir' can be used to specify a different working directory than the current directory where dso is running in.\n
+                """,
+      },
     'package': {
         'build': """Build a distrubutabkle package, and adds it to artifact store.\n
                 ** Tips: 1) ... 2) ...\n
@@ -194,7 +148,19 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The inherited package cannot be deleted. The context must be the owner of the secret or a not found error will be returned. 2) Multiple packages may be deleted at once using the '--input' option.\n
                 KEY: The identifier of the package to be deleted. It may also be provided using the '--key' option.\n
                 """,
+        'config': {
+                'get': """Get package provider configuration setting(s).\n
+                        KEY: The key of the configuration setting
+                        """,
+                'set': """Set package provider configuration setting(s).\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset package provider configuration setting(s).\n
+                        KEY: The key of the configuration
+                        """,
         },
+    },
     'release': {
         'create': """Create a deployment release, and adds it to artifact store.\n
                 ** Tips: 1) ... 2) ...\n
@@ -210,7 +176,24 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The inherited release cannot be deleted. The context must be the owner of the secret or a not found error will be returned. 2) Multiple releases may be deleted at once using the '--input' option.\n
                 KEY: The identifier of the release to be deleted. It may also be provided using the '--key' option.\n
                 """,
+
+        'config': {
+                'get': """Get release provider configuration setting(s).\n
+                        KEY: The key of the configuration setting
+                        """,
+                'set': """Set release provider configuration setting(s).\n
+                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
+                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
+                        """,
+                'unset': """Unset release provider configuration setting(s).\n
+                        KEY: The key of the configuration
+                        """,
         },
+    },
+    'network': {
+        'subnet': """Get subnet plan layout of the applcation.\n
+                """,
+    },
 }
 
 CLI_COMMANDS_SHORT_HELP = {
@@ -222,6 +205,11 @@ CLI_COMMANDS_SHORT_HELP = {
         'edit': "Edit the value of a parameter.",
         'delete': "Delete one or multiple parameters from the application.",
         'history': "Get the revision history of a parameter.",
+        'config': {
+                'get': "Get parameter provider configuration setting(s).",
+                'set': "Set parameter provider configuration setting(s)",
+                'unset': "Unset parameter provider configuration setting(s).",
+        },
     },
     'secret': {
         'list': "List secrets available to the application.",
@@ -230,6 +218,12 @@ CLI_COMMANDS_SHORT_HELP = {
         'edit': "Edit the value of a secret.",
         'delete': "Delete one or multiple secrets from the application.",
         'history': "Get the revision history of a secret.",
+        'config': {
+                'get': "Get secret provider configuration setting(s).",
+                'set': "Set secret provider configuration setting(s)",
+                'unset': "Unset secret provider configuration setting(s).",
+        },
+
     },
     'template': {
         'list': "List templates available to the application.",
@@ -238,65 +232,45 @@ CLI_COMMANDS_SHORT_HELP = {
         'edit': "Edit the contents of a template.",
         'delete': "Delete one or multiple templates from the application.",
         'history': "Get the revision history of a template.",
-        'render': "Render templates using parameters in a context.",
+        'render': "Render templates using parameters and secrets in a context.",
+        'config': {
+                'get': "Get template provider configuration setting(s).",
+                'set': "Set template provider configuration setting(s)",
+                'unset': "Unset template provider configuration setting(s).",
+        },
     },
     'package': {
         'list': "List packages built for the application available on arctifact store.",
         'build': "Build a distributable package for the application.",
         'get': "Download a build package from arctifact store.",
         'delete': "Delete a build package from arctifact store.",
+        'config': {
+                'get': "Get package provider configuration setting(s).",
+                'set': "Set package provider configuration setting(s)",
+                'unset': "Unset package provider configuration setting(s).",
+        },
+
     },
     'release': {
         'list': "List deployment releases for the application.",
         'create': "Create a deployment release for the application.",
         'get': "Download an application deployment release.",
         'delete': "Delete a deployment release from the application.",
+        'config': {
+                'get': "Get release provider configuration setting(s).",
+                'set': "Set release provider configuration setting(s)",
+                'unset': "Unset release provider configuration setting(s).",
+        },
     },
     'config': {
-        'app': {
-                'self': "Manage application configuration.",
-                'get': "Get DSO application configuration.",
-                'set': "Set DSO application configuration.",
-                'unset': "Delete a DSO application configuration.",
-                'init': "Initialize DSO application in the working directory.",
-        },
-        'parameter': {
-                'self': "Manage parameter provider configuration.",
-                'get': "Get parameter provider configuration.",
-                'set': "Set parameter provider configuration.",
-                'unset': "Delete parameter provider configuration.",
-        },
-        'secret': {
-                'self': "Manage secret provider configuration.",
-                'get': "Get secret provider configuration.",
-                'set': "Set secret provider configuration.",
-                'unset': "Delete secret provider configuration.",
-        },
-        'template': {
-                'self': "Manage template provider configuration.",
-                'get': "Get template provider configuration.",
-                'set': "Set template provider configuration.",
-                'unset': "Delete template provider configuration.",
-        },
-        'package': {
-                'self': "Manage package provider configuration.",
-                'get': "Get package provider configuration.",
-                'set': "Set package provider configuration.",
-                'unset': "Delete package provider configuration.",
-        },
-        'release': {
-                'self': "Manage release provider configuration.",
-                'get': "Get release provider configuration.",
-                'set': "Set release provider configuration.",
-                'unset': "Delete release provider configuration.",
-        },
-
+        'get': "Get DSO application configuration.",
+        'set': "Set DSO application configuration.",
+        'unset': "Delete a DSO application configuration.",
+        'init': "Initialize DSO application in the working directory.",
     },
     'network': {
         'subnet': "Get subnet plan layout of the application.",
-
     }
-
 }
 CLI_PARAMETERS_HELP = {
     'common': {
@@ -315,7 +289,6 @@ CLI_PARAMETERS_HELP = {
         'context': "Specify the context to be used.",
         'namespace': "Override the namespace in the context.",
         'application': "Override the application in the context.",
-
     },
     'parameter': {
         'key': "The key of the parameter. See KEY argument for more details.",
@@ -323,8 +296,6 @@ CLI_PARAMETERS_HELP = {
         'query_values': "Include parameter values in the output.",
         'uninherited': "Select only parameters which are specific to the gievn context, i.e. not inherited from the parent contexts.",
         'revision': "The revision ID whose value to be fetched.",
-        'history': "Get the revision history of the parameter.",
-
     },
     'secret': {
         'key': "The key of the secret",
@@ -333,7 +304,6 @@ CLI_PARAMETERS_HELP = {
         'query_values': "Include secret values in the output.",
         'uninherited': "Select only secrets which are specific to the gievn context, i.e. not inherited from the parent contexts.",
         'revision': "The revision ID whose value to be fetched.",
-        'history': "Get the revision history of the secret.",
         'ask_password': "Inputing password from stdin.",
     },
     'template': {
@@ -346,8 +316,6 @@ CLI_PARAMETERS_HELP = {
         'recursive' : "Add files recursively.",
         'uninherited': "Select only templates which are specific to the gievn context, i.e. not inherited from the parent contexts.",
         'include_contents': "Include template contenets in the output. ",
-        'history': "Get the revision history of the template.",
-
     },
     'config': {
         'key': "The key of the configuration setting",
@@ -357,22 +325,16 @@ CLI_PARAMETERS_HELP = {
         'global': "Select the global DSO configuration, i.e. user-wide configuration.",
         'override_inherited': "Explicitly override inherited configuration locally.",
         'setup': "Run a setup wizard to assist configuring the DSO application.",
-
-    },
-    'network': {
-        'subnet_layout_mode': "Select the subnet plan layout mode.",
-    
     },
     'package': {
         'key': "The key of the package. See KEY argument for more details.",
-
     },
     'release': {
         'key': "The key of the release. See KEY argument for more details.",
-
     },
-
-
+    'network': {
+        'subnet_layout_mode': "Select the subnet plan layout mode.",
+    },
 
 }
 
