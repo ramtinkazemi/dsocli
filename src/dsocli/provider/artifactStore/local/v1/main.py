@@ -1,6 +1,6 @@
 import os
 from dsocli.logger import Logger
-from dsocli.config import AppConfig
+from dsocli.appconfig import AppConfig
 from dsocli.providers import Providers
 from dsocli.templates import TemplateProvider
 from dsocli.stages import Stages

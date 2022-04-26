@@ -33,7 +33,6 @@ class ConfigService():
 
     def set(self, key, value, service):
         self.service = service
-        if not key: key = os.path.basename(filepath)
         # self.validate_key(key)
         provider = Providers.ConfigProvider()
         Logger.debug(f"Setting configuration '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")

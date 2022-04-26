@@ -66,7 +66,7 @@ class ProviderService():
     def register(self, provider: ProviderBase):
         if not provider.id in self.__providers:
             self.__providers[provider.id] = provider
-            Logger.debug(f"Provider registered: id ={provider.id}")
+            Logger.debug(f"Provider registered: id={provider.id}")
 
     def get_provider(self, provider_slug):
         if not provider_slug in self.__providers:
@@ -109,8 +109,8 @@ class ProviderService():
         return self.get_provider('package/' + AppConfig.package_provider)
 
     def ReleaseProvider(self):
-        if not AppConfig.package_provider:
+        if not AppConfig.release_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Release'))
-        return self.get_provider('release/' + AppConfig.package_provider)
+        return self.get_provider('release/' + AppConfig.release_provider)
 
 Providers = ProviderService()

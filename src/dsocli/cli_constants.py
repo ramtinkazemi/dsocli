@@ -323,7 +323,7 @@ CLI_PARAMETERS_HELP = {
         'input' : "Path to a local (yaml) file inputing the configuration. Use '-' to read from the shell pipe or stdin.",
         'local': "Select the local DSO configuration, i.e. existing in the working directory.",
         'global': "Select the global DSO configuration, i.e. user-wide configuration.",
-        'rendered': "Whether or not render DSO application configuration.",
+        'rendered': "Whether or not render configuration settings.",
         'override_inherited': "Explicitly override inherited configuration locally.",
         'setup': "Run a setup wizard to assist configuring the DSO application.",
     },

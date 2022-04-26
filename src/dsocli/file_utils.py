@@ -1,5 +1,6 @@
 import os
 import enum
+
 # from pathlib import Path
 # import shutils
 from .logger import Logger
@@ -74,6 +75,20 @@ def render_stream(stream, values):
         raise DSOException(msg)
 
     return rendered
+
+
+def render_dict_values(dict, values):
+    if not dict: return dict
+    import jinja2, json
+    template = jinja2.Environment(undefined=jinja2.StrictUndefined).from_string(json.dumps(dict))
+    try:
+        rendered = template.render(values)
+    except Exception as e:
+        Logger.error(f"Failed to render dictionary.")
+        msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
+        raise DSOException(msg)
+
+    return json.loads(rendered)
 
 
 def get_format_from_file_name(file_name):

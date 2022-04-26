@@ -12,7 +12,7 @@ from dsocli.settings import *
 
 
 __default_spec = {
-    'path': os.path.join(AppConfig.config_dir, 'secrets'),
+    'path': os.path.join(AppConfig.config_dir, 'secret/'),
     'store': 'shell.json',
 }
 

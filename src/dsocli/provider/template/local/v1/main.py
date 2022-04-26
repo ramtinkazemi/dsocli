@@ -12,7 +12,7 @@ from dsocli.settings import *
 
 
 __default_spec = {
-    'path': os.path.join(AppConfig.config_dir, 'templates'),
+    'path': os.path.join(AppConfig.config_dir, 'template/'),
 }
 
 

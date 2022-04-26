@@ -10,7 +10,7 @@ from stdiomask import getpass
 from .constants import *
 from .cli_constants import *
 from .exceptions import DSOException
-from .appconfig import AppConfig, ConfigScope, ContextSource
+from .appconfig import AppConfig, ContextSource
 import dsocli.logger as logger
 from .stages import Stages
 from .parameters import Parameters
@@ -2113,7 +2113,7 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 @command_doc(CLI_COMMANDS_HELP['config']['init'])
 @click.option('--setup', is_flag=True, required=False, help=f"{CLI_PARAMETERS_HELP['config']['setup']}")
 @click.option('--override-inherited', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['override_inherited']}")
-@click.option('-g', '--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('-g', '--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=f"{CLI_PARAMETERS_HELP['config']['input']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
@@ -2125,17 +2125,17 @@ def delete_release(stage, verbosity, config_override, working_dir, key, key_opti
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_init(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, setup, override_inherited, global_, input):
+def config_init(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, setup, override_inherited, input):
 
     init_config = None
     configScope = None
 
     def validate_command_usage():
-        nonlocal working_dir, config_override, scope, init_config, configScope
+        nonlocal working_dir, config_override, scope, init_config
 
         if not working_dir: working_dir = os.getcwd()
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
-        configScope = ConfigScope.Global if global_ else ConfigScope.Local
+        # configScope = ConfigScope.Global if global_ else ConfigScope.Local
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -2152,7 +2152,7 @@ def config_init(stage, scope, global_scope, namespace_scope, verbosity, config_o
         # AppConfig.load(working_dir if working_dir else os.getcwd(),
         #                 'global' if global_scope else 'namespace' if namespace_scope else 'application',
         #                 config_override)
-        AppConfig.init(working_dir, custom_init_config=init_config, config_overrides_string=config_override, override_inherited=override_inherited, config_scope=configScope)
+        AppConfig.init(working_dir, custom_init_config=init_config, config_overrides_string=config_override, override_inherited=override_inherited)
 
     except DSOException as e:
         Logger.error(e.message)
@@ -2173,8 +2173,8 @@ def config_init(stage, scope, global_scope, namespace_scope, verbosity, config_o
 @command_doc(CLI_COMMANDS_HELP['config']['get'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
-@click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2186,19 +2186,19 @@ def config_init(stage, scope, global_scope, namespace_scope, verbosity, config_o
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, rendered):
+def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, rendered):
 
-    configScope = None
+    # configScope = None
 
     def validate_command_usage():
-        nonlocal working_dir, config_override, key, scope, configScope
+        nonlocal working_dir, config_override, key, scope
 
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_not_all_provided([key, key_option], ["KEY", "'--key'"])
-        validate_not_all_provided([local, global_], ["'--local'", "'--global'"])
+        # validate_not_all_provided([local, global_], ["'--local'", "'--global'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
-        configScope = ConfigScope.Local if local else ConfigScope.Global if global_ else ConfigScope.Merged
+        # configScope = ConfigScope.Local if local else ConfigScope.Global if global_ else ConfigScope.Merged
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
@@ -2206,7 +2206,7 @@ def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_ov
         validate_command_usage()
         AppConfig.load(working_dir, config_override, stage, scope, rendered=rendered, ignore_config_errors=True)
 
-        result = AppConfig.get(key, configScope)
+        result = AppConfig.get(key)
         if result:
             ### pyyaml adding three trailing dots issue workaround
             if not isinstance(result, dict):
@@ -2239,7 +2239,7 @@ def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
 @click.argument('value', required=False)
 @click.option('--value', 'value_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['value']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=f"{CLI_PARAMETERS_HELP['config']['input']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
@@ -2251,18 +2251,18 @@ def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_set(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, global_, input):
+def config_set(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, input):
 
-    configScope = None
+    # configScope = None
 
     def validate_command_usage():
-        nonlocal working_dir, config_override, key, value, scope, configScope
+        nonlocal working_dir, config_override, key, value, scope
 
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'--key'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
-        configScope = ConfigScope.Global if global_ else ConfigScope.Local
+        # configScope = ConfigScope.Global if global_ else ConfigScope.Local
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
         if input:
@@ -2281,7 +2281,7 @@ def config_set(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 
         AppConfig.load(working_dir, config_override, stage, scope, ignore_config_errors=True)
 
-        AppConfig.set(key, value, configScope)
+        AppConfig.set(key, value)
 
     except DSOException as e:
         Logger.error(e.message)
@@ -2302,7 +2302,7 @@ def config_set(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @command_doc(CLI_COMMANDS_HELP['config']['unset'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2313,18 +2313,18 @@ def config_set(stage, scope, global_scope, namespace_scope, verbosity, config_ov
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_unset(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, global_):
+def config_unset(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option):
 
     configScope = None
 
     def validate_command_usage():
-        nonlocal working_dir, config_override, key, scope, configScope
+        nonlocal working_dir, config_override, key, scope
 
         if not working_dir: working_dir = os.getcwd()
 
         key = validate_only_one_provided([key, key_option], ["KEY", "'--key'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
-        configScope = ConfigScope.Global if global_ else ConfigScope.Local
+        # configScope = ConfigScope.Global if global_ else ConfigScope.Local
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
 
     try:
@@ -2351,24 +2351,23 @@ def config_unset(stage, scope, global_scope, namespace_scope, verbosity, config_
 
 
 
-def config_service_get(service, stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format):
-    configScope = None
+def config_service_get(service, stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
     filter = None
 
     def validate_command_usage():
-        nonlocal working_dir, config_override, key, query, scope, configScope, filter
+        nonlocal working_dir, config_override, key, query, scope, filter
 
         if not working_dir: working_dir = os.getcwd()
 
         # key = validate_not_all_provided([key, key_option], ["KEY", "'--key'"])
         key = validate_only_one_provided([key, key_option], ["KEY", "'--key'"])
-        validate_not_all_provided([local, global_], ["'--local'", "'--global'"])
+        # validate_not_all_provided([local, global_], ["'--local'", "'--global'"])
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, namespace_scope], ["'--scope'", "'-n' / '--namespace-scope'"])
         validate_not_all_provided([scope, global_scope], ["'--scope'", "'-g' / '--global-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.from_str(scope or 'App')
         # config_override += ',' if config_override else '' + transform_context_overrides(namespace, application)
-        configScope = ConfigScope.Local if local else ConfigScope.Global if global_ else ConfigScope.Merged
+        # configScope = ConfigScope.Local if local else ConfigScope.Global if global_ else ConfigScope.Merged
 
         defaultQuery = '{Configuration: Configuration[*].{Key: Key, Value: Value, Stage: Stage}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -2416,8 +2415,8 @@ def config_service_get(service, stage, scope, global_scope, namespace_scope, ver
 @command_doc(CLI_COMMANDS_HELP['parameter']['config']['get'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
-@click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2432,17 +2431,17 @@ def config_service_get(service, stage, scope, global_scope, namespace_scope, ver
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_parameter_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format):
+def config_parameter_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
-    config_service_get('parameter', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format)
+    config_service_get('parameter', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format)
 
 
 @secret_config.command('get', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['secret']['config']['get']}")
 @command_doc(CLI_COMMANDS_HELP['secret']['config']['get'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
-@click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2457,17 +2456,17 @@ def config_parameter_get(stage, scope, global_scope, namespace_scope, verbosity,
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_secret_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format):
+def config_secret_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
-    config_service_get('secret', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format)
+    config_service_get('secret', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format)
 
 
 @template_config.command('get', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['template']['config']['get']}")
 @command_doc(CLI_COMMANDS_HELP['template']['config']['get'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
-@click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2482,17 +2481,17 @@ def config_secret_get(stage, scope, global_scope, namespace_scope, verbosity, co
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_template_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format):
+def config_template_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
-    config_service_get('template', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format)
+    config_service_get('template', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format)
 
 
 @package_config.command('get', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['package']['config']['get']}")
 @command_doc(CLI_COMMANDS_HELP['package']['config']['get'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
-@click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2507,17 +2506,17 @@ def config_template_get(stage, scope, global_scope, namespace_scope, verbosity, 
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_package_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format):
+def config_package_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
-    config_service_get('package', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format)
+    config_service_get('package', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format)
 
 
 @release_config.command('get', context_settings=DEFAULT_CLICK_CONTEXT, short_help=f"{CLI_COMMANDS_SHORT_HELP['release']['config']['get']}")
 @command_doc(CLI_COMMANDS_HELP['release']['config']['get'])
 @click.argument('key', required=False)
 @click.option('--key', 'key_option', metavar='<value>', required=False, help=f"{CLI_PARAMETERS_HELP['config']['key']}")
-@click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
-@click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
+# @click.option('--local', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['local']}")
+# @click.option('--global', 'global_', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['global']}")
 # @click.option('-c', '--context', 'context_name', metavar='<context>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['context']}")
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
@@ -2532,9 +2531,9 @@ def config_package_get(stage, scope, global_scope, namespace_scope, verbosity, c
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_release_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format):
+def config_release_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format):
 
-    config_service_get('release', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, query_all, query, format)
+    config_service_get('release', stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, query_all, query, format)
 
 
 def config_service_set(service, stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, value, value_option, input, format): 
@@ -2569,7 +2568,6 @@ def config_service_set(service, stage, scope, global_scope, namespace_scope, ver
             key = validate_only_one_provided([key, key_option], ["KEY", "'--key'"])
             value = validate_only_one_provided([value, value_option], ["VALUE", "'--value'"])
             settings.append({'Key': key, 'Value': value})
-
 
     success = []
     failed = []

@@ -12,7 +12,7 @@ from dsocli.appconfig import AppConfig
 
 
 __default_spec = {
-    'pathPrefix': '/dso/config',
+    'pathPrefix': '/dso/config/',
 }
 
 def get_default_spec():
