@@ -2179,13 +2179,14 @@ def config_init(stage, scope, global_scope, namespace_scope, verbosity, config_o
 # @click.option('--namespace', metavar='<namespace>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['namespace']}")
 # @click.option('--application', metavar='<application>', required=False, help=f"{CLI_PARAMETERS_HELP['common']['application']}")
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=f"{CLI_PARAMETERS_HELP['common']['stage']}")
+@click.option('--rendered', is_flag=True, default=False, help=f"{CLI_PARAMETERS_HELP['config']['rendered']}")
 @click.option('--scope', required=False, type=click.Choice(['App', 'Namespace', 'Global']), help=f"{CLI_PARAMETERS_HELP['common']['scope']}")
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['global_scope']}")
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=f"{CLI_PARAMETERS_HELP['common']['namespace_scope']}")
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=f"{CLI_PARAMETERS_HELP['common']['config']}")
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=f"{CLI_PARAMETERS_HELP['common']['verbosity']}")
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=f"{CLI_PARAMETERS_HELP['common']['working_dir']}")
-def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_):
+def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_override, working_dir, key, key_option, local, global_, rendered):
 
     configScope = None
 
@@ -2203,7 +2204,7 @@ def config_get(stage, scope, global_scope, namespace_scope, verbosity, config_ov
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfig.load(working_dir, config_override, stage, scope, ignore_config_errors=True)
+        AppConfig.load(working_dir, config_override, stage, scope, rendered=rendered, ignore_config_errors=True)
 
         result = AppConfig.get(key, configScope)
         if result:

@@ -3,6 +3,8 @@ import os
 import sys
 import imp
 from turtle import st
+
+import yaml
 from .constants import *
 from .logger import Logger
 from .dict_utils import *
@@ -91,7 +93,17 @@ _default_config = {
     'package': {
         'provider': {
             'id': '',
-            'spec': {}
+            'spec': {},
+            'essential' : [],
+            'optional': []
+        },
+    },
+    'release': {
+        'provider': {
+            'id': '',
+            'spec': {},
+            'essential' : [],
+            'optional': []
         },
     },
     'network':{
@@ -142,7 +154,7 @@ class AppConfigService:
 
 
 
-    def load(self, working_dir, config_overrides_string='', stage=None, scope=ContextScope.App, ignore_config_errors=False):
+    def load(self, working_dir, config_overrides_string='', stage=None, scope=ContextScope.App, rendered=True, ignore_config_errors=False):
         if stage == 'default':
             raise DSOException("Stage name cannot be 'default'. If you intend to target all the stages, remove '-s/--stage' and try again.")
 
@@ -154,12 +166,13 @@ class AppConfigService:
         self.apply_config_overrides(config_overrides_string)
 
         ### now start the normal loading process
-        self.load_global_config()
-        self.load_inherited_config()
-        self.load_local_config()
-        self.check_version()
+        self.load_global_config(render=rendered)
+        self.load_inherited_config(render=rendered)
+        self.load_local_config(render=rendered)
 
         if not ignore_config_errors:
+            self.check_version()
+    
             if scope == ContextScope.Global and not Stages.is_default_env(stage):
                 raise DSOException("Numbered environments are not allowd when using global scope. Remove the number from the given satge and try again.")
 
@@ -201,7 +214,7 @@ class AppConfigService:
 
         if render:
             ### call update using not rendered config for in-place rendering of the global config iteself
-            self.update_merged_config(use_global_rendered=False)
+            self.update_merged_config(use_rendered_global=False)
             ### now do the rendering
             self.global_config_rendered = load_file(self.global_config_file_path, pre_render_values=self.meta_vars)
         else:
@@ -230,8 +243,8 @@ class AppConfigService:
 
         if render:
             ### call update using not rendered config for in-place rendering of the local config iteself
-            self.update_merged_config(use_local_rendered=False)
-            ### now do the rendering            
+            self.update_merged_config(use_rendered_local=False)
+            ### now do the rendering        
             self.local_config_rendered = load_file(self.local_config_file_path, pre_render_values=self.meta_vars)
         else:
             self.local_config_rendered = self.local_config.copy()
@@ -323,12 +336,12 @@ class AppConfigService:
         self.update_merged_config()
 
 
-    def update_merged_config(self, use_global_rendered=True, use_local_rendered=True):
+    def update_merged_config(self, use_rendered_global=True, use_rendered_local=True):
         self.merged_config = get_default_config()
-        merge_dicts(self.global_config_rendered if use_global_rendered else self.global_config, self.merged_config)
+        merge_dicts(self.global_config_rendered if use_rendered_global else self.global_config, self.merged_config)
         merge_dicts(self.inherited_config, self.merged_config)
-        merge_dicts(self.local_config_rendered if use_local_rendered else self.local_config, self.merged_config)
-        providers = ['config', 'parameter', 'secret', 'template', 'artifactStore', 'package']
+        merge_dicts(self.local_config_rendered if use_rendered_local else self.local_config, self.merged_config)
+        providers = ['config', 'parameter', 'secret', 'template', 'artifactStore', 'package', 'release']
         
         ### save provider ids before overriding
         saved_provider_ids = {}
@@ -355,11 +368,13 @@ class AppConfigService:
         self.merged_config['context'] = {
             'namespace': self.namespace,
             'application': self.application,
-            'stage': self.stage,
+            'stage': self.short_stage,
+            'env': Stages.parse_env(self.stage),
             'scope': str(self.scope)
         }
 
         self.merged_config['stage'] = self.get_stage(ContextSource.Target, short=True)
+        self.merged_config['env'] = Stages.parse_env(self.get_stage(ContextSource.Target, short=True))
         self.merged_config['scope'] = str(self.scope)
 
 
@@ -561,7 +576,7 @@ class AppConfigService:
 
     def get(self, key=None, config_scope=ConfigScope.Merged):
         if key:
-            Logger.info("Getting '{0}' from DSO configurations...".format(key))
+            Logger.info("Getting '{0}' from application configuration...".format(key))
         else:
             Logger.info("Getting application configuration...")
 
@@ -572,10 +587,11 @@ class AppConfigService:
         else:
             usedConfig = self.merged_config.copy()
 
+        print(yaml.dump(usedConfig))
         if key:
             result = get_dict_item(usedConfig, key.split('.'))
             if not result:
-                raise DSOException(f"DSO configuration '{key}' not found.")
+                raise DSOException(f"Configuration setting '{key}' not found.")
             return result
         else:
             return usedConfig
