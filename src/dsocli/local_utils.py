@@ -6,7 +6,7 @@ from .stages import Stages
 from dsocli.file_utils import *
 from dsocli.exceptions import DSOException
 from dsocli.dict_utils import *
-from dsocli.appconfig import AppConfig
+from dsocli.appconfigs import AppConfigs
 
 
 
@@ -19,8 +19,8 @@ def get_local_path(context, key=None, path_prefix=''):
 
 
 def get_parameter_store_path(store_name, path_prefix='', create=True):
-    path = os.path.join(get_local_path(context=AppConfig.context, key=None, path_prefix=path_prefix), store_name)
-    fullPath = os.path.join(AppConfig.working_dir, path)
+    path = os.path.join(get_local_path(context=AppConfigs.context, key=None, path_prefix=path_prefix), store_name)
+    fullPath = os.path.join(AppConfigs.working_dir, path)
     if not os.path.exists(fullPath):
         if create:
             os.makedirs(os.path.dirname(fullPath), exist_ok=True)
@@ -46,7 +46,7 @@ def load_templates_from_path(result, path, path_prefix='', include_contents=Fals
             if filter and not re.match(filter, key): continue
             if key in result:
                 Logger.warn(f"Inherited template '{key}' was overridden.")
-            ctx_path = os.path.abspath(filePath)[len(os.path.abspath(AppConfig.working_dir)) + 1 + len(path_prefix):].replace(os.sep, '/')
+            ctx_path = os.path.abspath(filePath)[len(os.path.abspath(AppConfigs.working_dir)) + 1 + len(path_prefix):].replace(os.sep, '/')
             ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
             result[key] = {
                 'Stage': ctx.short_stage,
@@ -68,11 +68,11 @@ def load_templates_from_path(result, path, path_prefix='', include_contents=Fals
 
 def load_context_templates(path_prefix='', uninherited=False, include_contents=False, filter=None):
     ### get templates in normal order (top to bottom)
-    paths = get_context_hierachy_local_paths(context=AppConfig.context, path_prefix=path_prefix, uninherited=uninherited)
+    paths = get_context_hierachy_local_paths(context=AppConfigs.context, path_prefix=path_prefix, uninherited=uninherited)
     templates = {}
     for path in paths:
         Logger.debug(f"Loading templates: path={path}")
-        load_templates_from_path(result=templates, path=os.path.join(AppConfig.working_dir, path), path_prefix=path_prefix, include_contents=include_contents, filter=filter)
+        load_templates_from_path(result=templates, path=os.path.join(AppConfigs.working_dir, path), path_prefix=path_prefix, include_contents=include_contents, filter=filter)
 
     return templates
 
@@ -80,18 +80,18 @@ def load_context_templates(path_prefix='', uninherited=False, include_contents=F
 def locate_template_in_context_hierachy(key, path_prefix='', include_contents=False, uninherited=False):
     templates = {}
     ### get templates in reverse order (more specific to general)
-    paths = get_context_hierachy_local_paths(context=AppConfig.context, path_prefix=path_prefix, uninherited=uninherited, reverse=True)
+    paths = get_context_hierachy_local_paths(context=AppConfigs.context, path_prefix=path_prefix, uninherited=uninherited, reverse=True)
     for path in paths:
-        load_templates_from_path(result=templates, path=os.path.join(AppConfig.working_dir, path), path_prefix=path_prefix, include_contents=include_contents, filter=f"^{key}$")
+        load_templates_from_path(result=templates, path=os.path.join(AppConfigs.working_dir, path), path_prefix=path_prefix, include_contents=include_contents, filter=f"^{key}$")
         if key in templates: break
 
     return templates
 
 
 def add_local_template(key, path_prefix, contents):
-    path = get_local_path(context=AppConfig.context, key=key, path_prefix=path_prefix)
+    path = get_local_path(context=AppConfigs.context, key=key, path_prefix=path_prefix)
     Logger.debug(f"Adding local template: path={path}")
-    fullPath = os.path.join(AppConfig.working_dir, path)
+    fullPath = os.path.join(AppConfigs.working_dir, path)
     os.makedirs(os.path.dirname(fullPath), exist_ok=True)
     with open(fullPath, 'w', encoding='utf-8') as f:
         f.write(contents)
@@ -117,7 +117,7 @@ def delete_local_template(path):
 
 
 def load_parameter_store(result, path, path_prefix='', filter=None):
-    fullPath = os.path.join(AppConfig.working_dir, path)
+    fullPath = os.path.join(AppConfigs.working_dir, path)
     if not os.path.exists(fullPath): return result
     parameters = flatten_dict(input=load_file(fullPath))
     for key, value in parameters.items():
@@ -162,7 +162,7 @@ def get_context_hierachy_parameter_stores(context, store_name, path_prefix='', u
 
 def load_context_local_parameters(store_name, path_prefix='', uninherited=False, filter=None):
     ### get stores in normal order (top to bottom)
-    stores = get_context_hierachy_parameter_stores(context=AppConfig.context, store_name=store_name, path_prefix=path_prefix, uninherited=uninherited)
+    stores = get_context_hierachy_parameter_stores(context=AppConfigs.context, store_name=store_name, path_prefix=path_prefix, uninherited=uninherited)
     parameters = {}
     for store in stores:
         Logger.debug(f"Loading store: path={store['Path']}")
@@ -173,7 +173,7 @@ def load_context_local_parameters(store_name, path_prefix='', uninherited=False,
 
 def locate_parameter_in_context_hierachy(key, store_name, path_prefix='', uninherited=False):
     ### get stores in reverse order (more specific to general)
-    stores = get_context_hierachy_parameter_stores(context=AppConfig.context, store_name=store_name, path_prefix=path_prefix, uninherited=uninherited, reverse=True)
+    stores = get_context_hierachy_parameter_stores(context=AppConfigs.context, store_name=store_name, path_prefix=path_prefix, uninherited=uninherited, reverse=True)
     parameters = {}
     for store_name in stores:
         Logger.debug(f"Loading store: path={store_name['Path']}")
@@ -187,7 +187,7 @@ def locate_parameter_in_context_hierachy(key, store_name, path_prefix='', uninhe
 def add_local_parameter(key, value, store_name, path_prefix=''):
     path = get_parameter_store_path(store_name=store_name, path_prefix=path_prefix)
     Logger.debug(f"Local parameter store: path={path}")
-    fullPath = os.path.join(AppConfig.working_dir, path)
+    fullPath = os.path.join(AppConfigs.working_dir, path)
     params = load_file(file_path=fullPath)
     set_dict_value(dic=params, keys=key.split('.'), value=value, overwrite_parent=False, overwrite_children=False)
     save_data(data=params, file_path=fullPath)
@@ -196,8 +196,8 @@ def add_local_parameter(key, value, store_name, path_prefix=''):
     result = {
         'Key': key,
         'Value': value,
-        'Stage': AppConfig.short_stage,
-        'Scope': AppConfig.context.scope_translation,
+        'Stage': AppConfigs.short_stage,
+        'Scope': AppConfigs.context.scope_translation,
         'Origin': {
             'Namespace': ctx.namespace,
             'Application': ctx.application,

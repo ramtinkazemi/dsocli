@@ -38,31 +38,22 @@ if [ ! -d tests/output ]; then
     mkdir tests/output
 fi
 
-printf "\n\ndso config get -v5 -w \"${working_dir}\" --global\n\n"
-dso config get -v5 -w "${working_dir}" --global > /dev/null
 
-printf "\n\ndso config set -v5 -w \"${working_dir}\" test.global-config some-value --global\n\n"
-dso config set -v5 -w "${working_dir}" test.global-config some-value -v5 --global
-
-printf "\n\ndso config get -v5 -w \"${working_dir}\" test.global-config --global\n\n"
-dso config get -v5 -w "${working_dir}" test.global-config --global > /dev/null
+###################################
 
 printf "\n\ndso config init -v5 -w \"${working_dir}\"\n\n"
 dso config init -v5 -w "${working_dir}" 
-printf "\n\ndso config get -v5 -w \"${working_dir}\" --local\n\n"
-dso config get -v5 -w "${working_dir}" --local > /dev/null
+printf "\n\ndso config get -v5 -w \"${working_dir}\"\n\n"
+dso config get -v5 -w "${working_dir}" > /dev/null
 
-printf "\n\ndso config set -v5 -w \"${working_dir}\" test.local-config some-value\n\n"
-dso config set -v5 -w "${working_dir}" test.local-config some-value
+printf "\n\ndso config set -v5 -w \"${working_dir}\" test.config some-value\n\n"
+dso config set -v5 -w "${working_dir}" test.config some-value
 
-printf "\n\ndso config get -v5 -w \"${working_dir}\" test.local-config\n\n"
-dso config get -v5 -w "${working_dir}" test.local-config > /dev/null
+printf "\n\ndso config get -v5 -w \"${working_dir}\" test.config\n\n"
+dso config get -v5 -w "${working_dir}" test.config > /dev/null
 
-printf "\n\ndso config unset -v5 -w \"${working_dir}\" test.global-config --global\n\n"
-dso config unset -v5 -w "${working_dir}" test.global-config --global
-
-printf "\n\ndso config unset -v5 -w \"${working_dir}\" test.local-config\n\n"
-dso config unset -v5 -w "${working_dir}" test.local-config
+printf "\n\ndso config unset -v5 -w \"${working_dir}\" test.config\n\n"
+dso config unset -v5 -w "${working_dir}" test.config
 
 printf "\n\ndso config set -v5 -w \"${working_dir}\" namespace ${namespace}\n\n"
 dso config set -v5 -w "${working_dir}" namespace ${namespace}

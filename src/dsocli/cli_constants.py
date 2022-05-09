@@ -115,6 +115,9 @@ CLI_COMMANDS_HELP = {
         },                
     },
     'config': {
+        'list': """Return the list of configuration settings in a context.\n
+                ** Tips: 1) To limit the list to the owned/overriden configuration settings only, use the '--uninherited' option. This will return only the context specific configuration settings.
+                """,
         'get': """Get DSO application configuration.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration
@@ -263,6 +266,7 @@ CLI_COMMANDS_SHORT_HELP = {
         },
     },
     'config': {
+        'list': "List configuration settings available to the application.",
         'get': "Get DSO application configuration.",
         'set': "Set DSO application configuration.",
         'unset': "Delete a DSO application configuration.",
@@ -284,11 +288,8 @@ CLI_PARAMETERS_HELP = {
         'query_all': "Include all the available fields in the ouput.",
         'global_scope': "Use the global scope.",
         'namespace_scope': "Use the namespace scope.",
-        'scope': "Select the context scope.",
         'filter': "Use a regex pattern to filter result by the provider.",
         'context': "Specify the context to be used.",
-        'namespace': "Override the namespace in the context.",
-        'application': "Override the application in the context.",
     },
     'parameter': {
         'key': "The key of the parameter. See KEY argument for more details.",
@@ -321,11 +322,10 @@ CLI_PARAMETERS_HELP = {
         'key': "The key of the configuration setting",
         'value': 'Value for the configuration setting',
         'input' : "Path to a local (yaml) file inputing the configuration. Use '-' to read from the shell pipe or stdin.",
-        'local': "Select the local DSO configuration, i.e. existing in the working directory.",
-        'global': "Select the global DSO configuration, i.e. user-wide configuration.",
         'rendered': "Whether or not render configuration settings.",
         'override_inherited': "Explicitly override inherited configuration locally.",
         'setup': "Run a setup wizard to assist configuring the DSO application.",
+        'uninherited': "Select only condifuration settings which are specific to the gievn context, i.e. not inherited from the parent contexts.",
     },
     'package': {
         'key': "The key of the package. See KEY argument for more details.",
@@ -343,7 +343,7 @@ CLI_PARAMETERS_HELP = {
 CLI_MESSAGES = {
     'MissingOption': "Missing option {0}.",
     'MissingArgument': "Missing argument {0}.",
-    'ArgumentsProvided': "The following argument/option must be provided: {1}",
+    'ArgumentProvided': "The following argument/option must be provided: {0}",
     'ArgumentsOnlyOneProvided': "Only one of the following arguments/options may be provided: {0}",
     'ArgumentsAtLeastOneProvided': "At least one of the following arguments/options must be provided: {0}",
     'ArgumentsAllProvided': "All of the following arguments/options must be provided: {0}",
@@ -361,7 +361,7 @@ CLI_MESSAGES = {
     'EnteredSecretValuesNotMatched': "Entered values for the secret did not macth.",
     'RenderPathNotReleative': "Render path '{0}' is not releative to the application root directory.",
     # 'InvalidRenderPath': "'{0}' is not a valid render path.",
-    'InvalidRenderPathExistingDir': "'{0}' is not a valid render path because it is an existing directory.",
+#     'InvalidRenderPathExistingDir': "'{0}' is not a valid render path because it is an existing directory.",
     'InvalidFilter': "Invalid regex pattern for filter: {0}",
     'NoChanegeDetectedAfterEditing': "Edit canceled, no change detected after editing.",
     'ParameterNotFound': "Parameter '{0}' not found in the given context: namespace={1}, application={2}, stage={3}, scope={4}",

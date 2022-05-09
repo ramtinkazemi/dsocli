@@ -1,6 +1,6 @@
 import os
 from dsocli.logger import Logger
-from dsocli.appconfig import AppConfig
+from dsocli.appconfigs import AppConfigs
 from dsocli.providers import Providers
 from dsocli.templates import TemplateProvider
 from dsocli.stages import Stages
@@ -12,7 +12,7 @@ from dsocli.settings import *
 
 
 __default_spec = {
-    'path': os.path.join(AppConfig.config_dir, 'templates'),
+    'path': os.path.join(AppConfigs.config_dir, 'templates'),
 }
 
 
@@ -67,7 +67,7 @@ class LocalTemplateProvider(TemplateProvider):
     def get(self, config, key, revision=None):
         self.config = config
         if revision:
-            Logger.warn(f"Template provider 'local/v1' does not support versioning.")
+            Logger.warn(f"Template provider 'local/v1' does not support versioning. Revision request ignored.")
         Logger.debug(f"Getting template '{key}': namespace={config.namespace}, application={config.application}, stage={config.stage}")
         found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), include_contents=True)
         if not found:

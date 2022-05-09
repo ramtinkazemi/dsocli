@@ -109,13 +109,14 @@ def command_doc(value):
     return _doc
 
 
-def check_file_path(ctx, self, value):
+def check_file_path(ctx, self, value, has_wildcards=False):
     if not value: return
     if value == '-':
         with tempfile.NamedTemporaryFile("w", delete=False) as f:
             f.write(sys.stdin.read())
             value = f.name
     else:
-        if not os.path.exists(value):
-            raise click.BadParameter(f"'{value}' does not exist.")
+        if not has_wildcards:
+            if not os.path.exists(value):
+                raise click.BadParameter(f"'{value}' does not exist.")
     return value

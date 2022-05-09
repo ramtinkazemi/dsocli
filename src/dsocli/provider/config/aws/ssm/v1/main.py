@@ -8,7 +8,7 @@ from dsocli.constants import *
 from dsocli.dict_utils import set_dict_value
 from dsocli.contexts import Contexts
 from dsocli.aws_ssm_utils import *
-from dsocli.appconfig import AppConfig
+from dsocli.appconfigs import AppConfigs
 
 
 __default_spec = {
@@ -27,7 +27,7 @@ class AwsSsmConfigProvider(ConfigProvider):
 
     ### adds service name to the artifactStore prefix
     def get_path_prefix(self, service):
-        configPathPrefix = AppConfig.config_spec('pathPrefix')
+        configPathPrefix = AppConfigs.config_spec('pathPrefix')
         if not configPathPrefix.endswith('/'): configPathPrefix += '/'
         return configPathPrefix + service
 
@@ -55,20 +55,20 @@ class AwsSsmConfigProvider(ConfigProvider):
         Logger.debug(f"Locating configuration setting '{key}' on SSM: service={service}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(service), uninherited=True)
         if found and not found['Type'] == 'String':
-            raise DSOException(f"Failed to add parameter '{key}' becasue becasue the key is not available in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        path = get_ssm_path(context=AppConfig.context, key=key, path_prefix=self.get_path_prefix(service))
+            raise DSOException(f"Failed to add parameter '{key}' becasue becasue the key is not available in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+        path = get_ssm_path(context=AppConfigs.context, key=key, path_prefix=self.get_path_prefix(service))
         Logger.debug(f"Adding configuration setting: path={path}")
         response = add_ssm_paramater(path, value)
         result = {
                 'RevisionId': str(response['Version']),
                 'Key': key, 
                 'Value': value,
-                'Stage': AppConfig.short_stage,
-                'Scope': AppConfig.context.scope_translation,
+                'Stage': AppConfigs.short_stage,
+                'Scope': AppConfigs.context.scope_translation,
                 'Origin': {
-                    'Namespace': AppConfig.namespace,
-                    'Application': AppConfig.application,
-                    'Stage': AppConfig.stage,
+                    'Namespace': AppConfigs.namespace,
+                    'Application': AppConfigs.application,
+                    'Stage': AppConfigs.stage,
                 },
                 'Path': path,
             }
@@ -82,10 +82,10 @@ class AwsSsmConfigProvider(ConfigProvider):
         Logger.debug(f"Locating configuration setting '{key}' on SSM: service={service}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(service))
         if not found:
-            raise DSOException(f"Config '{key}' not found nor inherited in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            raise DSOException(f"Config '{key}' not found nor inherited in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
         else:
             if not found['Type'] == 'String':
-                raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+                raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
         Logger.debug(f"Getting configuration setting from SSM: path={found['Name']}")
         response = get_ssm_parameter_history(found['Name'])
         configuration = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)
@@ -106,7 +106,7 @@ class AwsSsmConfigProvider(ConfigProvider):
             ### get specific revision
             configuration = [x for x in configuration if str(x['Version']) == revision]
             if not configuration:
-                raise DSOException(f"Revision '{revision}' not found for parameter '{key}' in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+                raise DSOException(f"Revision '{revision}' not found for parameter '{key}' in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
             result = {
                     'RevisionId':str(configuration[0]['Version']),
                     'Date': configuration[0]['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
@@ -126,10 +126,10 @@ class AwsSsmConfigProvider(ConfigProvider):
         Logger.debug(f"Locating configuration setting '{key}' on SSM: service={service}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(service))
         if not found:
-            raise DSOException(f"Config '{key}' not found in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            raise DSOException(f"Config '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
         else:
             if not found['Type'] == 'String':
-                raise DSOException(f"Config '{key}' not found in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+                raise DSOException(f"Config '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
         Logger.debug(f"Getting configuration from SSM: path={found['Name']}")
         response = get_ssm_parameter_history(found['Name'])
         parameters = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)
@@ -156,12 +156,12 @@ class AwsSsmConfigProvider(ConfigProvider):
         ### only configuration owned by the context can be deleted, hence uninherited=True
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(service), uninherited=True)
         if not found:
-            raise DSOException(f"Configuration '{key}' not found in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            raise DSOException(f"Configuration '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
         else:
             # if len(found) > 1:
             #     Logger.warn(f"More than one parameter found at '{found['Name']}'. The first one taken, and the rest were discarded.")
             if not found['Type'] == 'String':
-                raise DSOException(f"Configuraton '{key}' not found in the given context: namespace:{AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+                raise DSOException(f"Configuraton '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
         Logger.debug(f"Deleting configuration from SSM: path={found['Name']}")
         delete_ssm_parameter(found['Name'])
         result = {

@@ -77,14 +77,14 @@ def render_stream(stream, values):
     return rendered
 
 
-def render_dict_values(dict, values):
+def render_dict_values(dict, values, silent=False):
     if not dict: return dict
     import jinja2, json
     template = jinja2.Environment(undefined=jinja2.StrictUndefined).from_string(json.dumps(dict))
     try:
         rendered = template.render(values)
     except Exception as e:
-        Logger.error(f"Failed to render dictionary.")
+        if not silent: Logger.error(f"Render failed.")
         msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
         raise DSOException(msg)
 
@@ -145,3 +145,12 @@ def save_data(data, file_path, format='auto'):
 def get_file_modified_date(file_path, format='%A, %Y-%m-%d %H:%M:%S'):
     from time import strftime, localtime
     return strftime(format, localtime(os.path.getmtime(file_path)))
+
+
+def no_enclosing_quotes(value):
+    import re
+    if re.match(r'^".*"$', value):
+        return re.sub(r'^"|"$', '', value)
+    elif re.match(r"^'.*'$", value):
+        return re.sub(r"^'|'$", '', value)
+

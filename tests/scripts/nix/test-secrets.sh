@@ -47,19 +47,20 @@ else
     rm -rf tests/output/secret/*
 fi
 
-export global_secret='global.secret'
-export global_stage_secret='global.stage_secret'
-export namespace_secret='namespace.secret'
-export namespace_stage_secret='namespace.stage_secret'
-export app_secret='app.secret'
-export app_stage_secret='app.stage_secret'
-export global_overriden_secret='global.overriden_secret'
-export global_stage_overriden_secret='global.stage.overriden_secret'
-export namespace_overriden_secret='namespace.overriden_secret'
-export namespace_stage_overriden_secret='namespace.stage_overriden_secret'
-export app_overriden_secret='app.overriden_secret'
-export app_stage_overriden_secret='app.stage_overriden_secret'
-export app_stage2_overriden_secret='app.stage2_overriden_secret'
+export global_secret='global secret'
+export global_stage_secret='global stage secret'
+export namespace_secret='namespace secret'
+export namespace_stage_secret='namespace stage secret'
+export app_secret='app secret'
+export app_stage_secret='app stage secret'
+export global_overriden_secret='global overriden secret'
+export global_stage_overriden_secret='global stage overriden secret'
+export namespace_overriden_secret='namespace overriden secret'
+export namespace_stage_overriden_secret='namespace stage overriden secret'
+export app_overriden_secret='app overriden secret'
+export app_stage_overriden_secret='app stage overriden secret'
+export app_stage2_overriden_secret='app stage2 overriden secret'
+
 
 ###################################
 ### delete existing secrets, in order to also test overriding configurartions, they will be set later
@@ -70,8 +71,8 @@ dso secret list -v5 -w "${working_dir}" --config "namespace=${namespace}, applic
 printf "\n\ndso secret list -v5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --global-scope --uninherited | dso secret delete -v5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --global-scope -i -\n\n"
 dso secret list -v5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --global-scope --uninherited | dso secret delete -v5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --global-scope -i - > /dev/null
 
-printf "\n\ndso secret list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope --uninherited -f shell | dso secret delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope -i - -f shell\n\n"
-dso secret list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope --uninherited -f shell | dso secret delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope -i - -f shell > /dev/null
+printf "\n\ndso secret list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope --uninherited -f compact | dso secret delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope -i - -f compact\n\n"
+dso secret list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope --uninherited -f compact | dso secret delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope -i - -f compact > /dev/null
 
 printf "\n\ndso secret list -v5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope --uninherited -f json | dso secret delete -v5 -s ${stage} -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, secret.provider.id=${provider}\" --namespace-scope -i - -f json\n\n"
 dso secret list -v5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope --uninherited -f json | dso secret delete -v5 -s ${stage} -w "${working_dir}" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --namespace-scope -i - -f json > /dev/null
@@ -101,45 +102,45 @@ dso config set -v5 parameter.provider.id "${provider}" -w "${working_dir}"
 ###################################
 ### add context-specific secrets
 
-printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --global-scope -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --global-scope -f compact -i -
 global.secret=global_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -w "${working_dir}" --global-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -w "${working_dir}" --global-scope -f compact -i - > /dev/null
 global.secret=global_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --global-scope -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --global-scope -f compact -i -
 global.stage_secret=global_stage_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --global-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --global-scope -f compact -i - > /dev/null
 global.stage_secret=global_stage_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --namespace-scope -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --namespace-scope -f compact -i -
 namespace.secret=namespace_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -w "${working_dir}" --namespace-scope -f compact -i - > /dev/null
 namespace.secret=namespace_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --namespace-scope -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --namespace-scope -f compact -i -
 namespace.stage_secret=namespace_stage_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --namespace-scope -f compact -i - > /dev/null
 namespace.stage_secret=namespace_stage_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" -f compact -i -
 app.secret=app_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -w "${working_dir}" -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -w "${working_dir}" -f compact -i - > /dev/null
 app.secret=app_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" -f shell -i - 
+printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" -f compact -i - 
 app.stage_secret=app_stage_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" -f compact -i - > /dev/null
 app.stage_secret=app_stage_secret
 EOF
 
@@ -149,45 +150,45 @@ dso secret add app.stage2_secret app_stage2_secret -v5 -s ${stage}/2 -w "${worki
 ###################################
 ### add overriden secrets
 
-printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --global-scope -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --global-scope -f compact -i -
 overriden_secret=global_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -w "${working_dir}" --global-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -w "${working_dir}" --global-scope -f compact -i - > /dev/null
 overriden_secret=global_overriden_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --global-scope -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --global-scope -f compact -i -
 overriden_secret=global_stage_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --global-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --global-scope -f compact -i - > /dev/null
 overriden_secret=global_stage_overriden_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --namespace-scope -f shell -i - 
+printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" --namespace-scope -f compact -i - 
 overriden_secret=namespace_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -w "${working_dir}" --namespace-scope -f compact -i - > /dev/null
 overriden_secret=namespace_overriden_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --namespace-scope -f shell -i - 
+printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" --namespace-scope -f compact -i - 
 overriden_secret=namespace_stage_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --namespace-scope -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" --namespace-scope -f compact -i - > /dev/null
 overriden_secret=namespace_stage_overriden_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" -f shell -i -
+printf "\n\ncat <<EOF | dso secret add -v5 -w \"${working_dir}\" -f compact -i -
 overriden_secret=app_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -w "${working_dir}" -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -w "${working_dir}" -f compact -i - > /dev/null
 overriden_secret=app_overriden_secret
 EOF
 
-printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" -f shell -i - 
+printf "\n\ncat <<EOF | dso secret add -v5 -s ${stage} -w \"${working_dir}\" -f compact -i - 
 overriden_secret=app_stage_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" -f shell -i - > /dev/null
+cat <<EOF | dso secret add -v5 -s ${stage} -w "${working_dir}" -f compact -i - > /dev/null
 overriden_secret=app_stage_overriden_secret
 EOF
 
@@ -204,14 +205,14 @@ dso secret get -v5 -w "${working_dir}" overriden_secret -f raw > /dev/null
 printf "\n\ndso secret get -v5 -w \"${working_dir}\"  overriden_secret -s ${stage} -f raw\n\n"
 dso secret get -v5 -w "${working_dir}" overriden_secret -s ${stage} -f raw > /dev/null
 
-printf "\n\ndso secret get -v5 -w \"${working_dir}\" app.secret -s ${stage} -f raw\n\n"
-dso secret get -v5 -w "${working_dir}" app.secret -s ${stage} -f raw > /dev/null
+printf "\n\ndso secret get -v5 -w \"${working_dir}\" app_secret -s ${stage} -f raw\n\n"
+dso secret get -v5 -w "${working_dir}" app_secret -s ${stage} -f raw > /dev/null
 
-printf "\n\ndso secret get -v5 -w \"${working_dir}\" app.stage_secret -s ${stage} -f raw\n\n"
-dso secret get -v5 -w "${working_dir}" app.stage_secret -s ${stage} -f raw > /dev/null
+printf "\n\ndso secret get -v5 -w \"${working_dir}\" app_stage_secret -s ${stage} -f raw\n\n"
+dso secret get -v5 -w "${working_dir}" app_stage_secret -s ${stage} -f raw > /dev/null
 
-printf "\n\ndso secret get -v5 -w \"${working_dir}\" app.stage2_secret -s ${stage}/2 -f raw\n\n"
-dso secret get -v5 -w "${working_dir}" app.stage2_secret -s ${stage}/2 -f raw > /dev/null
+printf "\n\ndso secret get -v5 -w \"${working_dir}\" app_stage2_secret -s ${stage}/2 -f raw\n\n"
+dso secret get -v5 -w "${working_dir}" app_stage2_secret -s ${stage}/2 -f raw > /dev/null
 
 
 ###################################
@@ -223,14 +224,14 @@ dso secret edit -v5 -w "${working_dir}" overriden_secret --global-scope -v5
 printf "\n\ndso secret edit -v5 -w \"${working_dir}\" overriden_secret -s ${stage} --namespace-scope\n\n"
 dso secret edit -v5 -w "${working_dir}" overriden_secret -s ${stage} --namespace-scope
 
-printf "\n\ndso secret edit -v5 -w \"${working_dir}\" app.secret\n\n"
-dso secret edit -v5 -w "${working_dir}" app.secret
+printf "\n\ndso secret edit -v5 -w \"${working_dir}\" app_secret\n\n"
+dso secret edit -v5 -w "${working_dir}" app_secret
 
-printf "\n\ndso secret edit -v5 -w \"${working_dir}\" app.stage_secret -s ${stage}\n\n"
-dso secret edit -v5 -w "${working_dir}" app.stage_secret -s ${stage}
+printf "\n\ndso secret edit -v5 -w \"${working_dir}\" app_stage_secret -s ${stage}\n\n"
+dso secret edit -v5 -w "${working_dir}" app_stage_secret -s ${stage}
 
-printf "\n\ndso secret edit -v5 -w \"${working_dir}\" app.stage2_secret -s ${stage}/2\n\n"
-dso secret edit -v5 -w "${working_dir}" app.stage2_secret -s ${stage}/2
+printf "\n\ndso secret edit -v5 -w \"${working_dir}\" app_stage2_secret -s ${stage}/2\n\n"
+dso secret edit -v5 -w "${working_dir}" app_stage2_secret -s ${stage}/2
 
 
 ###################################
@@ -242,14 +243,14 @@ dso secret history -v5 -w "${working_dir}" overriden_secret -f json > /dev/null
 printf "\n\ndso secret history -v5 -w \"${working_dir}\" overriden_secret -s ${stage} -f json\n\n"
 dso secret history -v5 -w "${working_dir}" overriden_secret -s ${stage} -f json > /dev/null
 
-printf "\n\ndso secret history -v5 -w \"${working_dir}\" app.secret -s ${stage} --query-all -f json\n\n"
-dso secret history -v5 -w "${working_dir}" app.secret -s ${stage} --query-all -f json > /dev/null
+printf "\n\ndso secret history -v5 -w \"${working_dir}\" app_secret -s ${stage} --query-all -f json\n\n"
+dso secret history -v5 -w "${working_dir}" app_secret -s ${stage} --query-all -f json > /dev/null
 
-printf "\n\ndso secret history -v5 -w \"${working_dir}\" app.stage_secret -s ${stage} --query-all -f json\n\n"
-dso secret history -v5 -w "${working_dir}" app.stage_secret -s ${stage} --query-all -f json > /dev/null
+printf "\n\ndso secret history -v5 -w \"${working_dir}\" app_stage_secret -s ${stage} --query-all -f json\n\n"
+dso secret history -v5 -w "${working_dir}" app_stage_secret -s ${stage} --query-all -f json > /dev/null
 
-printf "\n\ndso secret history -v5 -w \"${working_dir}\" app.stage2_secret -s ${stage}/2 --query-all -f json\n\n"
-dso secret history -v5 -w "${working_dir}" app.stage2_secret -s ${stage}/2 --query-all -f json > /dev/null
+printf "\n\ndso secret history -v5 -w \"${working_dir}\" app_stage2_secret -s ${stage}/2 --query-all -f json\n\n"
+dso secret history -v5 -w "${working_dir}" app_stage2_secret -s ${stage}/2 --query-all -f json > /dev/null
 
 
 ###################################

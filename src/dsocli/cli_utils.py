@@ -10,7 +10,7 @@ from functools import reduce
 
 
 
-def format_data(data, query, format, compress=True):
+def format_data(data, query, format, compress=True, mainkeys=None):
     def compress_single_element_lists(data):
         if not isinstance(data, list): return data
         if len(data) > 1: return data
@@ -72,7 +72,42 @@ def format_data(data, query, format, compress=True):
         
         return output.getvalue()
 
-    ### tab delimilted with no headers
+    elif format in 'tsv':
+        import io
+        import csv
+        output = io.StringIO()
+        writer = csv.writer(output, delimiter='\t')
+        if isinstance(result, list) and len(result):
+            if isinstance(result[0], dict):
+                writer.writerow(result[0].keys())
+                for item in result:
+                    writer.writerow(item.values())
+            else:
+                writer.writerow(result)
+        elif isinstance(result, dict) and len(result):
+            keys = list(result.keys())
+            ### if data is dictionary with single key whose value is a list, process the child list instead
+            if len(keys) == 1:
+                childList = result[keys[0]]
+                if isinstance(childList, list) and len(childList):
+                    if isinstance(childList[0], dict):
+                        writer.writerow(childList[0].keys())
+                        for item in childList:
+                            writer.writerow(item.values())
+                    else:
+                        writer.writerow(childList)
+                else:
+                    writer.writerow(keys)
+                    writer.writerow(result.values())
+            elif len(keys) > 1:
+                writer.writerow(keys)
+                writer.writerow(result.values())
+        else:
+            writer.writerow(result)
+        
+        return output.getvalue()
+
+    ### tab separated with no headers
     ### expects list(dict), or a dict, otherwise best-effort
     elif format == 'raw':
         outputStream = ''
@@ -109,13 +144,15 @@ def format_data(data, query, format, compress=True):
         
         return outputStream
 
+
     ### expects list(dict), or a dict
-    ### take first key as name and second key as value, and form name=value
-    elif format == 'flat':
+    ### take first key as name and second key as value, or use mainkeys and form name=value
+    elif format == 'shell':
 
         def quote(value):
             if not value: return ''
             import re
+            value = str(value)
             ### no quoting numbers
             if re.match(r"^[0-9]$", value) or re.match(r"^[1-9][0-9]*$", value) or re.match(r"^[0-9]*\.[0-9]+$", value):
                 return value
@@ -130,13 +167,15 @@ def format_data(data, query, format, compress=True):
         if isinstance(result, list) and len(result):
             if isinstance(result[0], dict):
                 if len(result[0].keys()) < 2:
-                    raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
+                    raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
                 for item in result:
-                    key = item[list(item.keys())[0]]
-                    value = quote(item[list(item.keys())[1]])
+                    if not mainkeys:
+                        mainkeys = list(item.keys())
+                    key = item[mainkeys[0]]
+                    value = quote(item[mainkeys[1]])
                     outputStream += f"{key}={value}\n"
             else:
-                raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
+                raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
         elif isinstance(result, dict):
             keys = list(result.keys())
             ### if data is dictionary with single key whose value is a list, process the child list instead
@@ -145,17 +184,19 @@ def format_data(data, query, format, compress=True):
                 if isinstance(childList, list):
                     if childList:
                         if len(childList[0].keys()) < 2:
-                            raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
+                            raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
                         for item in childList:
-                            key = item[list(item.keys())[0]]
-                            value = quote(item[list(item.keys())[1]])
+                            if not mainkeys:
+                                mainkeys = list(item.keys())
+                            key = item[mainkeys[0]]
+                            value = quote(item[mainkeys[1]])
                             outputStream += f"{key}={value}\n"
                 else:
                     raise NotImplementedError()
             elif len(keys) > 1:
                 raise NotImplementedError()
         else:
-            raise DSOException(f"Unable to format data as it is incompatible with the 'flat' format.")
+            raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
         return outputStream
 
     else:
@@ -261,7 +302,7 @@ def read_data(input, parent_key, keys, format):
         except:
             raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
 
-    elif format == 'flat':
+    elif format == 'compact':
         if keys == ['*']: 
             raise NotImplementedError()
 
@@ -295,7 +336,7 @@ def validate_provided(value, name, causes=[]):
         if causes:
             raise DSOException(CLI_MESSAGES['ArgumentsProvidedBecause'].format(', '.join(causes), name))
         else:
-            raise DSOException(CLI_MESSAGES['ArgumentsProvided'].format(name))
+            raise DSOException(CLI_MESSAGES['MissingArgument'].format(name))
     
     return value
 

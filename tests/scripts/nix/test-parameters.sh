@@ -48,6 +48,21 @@ else
 fi
 
 
+export global_parameter='global parameter'
+export global_stage_parameter='global stage parameter'
+export namespace_parameter='namespace parameter'
+export namespace_stage_parameter='namespace stage parameter'
+export app_parameter='app parameter'
+export app_stage_parameter='app stage parameter'
+export global_overriden_parameter='global overriden parameter'
+export global_stage_overriden_parameter='global stage overriden parameter'
+export namespace_overriden_parameter='namespace overriden parameter'
+export namespace_stage_overriden_parameter='namespace stage overriden parameter'
+export app_overriden_parameter='app overriden parameter'
+export app_stage_overriden_parameter='app stage overriden parameter'
+export app_stage2_overriden_parameter='app stage2 overriden parameter'
+
+
 ###################################
 ### delete existing parameters, in order to also test overriding configurartions, they will be set later
 
@@ -57,20 +72,20 @@ dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, app
 printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --global-scope --uninherited -f yaml | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --global-scope -i - -f yaml\n\n"
 dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --global-scope --uninherited -f yaml | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --global-scope -i - -f yaml > /dev/null
 
-printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" --namespace-scope --uninherited | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" --namespace-scope -i -\n\n"
-dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" --namespace-scope --uninherited | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" --namespace-scope -i - > /dev/null
+printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" --namespace-scope --uninherited -f json | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" --namespace-scope -i -\n\n"
+dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" --namespace-scope --uninherited -f json | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" --namespace-scope -i - > /dev/null
 
-printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --namespace-scope --uninherited -f shell | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --namespace-scope -i - -f shell\n\n"
-dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --namespace-scope --uninherited -f shell | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --namespace-scope -i - -f shell > /dev/null
+printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --namespace-scope --uninherited -f compact | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --namespace-scope -i - -f compact\n\n"
+dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --namespace-scope --uninherited -f compact | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --namespace-scope -i - -f compact > /dev/null
 
-printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" --uninherited | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -i -\n\n"
-dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" --uninherited | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -i - > /dev/null
+printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" --uninherited -f json | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -i -\n\n"
+dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" --uninherited -f json | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -i - > /dev/null
 
-printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --uninherited | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} -i -\n\n"
-dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --uninherited | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} -i - > /dev/null
+printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} --uninherited -f json | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage} -i -\n\n"
+dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} --uninherited -f json | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage} -i - > /dev/null
 
-printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage}/2 --uninherited | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage}/2 -i -\n\n"
-dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage}/2 --uninherited | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage}/2 -i - > /dev/null
+printf "\n\ndso parameter list -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage}/2 --uninherited -f json | dso parameter delete -v5 -w \"${working_dir}\" --config \"namespace=${namespace}, application=${application}, parameter.provider.id=${provider}\" -s ${stage}/2 -i -\n\n"
+dso parameter list -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage}/2 --uninherited -f json | dso parameter delete -v5 -w "${working_dir}" --config "namespace=${namespace}, application=${application}, parameter.provider.id=${provider}" -s ${stage}/2 -i - > /dev/null
 
 
 ###################################

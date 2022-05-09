@@ -1,11 +1,13 @@
 
-from asyncio.log import logger
+from cmath import pi
+from glob import escape
 import os
+import re
 import sys
 import imp
-# from turtle import st
+from functools import reduce
 
-import yaml
+from click.core import F
 from .constants import *
 from .logger import Logger
 from .dict_utils import *
@@ -13,7 +15,7 @@ from pathlib import Path
 from .file_utils import *
 from .exceptions import DSOException
 from .stages import Stages
-from .contexts import Context, Contexts, ContextScope
+from .contexts import Context, ContextScope
 from .enum_utils import OrderedEnum
 
 
@@ -23,10 +25,6 @@ class ContextSource(OrderedEnum):
     Effective = 30
 
 
-# class ConfigScope(OrderedEnum):
-#     Local = 10
-#     root = 20
-#     Merged = 30
 
 _init_config = {
     'kind': 'dso/application',
@@ -83,7 +81,7 @@ _default_config = {
             'id': '',
             'spec': {}
         },
-        'render': {}
+        'renderPath': {}
     },
     'artifactStore': {
         'provider': {
@@ -115,7 +113,7 @@ _default_config = {
 
 }
 
-_services = ['config', 'parameter', 'secret', 'template', 'artifactStore', 'package', 'release']
+all_services = ['config', 'parameter', 'secret', 'template', 'artifactStore', 'package', 'release']
 
 
 def get_init_config():
@@ -157,13 +155,13 @@ class AppConfigService:
     service_configs = {}
 
 
-    def load(self, working_dir, config_overrides_string='', stage=None, scope=ContextScope.App, rendered=True, ignore_config_errors=False):
-        if stage == 'default':
-            raise DSOException("Stage name cannot be 'default'. If you intend to target all the stages, remove '-s/--stage' and try again.")
+    def load(self, working_dir, config_overrides_string='', stage=None, scope=ContextScope.App, ignore_errors=False):
 
         if stage is None: stage = 'default'
+        stage = Stages.normalize(stage)
 
         self.working_dir = working_dir
+
         ### start off with given stage, scope, and overriden config to set meta_data for subsequent rendering
         self.context = Context('default', 'default', stage, scope)
         self.apply_config_overrides(config_overrides_string)
@@ -173,58 +171,59 @@ class AppConfigService:
         # self.load_inherited_config(render=False)
         self.load_local_config(render=False)
         
-        if not ignore_config_errors:
-            self.check_version()
-    
-            if scope == ContextScope.Global and not Stages.is_default_env(stage):
-                raise DSOException("Numbered environments are not allowd when using root scope. Remove the number from the given satge and try again.")
-
+        if not ignore_errors:
+            if not self.merged_config['namespace']:
+                raise DSOException("Namespace has not been set. Run 'dso config set namespace <name>' to do so.")
             if self.merged_config['namespace'] == 'default':
                 raise DSOException("Namespace name cannot be 'default'.")
-            if scope == ContextScope.Namespace and not self.merged_config['namespace']:
-                raise DSOException("Namespace has not been set. Run 'dso config set namespace <name>' to do so.")
             if scope == ContextScope.Namespace and not Stages.is_default_env(stage):
-                raise DSOException("Numbered environments are not allowd when using namespace scope. Remove the number from the given satge and try again.")
+                raise DSOException("Numbered environments are not allowd when using the namespace scope (for simplicity). Remove the number from the given satge and try again.")
+            if scope == ContextScope.Global and not Stages.is_default_env(stage):
+                raise DSOException("Numbered environments are not allowd when using the root scope (for simplicty). Remove the number from the given satge and try again.")
 
+            if not self.merged_config['application']:
+                raise DSOException("Application name has not been set. Run 'dso config set application <name>' to do so.")
             if self.merged_config['application'] == 'default':
                 raise DSOException("Application name cannot be 'default'.")
-            if scope == ContextScope.App and not self.merged_config['application']:
-                raise DSOException("Application name has not been set. Run 'dso config set application <name>' to do so.")
-        
-        ### now that merged_config has config service set, load service 
-        ### specific configurations if config provider has been set
-        if self.config_provider:
-            # Logger.warn("Config provider has been set up: {0}".format(self.config_provider))
-            self.load_service_configs()
 
-        ### now we have all configs merged but not rendered
-        if rendered:
-            self.render_root_config()
-            self.render_local_config()
+            self.check_version()
+
+        # if not local_only:
+        #     ### now that merged_config has config service set, load service 
+        #     ### specific configurations if config provider has been set
+        #     if self.config_provider:
+        #         # Logger.warn("Config provider has been set up: {0}".format(self.config_provider))
+        #         self.load_service_configs()
+        #     else:
+        #         Logger.warn("Config service has not been set up.")
+
+
+        # ### now we have all configs merged but not rendered
+        # if rendered: 
+        #     try:
+        #         self.render_root_config(silent=ignore_errors)
+        #         self.render_local_config(silent=ignore_errors)
+        #     except Exception as e:
+        #         if not ignore_errors:
+        #             msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
+        #             raise DSOException(msg)        
+        #         # else:
+        #         #     Logger.warn("At least one of the configuration settings failed to render due to undefined variables.")
+
 
     @property
     def meta_vars(self):
         return {'dso': self.merged_config}
 
-    def get_configured_service_providers(self):
-        result = {}
-        for service in _services:
+    def load_service_configs(self, uninherited=False, filter=None):
+        for service in all_services:
             pid = self.get_provider_id(service)
-            if pid:
-                result[service] = {
-                    'id': pid,
-                    'spec': self.get_provider_spec(service).copy()
-                }
-        return result
-
-
-    def load_service_configs(self):
         self.service_configs = {}
         from .configs import Configs
-        for service in _services:
+        for service in all_services:
             pid = self.get_provider_id(service)
             if pid:
-                conf = deflatten_dict({x['Key']: x['Value'] for x in Configs.list(service)['Configuration']})
+                conf = deflatten_dict({x['Key']: x['Value'] for x in Configs.list(service, uninherited, filter)['Configuration']})
                 merge_dicts({service: conf}, self.service_configs)
         
         self.update_merged_config()
@@ -274,14 +273,6 @@ class AppConfigService:
         except:
             raise DSOException(MESSAGES['InvalidDSOConfigurationFile'].format(self.local_config_file_path))
 
-        # if render:
-        #     ### call update using not rendered config for in-place rendering of the local config iteself
-        #     self.update_merged_config(use_rendered_local=False)
-        #     ### now do the rendering        
-        #     self.local_config_rendered = load_file(self.local_config_file_path, pre_render_values=self.meta_vars)
-        # else:
-        #     self.local_config_rendered = self.local_config.copy()
-
         if render:
             self.render_local_config()
         else:
@@ -290,57 +281,21 @@ class AppConfigService:
         self.update_merged_config()
 
 
-    # def load_inherited_config(self, render=True):
-
-    #     self.inherited_config = {}
-
-    #     for dir in Path(self.working_dir).resolve().parents:
-    #         configFilePath = os.path.join(dir, self.config_dir, self.config_file)
-    #         if os.path.exists(configFilePath):
-    #             # if not os.path.samefile(configFilePath, self.root_config_file_path):
-    #             if not os.path.abspath(configFilePath) == os.path.abspath(self.root_config_file_path):
-    #                 Logger.debug(f"Inherited DSO configuration found: path={configFilePath}")
-    #                 self.inherited_config_files.append(configFilePath)
-
-    #     for configFilePath in reversed(self.inherited_config_files):
-    #         try:
-    #             config = load_file(configFilePath)
-    #         except DSOException:
-    #             raise
-    #         except:
-    #             raise DSOException(MESSAGES['InvalidDSOConfigurationFile'].format(configFilePath))
-            
-    #         if render:
-    #             ### use raw config for inplace rendering, otherwise have to keep a copy of raw/rendetred for each inherited config file
-    #             merge_dicts(config, self.inherited_config)
-    #             ### update meta_vars
-    #             self.update_merged_config()
-    #             ### now do the rendering
-    #             config = load_file(configFilePath, pre_render_values=self.meta_vars)
-
-    #         ### merge rendered inherited config
-    #         merge_dicts(config, self.inherited_config)
-    #         ### call update for next meta var rendering
-    #         self.update_merged_config()
-
-    #     self.update_merged_config()
-
-    def render_root_config(self):
+    def render_root_config(self, silent=False):
         ### call update using not rendered config for in-place rendering of the root config iteself
         self.update_merged_config(use_rendered_root=False)
         ### now do the rendering
         # self.root_config_rendered = load_file(self.root_config_file_path, pre_render_values=self.meta_vars)
-        self.root_config_rendered = render_dict_values(self.root_config, values=self.meta_vars)
+        self.root_config_rendered = render_dict_values(self.root_config, values=self.meta_vars, silent=silent)
         self.update_merged_config()
 
 
-
-    def render_local_config(self):
+    def render_local_config(self, silent=False):
         ### call update using not rendered config for in-place rendering of the root config iteself
         self.update_merged_config(use_rendered_local=False)
         ### now do the rendering
         # self.local_config_rendered = load_file(self.local_config_rendered, pre_render_values=self.meta_vars)
-        self.local_config_rendered = render_dict_values(self.local_config_rendered, values=self.meta_vars)
+        self.local_config_rendered = render_dict_values(self.local_config, values=self.meta_vars, silent=silent)
         self.update_merged_config()
 
 
@@ -392,10 +347,17 @@ class AppConfigService:
         merge_dicts(self.local_config_rendered if use_rendered_local else self.local_config, self.merged_config)
         
         ### save provider ids set in app config before overriding
-        saved_service_providers = self.get_configured_service_providers()
-    
+        saved_service_providers = {}
+        for service in all_services:
+            pid = self.get_provider_id(service)
+            if pid:
+                saved_service_providers[service] = {
+                    'id' : pid,
+                    'spec' : self.get_provider_spec(service)
+                }
+
         ### add missing default specs for each service
-        for service in _services:
+        for service in all_services:
             pid = self.get_provider_id(service)
             if pid:
                 ### merge saved spec with the default if only same provider
@@ -408,20 +370,28 @@ class AppConfigService:
 
         merge_dicts(self.overriden_config, self.merged_config)
 
-
         
         self.context = Context(self.merged_config['namespace'], self.merged_config['application'], self.stage, self.scope)
 
         self.merged_config['context'] = {
-            'namespace': self.namespace,
-            'application': self.application,
-            'stage': self.short_stage,
-            'env': Stages.parse_env(self.stage),
-            'scope': str(self.scope)
+            'effective': {
+                'namespace': self.namespace,
+                'application': self.application,
+                'stage': self.short_stage,
+                'env': self.env,
+                'scope': str(self.scope)
+            },
+            'target': {
+                'namespace': self.get_namespace(ContextSource.Target),
+                'application': self.get_application(ContextSource.Target),
+                'stage': self.get_stage(ContextSource.Target, short=True),
+                'env': Stages.parse_env(self.get_stage(ContextSource.Target)),
+                'scope': str(self.scope)
+            },
         }
 
         self.merged_config['stage'] = self.get_stage(ContextSource.Target, short=True)
-        self.merged_config['env'] = Stages.parse_env(self.get_stage(ContextSource.Target, short=True))
+        self.merged_config['env'] = Stages.parse_env(self.get_stage(ContextSource.Target))
         self.merged_config['scope'] = str(self.scope)
 
 
@@ -502,6 +472,10 @@ class AppConfigService:
     def short_stage(self):
         return self.get_stage(short=True)
 
+    @property
+    def env(self):
+        return Stages.parse_env(self.get_stage())
+
 
     @property
     def scope(self):
@@ -523,26 +497,13 @@ class AppConfigService:
     def parameter_provider(self):
         return self.get_provider_id('parameter')
 
-    # @parameter_provider.setter
-    # def parameter_provider(self, value):
-    #     self.merged_config['parameter']['provider']['id'] = value
-
-
     @property
     def secret_provider(self):
         return self.get_provider_id('secret')
 
-    # @secret_provider.setter
-    # def secret_provider(self, value):
-    #     self.merged_config['secret']['provider']['id'] = value
-
     @property
     def template_provider(self):
         return self.get_provider_id('template')
-
-    # @template_provider.setter
-    # def template_provider(self, value):
-    #     self.merged_config['template']['provider']['id'] = value
 
     @property
     def artifactStore_provider(self):
@@ -601,95 +562,28 @@ class AppConfigService:
             return ''
 
     def get_template_render_paths(self, key=None):
-        result = get_dict_item(self.local_config, ['template', 'render']) or {}
+        result = get_dict_item(self.local_config, ['template', 'renderPath']) or {}
         if not key:
             return result
         else:
             return {x:result[x] for x in result if x==key}
 
     def register_template_custom_render_path(self, key, render_path):
-        result = get_dict_item(self.local_config, ['template', 'render']) or {}
+        result = get_dict_item(self.local_config, ['template', 'renderPath']) or {}
         # if os.path.isabs(render_path):
         #     raise DSOException(MESSAGES['AbsTemplateRenderPath'].format(render_path))
         # if os.path.isdir(render_path):
         #     raise DSOException(MESSAGES['InvalidRenderPathExistingDir'].format(render_path))
         result[key] = render_path
-        self.local_config['template']['render'] = result
+        self.local_config['template']['renderPath'] = result
         self.save_local_config()
 
     def unregister_template_custom_render_path(self, key):
-        result = get_dict_item(self.local_config, ['template', 'render'])
+        result = get_dict_item(self.local_config, ['template', 'renderPath'])
         if key in result:
-            self.local_config['template']['render'].pop(key)
+            self.local_config['template']['renderPath'].pop(key)
             self.save_local_config()
 
-
-    def get(self, key=None):
-        if key:
-            Logger.info("Getting '{0}' from application configuration...".format(key))
-        else:
-            Logger.info("Getting DSO configuration...")
-
-        # if config_scope == ConfigScope.Local:
-        #     usedConfig = merge_dicts(self.overriden_config, self.local_config_rendered.copy())
-        # elif config_scope == ConfigScope.root:
-        #     usedConfig = merge_dicts(self.overriden_config, self.root_config_rendered.copy())
-        # else:
-        # usedConfig = self.merged_config.copy()
-
-        if key:
-            result = get_dict_item(self.merged_config, key.split('.'))
-            if not result:
-                raise DSOException(f"Configuration setting '{key}' not found.")
-            return result
-        else:
-            return self.merged_config
-
-    def set(self, key, value):
-        # if config_scope == ConfigScope.root:
-        #     Logger.info(f"Setting '{key}' to '{value}' in the root DSO configurations...")
-        #     if not os.path.exists(self.root_config_file_path):
-        #         raise DSOException("The root configuration has not been intitialized yet. Run 'dso config init --root' to initialize it.")
-
-        #     set_dict_value(self.root_config, key.split('.'), value, overwrite_parent=True, overwrite_children=True)
-        #     self.save_root_config()
-        #     self.load_root_config()
-        #     # set_dict_value(self.root_config_rendered, key.split('.'), value, overwrite_parent=True, overwrite_children=True)
-        #     # self.update_merged_config()
-        
-        # elif config_scope == ConfigScope.Local:
-        Logger.info(f"Setting '{key}' to '{value}' in DSO configuration...")
-        if not os.path.exists(self.local_config_file_path):
-            raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
-
-        set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=True, overwrite_children=True)
-        self.save_local_config()
-        self.load_local_config()
-
-
-    def unset(self, key):
-        # if config_scope == ConfigScope.root:
-        #     Logger.info(f"Unsetting '{key}' from the root DSO configurations...")
-        #     parent = get_dict_item(self.root_config, key.split('.')[:-1])
-        #     if parent and key.split('.')[-1] in parent:
-        #         del_dict_item(dic=self.root_config, keys=key.split('.'))
-        #         del_dict_empty_item(dic=self.root_config, keys=key.split('.')[:-1])
-        #         self.save_root_config()
-        #         self.load_root_config()
-        #     else:
-        #         raise DSOException(f"'{key}' not found in the root DSO configuratoins.")
-        # elif config_scope == ConfigScope.Local:
-        Logger.info(f"Unsetting '{key}' from the local DSO configurations...")
-        parent = get_dict_item(self.local_config, key.split('.')[:-1])
-        if parent and key.split('.')[-1] in parent:
-            del_dict_item(dic=self.local_config, keys=key.split('.'))
-            del_dict_empty_item(dic=self.local_config, keys=key.split('.')[:-1])
-            self.save_local_config()
-            self.load_local_config()
-        else:
-            raise DSOException(f"'{key}' not found in the local DSO configuratoins.")
-        # else:
-        #     raise NotImplementedError
 
     def init(self, working_dir, custom_init_config, config_overrides_string, override_inherited=False):
         Logger.info("Initializing DSO configurations...")
@@ -742,46 +636,87 @@ class AppConfigService:
         self.update_merged_config()
 
         self.save_local_config()
-        
-        # elif config_scope == ConfigScope.root:
-        #     if os.path.exists(self.root_config_file_path):
-        #         Logger.warn("The root configuration has already been initialized.")
 
-        #     config = get_init_config()
-            
-        #     ### use init_config instead of local/inherited config
-        #     if custom_init_config:
-        #         merge_dicts(custom_init_config, config)
-        #         ### merge with existing local configuration?
-        #         # if override_inherited:
-        #         #     Logger.debug("Merging local configuration...")
-        #         #     self.load_local_config(silent_warnings=True, render=False)
-        #         #     merge_dicts(self.local_config, config)
-        #         Logger.debug("Merging existing configuration...")
-        #         self.load_root_config(render=False)
-        #         merge_dicts(self.local_root, config)
+
+    def list(self, uninherited=False, filter=None, rendered=False):
+        Logger.info("Listing DSO configuration settings...")
+        ### must return full list, do not use with filter
+        self.load_service_configs(uninherited=uninherited)
+        if rendered:
+            self.render_root_config()
+            self.render_local_config()
+        self.update_merged_config(use_rendered_local=rendered, use_rendered_root=rendered)
+        result = flatten_dict(merge_dicts(self.service_configs, self.merged_config.copy()))
+        processed = []
+        for key, value in result.items():
+            if filter and not re.match(filter, key): continue
+            item = {
+                'Key': key,
+                'Value': value
+              }
+            processed.append(item)
+
+        from operator import itemgetter
+        return {'Configuration': sorted(processed, key=itemgetter('Key'))}
+
+        # if result:
+        #     ### pyyaml adding three trailing dots issue workaround
+        #     if not isinstance(result, dict):
+        #         output = yaml.dump(result, default_style='"', sort_keys=False, indent=2).rstrip()
+        #         ### remove enclosing "
+        #         output = output[1:len(output)-1]
         #     else:
-        #         ### do not show warning if directory is not initialized yet
-        #         Logger.debug("Merging existing configuration...")
-        #         self.load_root_config(render=False)
-        #         merge_dicts(self.root_config, config)
+        #         output = yaml.dump(result, sort_keys=False, indent=2).rstrip()
 
-        #     ### if config overrides, merge them to local
-        #     if config_overrides_string:
-        #         Logger.debug("Merging configuration overrides...")
-        #         self.apply_config_overrides(config_overrides_string)
-        #         merge_dicts(self.overriden_config, config)
+    def set(self, key, value, service=None):
+        # self.validate_key(key)
+        if service:  ### use config service
+            from .configs import Configs
+            return Configs.set(service=service, key=key, value=value)
+        else:
+            Logger.info(f"Setting '{key}' to '{value}' in configuration...")
+            if not os.path.exists(self.local_config_file_path):
+                raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
 
-        #     self.root_config = config
-        #     self.update_merged_config()
-
-        #     self.save_root_config()
-
-        # else:
-        #     raise NotImplementedError
+            set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=True, overwrite_children=True)
+            self.save_local_config()
+            self.load_local_config()
 
 
+    def get(self, key, service=None, revision=None, uninherited=False, rendered=True):
+        if service:  ### use config service
+            from .configs import Configs
+            return Configs.get(service=service, key=key, revision=revision)
+        else:
+            if key:
+                Logger.info("Getting '{0}' from configuration...".format(key))
+            else:
+                Logger.info("Getting DSO configuration...")
+
+            if key:
+                result = get_dict_item(self.merged_config, key.split('.'))
+                if not result:
+                    raise DSOException(f"Configuration setting '{key}' not found.")
+                return result
+            else:
+                return self.merged_config
 
 
-AppConfig = AppConfigService()
+    def unset(self, key, service=None):
+        if service:  ### use config service
+            from .configs import Configs
+            return Configs.unset(service=service, key=key)
+        else:
+            Logger.info(f"Unsetting '{key}' from configurations...")
+            parent = get_dict_item(self.local_config, key.split('.')[:-1])
+            if parent and key.split('.')[-1] in parent:
+                del_dict_item(dic=self.local_config, keys=key.split('.'))
+                del_dict_empty_item(dic=self.local_config, keys=key.split('.')[:-1])
+                self.save_local_config()
+                self.load_local_config()
+            else:
+                raise DSOException(f"'{key}' not found in configuratoin settings.")
+
+
+AppConfigs = AppConfigService()
 

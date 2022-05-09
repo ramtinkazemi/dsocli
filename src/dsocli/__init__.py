@@ -3,7 +3,7 @@ from .version import __version__
 from .exceptions import *
 from .stages import Stages
 from .contexts import Contexts
-from .appconfig import AppConfig
+from .appconfigs import AppConfigs
 from .providers import ProviderBase, KeyValueStoreProvider, ProviderService, Providers
 from .parameters import ParameterProvider, ParameterService, Parameters
 from .secrets import SecretProvider, SecretService, Secrets

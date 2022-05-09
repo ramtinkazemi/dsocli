@@ -4,7 +4,7 @@ from .providers import KeyValueStoreProvider, Providers
 from .stages import Stages
 from .constants import *
 from .exceptions import *
-from .appconfig import AppConfig, ContextSource
+from .appconfigs import AppConfigs, ContextSource
 
 
 
@@ -38,31 +38,31 @@ class SecretService():
 
     def list(self, uninherited=False, decrypt=False, filter=None):
         provider = Providers.SecretProvider()
-        Logger.info(f"Listing secrets: namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Listing secrets: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         return provider.list(uninherited, decrypt, filter)
 
     def add(self, key, value):
         self.validate_key(key)
         provider = Providers.SecretProvider()
-        Logger.info(f"Adding secret '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Adding secret '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         return provider.add(key, value)
 
     def get(self, key, revision=None, uninherited=False, decrypt=False):
         # self.validate_key(key)
         provider = Providers.SecretProvider()
-        Logger.info(f"Getting secret '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Getting secret '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         return provider.get(key, revision, uninherited, decrypt)
 
     def history(self, key, decrypt=False):
         # self.validate_key(key)
         provider = Providers.SecretProvider()
-        Logger.info(f"Getting the history of secret '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Fetching history of secret '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         return provider.history(key, decrypt)
 
     def delete(self, key):
         # self.validate_key(key)
         provider = Providers.SecretProvider()
-        Logger.info(f"Deleting secret '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Deleting secret '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         return provider.delete(key)
 
 Secrets = SecretService()

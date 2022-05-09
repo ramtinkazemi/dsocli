@@ -3,7 +3,8 @@ import boto3
 import logging
 from .contexts import Contexts, Context
 from .logger import Logger
-from dsocli.appconfigs import AppConfigs
+from .stages import Stages
+from .appconfigs import AppConfigs
 
 logging.getLogger('botocore').setLevel(Logger.mapped_level)
 logging.getLogger('boto').setLevel(Logger.mapped_level)
@@ -49,12 +50,11 @@ def decode_nulls(value):
 
 
 def get_ssm_path(context, key=None, path_prefix=''):
-    if path_prefix.endswith('/'): path_prefix = path_prefix[:-1]
     return path_prefix + context.get_path(key)
 
 
 
-def load_ssm_path(result, path, parameter_type, used_path_prefix='', decrypt=False, filter=None):
+def load_ssm_path(result, path, parameter_type, path_prefix='', decrypt=False, filter=None):
     ssm = boto3.session.Session().client(service_name='ssm')
     p = ssm.get_paginator('get_parameters_by_path')
     paginator = p.paginate(Path=path, Recursive=True, WithDecryption=decrypt, ParameterFilters=[{'Key': 'Type', 'Values': [parameter_type]}]).build_full_result()
@@ -63,7 +63,7 @@ def load_ssm_path(result, path, parameter_type, used_path_prefix='', decrypt=Fal
         if filter and not re.match(filter, key): continue
         if key in result:
             Logger.warn("Inherited {0} '{1}' was overridden.".format(ssm_resource_type[parameter_type] , key))
-        ctx_path = path[len(used_path_prefix):]
+        ctx_path = path[len(path_prefix):]
         ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
         details = {
                     'Value': unescape_curly_brackets(parameter['Value']) if parameter_type == 'StringList' else decode_nulls(parameter['Value']), 
@@ -90,7 +90,7 @@ def load_context_ssm_parameters(parameter_type, path_prefix='', decrypt=False, u
     parameters = {}
     for path in paths:
         Logger.debug(f"Loading SSM parameters: path={path}")
-        load_ssm_path(result=parameters, path=path, parameter_type=parameter_type, used_path_prefix=path_prefix, decrypt=decrypt, filter=filter)
+        load_ssm_path(result=parameters, path=path, parameter_type=parameter_type, path_prefix=path_prefix, decrypt=decrypt, filter=filter)
     return parameters
 
 
@@ -146,19 +146,19 @@ def assert_ssm_parameter_no_namespace_overwrites(key, path_prefix=''):
 
 
 
-def add_ssm_paramater(path, value):
+def put_ssm_paramater(path, value):
     ssm = boto3.session.Session().client(service_name='ssm')
     return ssm.put_parameter(Name=path, Value=encode_nulls(value), Type='String', Overwrite=True)
 
 
 
-def add_ssm_secret(path, value):
+def put_ssm_secret(path, value):
     ssm = boto3.session.Session().client(service_name='ssm')
     return ssm.put_parameter(Name=path, Value=encode_nulls(value), Type='SecureString', Overwrite=True)
 
 
 
-def add_ssm_template(path, contents):
+def put_ssm_template(path, contents):
     ssm = boto3.session.Session().client(service_name='ssm')
     return ssm.put_parameter(Name=path, Value=escape_curly_brackets(contents), Type='StringList', Overwrite=True)
 

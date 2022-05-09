@@ -195,7 +195,6 @@ class Context():
         return Stages.parse_env(self.stage)
 
 
-
     @property
     def scope(self):
         return self._scope
@@ -234,7 +233,7 @@ class Context():
         return self.get_namespace(), self.get_application(), self.get_stage(), str(self.scope)
 
     @property
-    def target(self):
+    def target(self):  ### ns/app/stage/
         return self.get_namespace(ignore_scope=True), self.get_application(ignore_scope=True), self.get_stage(ignore_scope=True), str(self.scope)
 
 

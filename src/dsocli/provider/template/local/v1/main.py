@@ -1,18 +1,17 @@
 import os
 from dsocli.logger import Logger
-from dsocli.appconfig import AppConfig
+from dsocli.appconfigs import AppConfigs, ContextSource
 from dsocli.providers import Providers
 from dsocli.templates import TemplateProvider
 from dsocli.stages import Stages
 from dsocli.constants import *
 from dsocli.exceptions import DSOException
-from dsocli.contexts import Contexts
 from dsocli.local_utils import *
 from dsocli.settings import *
 
 
 __default_spec = {
-    'path': os.path.join(AppConfig.config_dir, 'template/'),
+    'path': os.path.join(AppConfigs.config_dir, 'template/'),
 }
 
 
@@ -29,7 +28,7 @@ class LocalTemplateProvider(TemplateProvider):
 
     @property
     def root_dir(self):
-        return AppConfig.template_spec('path')
+        return AppConfigs.template_spec('path')
 
 
     def get_path_prefix(self):
@@ -38,7 +37,7 @@ class LocalTemplateProvider(TemplateProvider):
 
 
     def list(self, uninherited=False, include_contents=False, filter=None):
-        Logger.debug(f"Listing local templates: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Listing local templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         templates = load_context_templates(path_prefix=self.get_path_prefix(), uninherited=uninherited, include_contents=include_contents, filter=filter)
         result = {'Templates': []}
         for key, details in templates.items():
@@ -49,13 +48,13 @@ class LocalTemplateProvider(TemplateProvider):
 
 
     def add(self, key, contents, render_path=None):
-        if not Stages.is_default(AppConfig.stage) and not ALLOW_STAGE_TEMPLATES:
+        if not Stages.is_default(AppConfigs.stage) and not ALLOW_STAGE_TEMPLATES:
             raise DSOException(f"Templates may not be added to stage scopes, as the feature is currently disabled. It may be enabled by adding 'ALLOW_STAGE_TEMPLATES=yes' to the DSO global settings, or adding environment variable 'DSO_ALLOW_STAGE_TEMPLATES=yes'.")
-        Logger.debug(f"Adding local template '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Adding local template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         response = add_local_template(key=key, path_prefix=self.get_path_prefix(), contents=contents)
         result = {
                 'Key': key,
-                'Stage': Stages.shorten(AppConfig.stage),
+                'Stage': Stages.shorten(AppConfigs.stage),
                 'Origin': response['Origin'], 
                 'Path': response['Path'],
             }
@@ -64,11 +63,11 @@ class LocalTemplateProvider(TemplateProvider):
 
     def get(self, key, revision=None):
         if revision:
-            Logger.warn(f"Template provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting template '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+            Logger.warn(f"Template provider 'local/v1' does not support versioning. Revision request ignored.")
+        Logger.debug(f"Getting template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), include_contents=True)
         if not found:
-            raise DSOException(f"Template '{key}' not found nor inherited in the given context: stage={AppConfig.short_stage}")
+            raise DSOException(f"Template '{key}' not found nor inherited in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         result = {
                 'Key': key, 
             }
@@ -78,10 +77,10 @@ class LocalTemplateProvider(TemplateProvider):
 
     def history(self, key, include_contents=False):
         Logger.warn(f"Template provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting template '{key}': namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Getting template '{key}': namesape={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), include_contents=True)
         if not found:
-            raise DSOException(f"Template '{key}' not found nor inherited in the given context: stage={AppConfig.short_stage}")
+            raise DSOException(f"Template '{key}' not found nor inherited in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
 
         result = { "Revisions":
             [{
@@ -93,16 +92,16 @@ class LocalTemplateProvider(TemplateProvider):
 
 
     def delete(self, key):
-        Logger.debug(f"Locating template: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Locating template: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         ### only parameters owned by the context can be deleted, hence uninherited=True
         found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Template '{key}' not found in the given context: stage={Stages.shorten(stage)}")
+            raise DSOException(f"Template '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         Logger.info(f"Deleting template: path={found[key]['Path']}")
         delete_local_template(path=found[key]['Path'])
         result = {
                 'Key': key,
-                'Stage': AppConfig.short_stage,
+                'Stage': AppConfigs.short_stage,
                 'Scope': found[key]['Scope'], 
                 'Origin': found[key]['Origin'], 
                 'Path': found[key]['Path'],

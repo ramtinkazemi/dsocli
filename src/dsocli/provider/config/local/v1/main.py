@@ -1,6 +1,6 @@
 import os
 from dsocli.logger import Logger
-from dsocli.appconfig import AppConfig
+from dsocli.appconfigs import AppConfigs
 from dsocli.providers import Providers
 from dsocli.configs import ConfigProvider
 from dsocli.stages import Stages
@@ -12,7 +12,7 @@ from dsocli.settings import *
 
 
 __default_spec = {
-    'path': os.path.join(AppConfig.config_dir, 'config/'),
+    'path': os.path.join(AppConfigs.config_dir, 'config/'),
     # 'namespace': 'default',
     'store': 'local.json',
 }
@@ -30,7 +30,7 @@ class LocalConfigProvider(ConfigProvider):
 
     @property
     def root_path(self):
-        return AppConfig.config_spec('path')
+        return AppConfigs.config_spec('path')
 
 
     def get_path_prefix(self, service):
@@ -39,18 +39,18 @@ class LocalConfigProvider(ConfigProvider):
 
     @property
     def namespace(self):
-        return AppConfig.parameter_spec('namespace')
+        return AppConfigs.parameter_spec('namespace')
 
 
     @property
     def store_name(self):
-        return AppConfig.parameter_spec('store')
+        return AppConfigs.parameter_spec('store')
 
 
 
     def set(self, service, key, value):
         self.service = service
-        Logger.debug(f"Adding local configuration setting '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Adding local configuration setting '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         response = add_local_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix(service))
         return response
 
@@ -58,7 +58,7 @@ class LocalConfigProvider(ConfigProvider):
 
     def list(self, service, uninherited=False, filter=None):
         self.service = service
-        Logger.debug(f"Listing local configuration settings: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Listing local configuration settings: namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         settings = load_context_local_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(service), uninherited=uninherited, filter=filter)
         result = {'Configuration': []}
         for key, details in settings.items():
@@ -75,16 +75,16 @@ class LocalConfigProvider(ConfigProvider):
     def get(self, service, key, revision=None, uninherited=False, editable=False):
         self.service = service
         if revision:
-            Logger.warn(f"Config provider 'local/v1' does not support versioning.")
-        Logger.debug(f"Getting configuration setting '{key}': namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+            Logger.warn(f"Config provider 'local/v1' does not support versioning. Revision request ignored.")
+        Logger.debug(f"Getting configuration setting '{key}': namesape={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(service), uninherited=uninherited)
         if not found:
             if uninherited:
-                raise DSOException(f"Setting '{key}' not found in the given context: namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+                raise DSOException(f"Setting '{key}' not found in the given context: namesape={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
             else:
-                raise DSOException(f"Setting '{key}' not found nor inherited in the given context: namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
-        if len(found) > 1:
-            raise DSOException(f"Mutiple settings found with the same key '{key}' in the given context.")
+                raise DSOException(f"Setting '{key}' not found nor inherited in the given context: namesape={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
+        # if len(found) > 1:
+        #     raise DSOException(f"Mutiple settings found with the same key '{key}' in the given context.")
         result = {
                 'Key': key, 
             }
@@ -97,10 +97,10 @@ class LocalConfigProvider(ConfigProvider):
         self.service = service
         Logger.warn(f"Config provider 'local/v1' does not support versioning.")
 
-        Logger.debug(f"Getting local config setting '{key}': namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Getting local config setting '{key}': namesape={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(service), uninherited=False)
         if not found:
-            raise DSOException(f"Setting '{key}' not found nor inherited in the given context: stage={Stages.shorten(AppConfig.short_stage)}")
+            raise DSOException(f"Setting '{key}' not found nor inherited in the given context: stage={Stages.shorten(AppConfigs.short_stage)}")
         result = { "Revisions":
             [{
                 'RevisionId': '0',
@@ -113,16 +113,16 @@ class LocalConfigProvider(ConfigProvider):
 
     def unset(self, service, key):
         self.service = service
-        Logger.debug(f"Locating config setting '{key}': namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.stage}")
+        Logger.debug(f"Locating config setting '{key}': namesape={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         ### only configs owned by the config can be deleted, hence uninherited=True
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(service), uninherited=True)
         if not found:
-            raise DSOException(f"Config setting '{key}' not found in the given context: namesape={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+            raise DSOException(f"Config setting '{key}' not found in the given context: namesape={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
         Logger.info(f"Deleting config setting '{key}': path={found[key]['Path']}")
         delete_local_parameter(found[key]['Path'], key=key)
         result = {
                 'Key': key,
-                'Stage': AppConfig.short_stage,
+                'Stage': AppConfigs.short_stage,
                 'Scope': found[key]['Scope'], 
                 'Origin': found[key]['Origin'], 
                 'Path': found[key]['Path'],
