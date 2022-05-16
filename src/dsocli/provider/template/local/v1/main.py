@@ -48,8 +48,8 @@ class LocalTemplateProvider(TemplateProvider):
 
 
     def add(self, key, contents, render_path=None):
-        if not Stages.is_default(AppConfigs.stage) and not ALLOW_STAGE_TEMPLATES:
-            raise DSOException(f"Templates may not be added to stage scopes, as the feature is currently disabled. It may be enabled by adding 'ALLOW_STAGE_TEMPLATES=yes' to the DSO global settings, or adding environment variable 'DSO_ALLOW_STAGE_TEMPLATES=yes'.")
+        # if not Stages.is_default(AppConfigs.stage) and not ALLOW_STAGE_TEMPLATES:
+        #     raise DSOException(f"Templates may not be added to stage scopes, as the feature is currently disabled. It may be enabled by adding 'ALLOW_STAGE_TEMPLATES=yes' to the DSO global settings, or adding environment variable 'DSO_ALLOW_STAGE_TEMPLATES=yes'.")
         Logger.debug(f"Adding local template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         response = add_local_template(key=key, path_prefix=self.get_path_prefix(), contents=contents)
         result = {
@@ -98,7 +98,7 @@ class LocalTemplateProvider(TemplateProvider):
         if not found:
             raise DSOException(f"Template '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         Logger.info(f"Deleting template: path={found[key]['Path']}")
-        delete_local_template(path=found[key]['Path'])
+        delete_local_template(path=f"{found[key]['Path']}/{key}")
         result = {
                 'Key': key,
                 'Stage': AppConfigs.short_stage,

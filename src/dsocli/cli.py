@@ -242,7 +242,7 @@ def list_parameter(stage, uninherited, filter, global_scope, namespace_scope, qu
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         if format == 'shell' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'shell'. Use '-f'/'--format' to change it.")
+            Logger.warn("Query customizaion was ignored, becasue output format is 'shell'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Parameters: Parameters[*].{Key: Key, Value: Value, Stage: Stage, Scope: Scope}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -642,7 +642,7 @@ def list_secret(stage, global_scope, namespace_scope, uninherited, decrypt, filt
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         if format == 'shell' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'shell'. Use '-f'/'--format' to change it.")
+            Logger.warn("Query customizaion was ignored, becasue output format is 'shell'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Secrets: Secrets[*].{Key: Key, Value: Value, Scope: Scope, Origin: Origin}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -941,7 +941,7 @@ def delete_secret(key, stage, global_scope, namespace_scope, input, format, verb
 @click.option('-r', '--render-path', metavar='<path>', required=False, help=CLI_PARAMETERS_HELP['template']['render_path'])
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 @click.option('--recursive', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['template']['recursive'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'shell']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
@@ -1052,6 +1052,7 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
 
             ### use the current dir as the base for render path
             if not render_path:
+                # render_path = f'{AppConfigs.config_dir}{os.sep}output{os.sep}**{os.sep}*'
                 render_path = f'**{os.sep}*'
             else:
                 if not '*' in render_path:
@@ -1141,10 +1142,10 @@ def list_template(stage, uninherited, include_contents, filter, global_scope, na
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         if format == 'shell' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'shell'. Use '-f'/'--format' to change it.")
+            Logger.warn("Query customizaion was ignored, becasue output format is 'shell'. Use '-f'/'--format' to change it.")
 
         if include_contents and not format in ['json', 'yaml']:
-            raise DSOException("Contents can be include only when output format is 'json' or 'yaml'. Use '-f'/'--format' to change it.")
+            raise DSOException("Contents can be included only when output format is 'json' or 'yaml'. Use '-f'/'--format' to change it.")
 
 
         if include_contents:
@@ -1196,7 +1197,7 @@ def list_template(stage, uninherited, include_contents, filter, global_scope, na
 # @click.option('-p', '--path', 'include_contents', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['template']['include_contents'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw']), default='raw', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'raw']), default='raw', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
@@ -1375,7 +1376,7 @@ def history_template(stage, key, include_contents, global_scope, namespace_scope
 @template.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['delete'])
 @click.argument('key', required=False)
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'shell']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'shell']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])

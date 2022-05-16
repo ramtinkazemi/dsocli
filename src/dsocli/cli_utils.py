@@ -285,6 +285,35 @@ def read_data(input, parent_key, keys, format):
                 record[keys[i]] = row[i]
             result.append(record)
 
+    elif format == 'tsv':
+        if parent_key: 
+            raise NotImplementedError()
+
+        try:
+            data = list(csv.reader(input, delimiter='\t'))
+        except:
+            raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
+
+        if not data: return []
+
+        if keys == ['*']: 
+            keys = data[0]
+        else:
+            header = data[0]
+            if len(header) < len(keys):
+                raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
+
+            for i in range(0, len(keys)):
+                key = keys[i]
+                if not key == header[i]:
+                    raise DSOException(CLI_MESSAGES['MissingField'].format(key))
+
+        for row in data[1:]:
+            record = {}
+            for i in range(0, len(keys)):
+                record[keys[i]] = row[i]
+            result.append(record)
+
     elif format == 'raw':
         if parent_key: 
             raise NotImplementedError()
@@ -302,7 +331,7 @@ def read_data(input, parent_key, keys, format):
         except:
             raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
 
-    elif format == 'compact':
+    elif format == 'shell':
         if keys == ['*']: 
             raise NotImplementedError()
 

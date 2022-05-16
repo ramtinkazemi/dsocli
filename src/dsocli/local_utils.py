@@ -112,8 +112,12 @@ def add_local_template(key, path_prefix, contents):
 
 
 def delete_local_template(path):
-    if os.path.exists(path):
-        os.remove(path)
+    ### remove possible starting / before joing path avoiding an absolute path
+    path = re.sub(f'^/', '', path)
+    fullPath = os.path.join(AppConfigs.working_dir, AppConfigs.config_dir, 'template', path)
+    print(fullPath)
+    if os.path.exists(fullPath):
+        os.remove(fullPath)
 
 
 def load_parameter_store(result, path, path_prefix='', filter=None):
