@@ -5,6 +5,8 @@ dso template list -u -n -s dev -f json | dso template delete -n -s dev -f json -
 dso template list -u -f json | dso template delete -f json -i - > /dev/null
 dso template list -u -s dev -f json | dso template delete -s dev -f json -i - > /dev/null
 
+dso template list -s dev
+
 
 cat <<EOF | dso template add - ot -r '.dso/output/**/*' -g > /dev/null
 Overridden Global Template
@@ -177,3 +179,4 @@ as = {{as}}
 ass = {{ass}}
 EOF
 
+dso template list -s dev

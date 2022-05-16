@@ -5,6 +5,7 @@ dso parameter list -u -n -s dev -f json | dso parameter delete -n -s dev -f json
 dso parameter list -u -f json | dso parameter delete -f json -i - > /dev/null
 dso parameter list -u -s dev -f json | dso parameter delete -s dev -f json -i - > /dev/null
 
+dso parameter list -s dev
 
 dso parameter add gp gp_value -g > /dev/null
 dso parameter add gsp gsp_value -g -s dev > /dev/null
@@ -19,4 +20,7 @@ dso parameter add op nop_value -n > /dev/null
 dso parameter add op nsop_value -n -s dev > /dev/null
 dso parameter add op aop_value > /dev/null
 dso parameter add op asop_value -s dev > /dev/null
+
+dso parameter list -s dev
+
 
