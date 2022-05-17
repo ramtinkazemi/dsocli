@@ -153,8 +153,8 @@ class AppConfigService:
     # inherited_config_files = []
     overriden_config = {}
     merged_config = {}
-    remote_configs = {}
-    remote_configs_rendered = {}
+    remote_config = {}
+    remote_config_rendered = {}
 
 
     def load(self, working_dir, config_overrides_string='', stage=None, scope=ContextScope.App, ignore_errors=False):
@@ -263,17 +263,17 @@ class AppConfigService:
         self.update_merged_config()
 
 
-    def load_remote_configs(self, uninherited=False, filter=None):
+    def load_remote_config(self, uninherited=False, filter=None):
         for service in all_services:
             pid = self.get_provider_id(service)
-        self.remote_configs = {}
+        self.remote_config = {}
         from .configs import Configs
         for service in all_services:
-            serviceConfigs = Configs.list(service, uninherited, filter)['Configuration']
+            serviceConfigs = Configs.list(service, uninherited, filter)
             pid = self.get_provider_id(service)
             if pid:
                 conf = deflatten_dict({x['Key']: x['Value'] for x in serviceConfigs})
-                merge_dicts({service: conf}, self.remote_configs)
+                merge_dicts({service: conf}, self.remote_config)
         
         self.update_merged_config()
 
@@ -296,12 +296,12 @@ class AppConfigService:
         self.update_merged_config()
 
 
-    def render_remote_configs(self, silent=False):
+    def render_remote_config(self, silent=False):
         ### call update using not rendered config for in-place rendering of the remote config iteself
         self.update_merged_config(rendered=False)
         ### now do the rendering
         # self.local_config_rendered = load_file(self.local_config_rendered, pre_render_values=self.meta_vars)
-        self.remote_configs_rendered = render_dict_values(self.remote_configs, values=self.meta_vars, silent=silent)
+        self.remote_config_rendered = render_dict_values(self.remote_config, values=self.meta_vars, silent=silent)
         self.update_merged_config()
 
 
@@ -332,7 +332,7 @@ class AppConfigService:
         if use_defaults:
             self.merged_config = get_default_config()
         if use_remote:
-            merge_dicts(self.remote_configs_rendered if rendered else self.remote_configs, self.merged_config)
+            merge_dicts(self.remote_config_rendered if rendered else self.remote_config, self.merged_config)
         if use_root:
             merge_dicts(self.root_config_rendered if rendered else self.root_config, self.merged_config)
         if use_local:
@@ -640,17 +640,17 @@ class AppConfigService:
             self.update_merged_config(use_remote=False, rendered=rendered)
             result = flatten_dict(self.merged_config.copy())
         elif source == ConfigSource.Remote:
-            self.load_remote_configs(uninherited=uninherited)
+            self.load_remote_config(uninherited=uninherited)
             if rendered:
-                self.render_remote_configs()
+                self.render_remote_config()
             self.update_merged_config(use_defaults=False, use_calculated=False, use_local=False, use_root=False, rendered=rendered)
-            result = flatten_dict(merge_dicts(self.remote_configs, self.merged_config.copy()))
+            result = flatten_dict(merge_dicts(self.remote_config, self.merged_config.copy()))
         elif source == ConfigSource.All:
-            self.load_remote_configs(uninherited=uninherited)
+            self.load_remote_config(uninherited=uninherited)
             if rendered:
                 self.render_local_config()
             self.update_merged_config(rendered=rendered)
-            result = flatten_dict(merge_dicts(self.remote_configs, self.merged_config.copy()))
+            result = flatten_dict(merge_dicts(self.remote_config, self.merged_config.copy()))
         processed = []
         for key, value in result.items():
             if filter and not re.match(filter, key): continue
@@ -688,22 +688,15 @@ class AppConfigService:
 
 
     def get(self, key, service=None, revision=None, uninherited=False, rendered=True):
+        Logger.info("Getting '{0}' from configuration...".format(key))
         if service:  ### use config service
             from .configs import Configs
             return Configs.get(service=service, key=key, revision=revision)
         else:
-            if key:
-                Logger.info("Getting '{0}' from configuration...".format(key))
-            else:
-                Logger.info("Getting DSO configuration...")
-
-            if key:
-                result = get_dict_item(self.merged_config, key.split('.'))
-                if not result:
-                    raise DSOException(f"Configuration setting '{key}' not found.")
-                return result
-            else:
-                return self.merged_config
+            result = get_dict_item(self.merged_config, key.split('.'))
+            if not result:
+                raise DSOException(f"Configuration setting '{key}' not found.")
+            return result
 
 
     def unset(self, key, service=None):

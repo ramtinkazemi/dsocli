@@ -39,7 +39,8 @@ class ParameterService():
     def list(self, uninherited=False, filter=None):
         provider = Providers.ParameterProvider()
         Logger.info(f"Listing parameters: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        return provider.list(uninherited, filter)
+        from operator import itemgetter
+        return {'Parameters': sorted(provider.list(uninherited, filter), key=itemgetter('Key'))}        
 
     def add(self, key, value):
         self.validate_key(key)

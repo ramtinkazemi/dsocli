@@ -29,14 +29,14 @@ class AwsSsmParameterProvider(ParameterProvider):
     def list(self, uninherited=False, filter=None):
         Logger.debug(f"Listing SSM parameters: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         parameters = load_context_ssm_parameters(parameter_type='String', path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
-        result = {'Parameters': []}
+        result = []
         for key, details in parameters.items():
             item = {
                 'Key': key,
                 'RevisionId': str(details['Version']),
             }
             item.update(details)
-            result['Parameters'].append(item)
+            result.append(item)
 
         return result
 

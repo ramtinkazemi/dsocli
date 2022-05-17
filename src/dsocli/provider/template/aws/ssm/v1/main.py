@@ -31,7 +31,7 @@ class AwsSsmTemplateProvider(TemplateProvider):
     def list(self, uninherited=False, include_contents=False, filter=None):
         Logger.debug(f"Listing SSM templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         templates = load_context_ssm_parameters(parameter_type='StringList', path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
-        result = {'Templates': []}
+        result = []
         for key, details in templates.items():
             item = {
                 'Key': key,
@@ -40,7 +40,7 @@ class AwsSsmTemplateProvider(TemplateProvider):
             item.update(details)
             if include_contents: item['Contents'] = item['Value']
             item.pop('Value')
-            result['Templates'].append(item)
+            result.append(item)
         return result
 
 

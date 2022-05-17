@@ -36,14 +36,14 @@ class AwsSsmConfigProvider(ConfigProvider):
         self.service = service
         Logger.debug(f"Listing configuration on SSM: service={service}")
         configuration = load_context_ssm_parameters(parameter_type='String', path_prefix=self.get_path_prefix(service), uninherited=uninherited, filter=filter)
-        result = {'Configuration': []}
+        result = []
         for key, details in configuration.items():
             item = {
                 'Key': key,
                 'RevisionId': str(details['Version']),
             }
             item.update(details)
-            result['Configuration'].append(item)
+            result.append(item)
 
         return result
 

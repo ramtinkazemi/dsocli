@@ -55,13 +55,13 @@ class LocalSecretProvider(SecretProvider):
     def list(self, uninherited=False, decrypt=False, filter=None):
         Logger.debug(f"Listing local secrets: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         secrets = load_context_local_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
-        result = {'Secrets': []}
+        result = []
         for key, details in secrets.items():
             item = {
                 'Key': key,
             }
             item.update(details)
-            result['Secrets'].append(item)
+            result.append(item)
 
         return result
 

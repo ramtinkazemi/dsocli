@@ -39,7 +39,8 @@ class SecretService():
     def list(self, uninherited=False, decrypt=False, filter=None):
         provider = Providers.SecretProvider()
         Logger.info(f"Listing secrets: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        return provider.list(uninherited, decrypt, filter)
+        from operator import itemgetter
+        return {'Secrets': sorted(provider.list(uninherited, decrypt, filter), key=itemgetter('Key'))}        
 
     def add(self, key, value):
         self.validate_key(key)

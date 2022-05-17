@@ -52,13 +52,13 @@ class ShellParameterProvider(ParameterProvider):
     def list(self, uninherited=False, filter=None):
         Logger.debug(f"Listing shell parameters: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         parameters = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
-        result = {'Parameters': []}
+        result = []
         for key, details in parameters.items():
             item = {
                 'Key': key,
             }
             item.update(details)
-            result['Parameters'].append(item)
+            result.append(item)
 
         return result
 

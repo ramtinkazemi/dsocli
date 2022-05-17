@@ -32,14 +32,14 @@ class AwsSsmSecretProvider(SecretProvider):
     def list(self, uninherited=False, decrypt=False, filter=None):
         Logger.debug(f"Listing SSM secrets: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         secrets = load_context_ssm_parameters(parameter_type='SecureString', path_prefix=self.get_path_prefix(), uninherited=uninherited, decrypt=decrypt, filter=filter)
-        result = {'Secrets': []}
+        result = []
         for key, details in secrets.items():
             item = {
                 'Key': key,
                 'RevisionId': str(details['Version']),
             }
             item.update(details)
-            result['Secrets'].append(item)
+            result.append(item)
 
         return result
 

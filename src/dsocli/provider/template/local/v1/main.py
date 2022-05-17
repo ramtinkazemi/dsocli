@@ -39,11 +39,11 @@ class LocalTemplateProvider(TemplateProvider):
     def list(self, uninherited=False, include_contents=False, filter=None):
         Logger.debug(f"Listing local templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         templates = load_context_templates(path_prefix=self.get_path_prefix(), uninherited=uninherited, include_contents=include_contents, filter=filter)
-        result = {'Templates': []}
+        result = []
         for key, details in templates.items():
             item = {'Key': key}
             item.update(details)
-            result['Templates'].append(item)
+            result.append(item)
         return result
 
 

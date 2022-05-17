@@ -74,9 +74,11 @@ class TemplateService():
         provider = Providers.TemplateProvider()
         Logger.info(f"Listing templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         response = provider.list(uninherited, include_contents, filter)
-        for template in response['Templates']:
+        for template in response:
             key = template['Key']
             template['RenderPath'] = self.get_template_render_path(key)
+        from operator import itemgetter
+        return {'Templates': sorted(response, key=itemgetter('Key'))}        
         
         return response
 

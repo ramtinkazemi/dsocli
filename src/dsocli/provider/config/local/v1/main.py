@@ -60,13 +60,13 @@ class LocalConfigProvider(ConfigProvider):
         self.service = service
         Logger.debug(f"Listing local configuration settings: namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         settings = load_context_local_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(service), uninherited=uninherited, filter=filter)
-        result = {'Configuration': []}
+        result = []
         for key, details in settings.items():
             item = {
                 'Key': key,
             }
             item.update(details)
-            result['Configuration'].append(item)
+            result.append(item)
 
         return result
 

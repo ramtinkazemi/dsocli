@@ -52,13 +52,13 @@ class ShellSecretProvider(SecretProvider):
     def list(self, uninherited=False, decrypt=False, filter=None):
         Logger.debug(f"Listing shell secrets: namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         secrets = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
-        result = {'Secrets': []}
+        result = []
         for key, details in secrets.items():
             item = {
                 'Key': key,
             }
             item.update(details)
-            result['Secrets'].append(item)
+            result.append(item)
 
         return result
 
