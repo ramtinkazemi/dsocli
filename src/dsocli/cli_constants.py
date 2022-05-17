@@ -327,7 +327,10 @@ CLI_PARAMETERS_HELP = {
         'override_inherited': "Explicitly override inherited configuration locally.",
         'setup': "Run a setup wizard to assist configuring the DSO application.",
         'uninherited': "Select only condifuration settings which are specific to the gievn context, i.e. not inherited from the parent contexts.",
-        'source': "Specifies the source of configuration settings.",
+        'local': "Use local configuration only.",
+        'remote': "Use remote configuration only via config service.",
+        'revision': "The revision ID whose value to be fetched.",
+
     },
     'package': {
         'key': "The key of the package. See KEY argument for more details.",

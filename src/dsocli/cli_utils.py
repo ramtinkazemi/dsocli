@@ -134,7 +134,7 @@ def format_data(data, query, format, compress=True, mainkeys=None):
                         else:
                             valuesStr = str(item) if not item is None else ''
                         outputStream += f"{valuesStr}"
-                        if i < len(childList)-1: outputStream += '\n'
+                        if i < len(childList)-1: outputStream += ','
                 else:
                     outputStream = '\t'.join(map(lambda x: str(x) if not x is None else '', list(result.values())))
             elif len(keys) > 1:
@@ -147,7 +147,7 @@ def format_data(data, query, format, compress=True, mainkeys=None):
 
     ### expects list(dict), or a dict
     ### take first key as name and second key as value, or use mainkeys and form name=value
-    elif format == 'shell':
+    elif format == 'compact':
 
         def quote(value):
             if not value: return ''
@@ -331,7 +331,7 @@ def read_data(input, parent_key, keys, format):
         except:
             raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
 
-    elif format == 'shell':
+    elif format == 'compact':
         if keys == ['*']: 
             raise NotImplementedError()
 

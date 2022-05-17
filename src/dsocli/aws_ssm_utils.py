@@ -4,6 +4,7 @@ import logging
 from .contexts import Contexts, Context
 from .logger import Logger
 from dsocli.appconfigs import AppConfigs
+from dsocli.exceptions import *
 
 logging.getLogger('botocore').setLevel(Logger.mapped_level)
 logging.getLogger('boto').setLevel(Logger.mapped_level)
@@ -131,7 +132,7 @@ def assert_ssm_parameter_no_namespace_overwrites(key, path_prefix=''):
     path = path_prefix + AppConfigs.context.get_path(key)
     response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Option': 'BeginsWith', 'Values':[f"{path}."]}])
     if len(response['Parameters']) > 0:
-        raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would overwrite '{0}.{1}' and all other parameters in '{0}.*' namespace if any.".format(key,response['Parameters'][0]['Name'][len(path)+1:]))
+        raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would otherwise overwrite '{0}.{1}' and all other parameters in '{0}.*' namespace if any.".format(key,response['Parameters'][0]['Name'][len(path)+1:]))
 
     ### check parent parameters
     namespaces = key.split('.')
@@ -142,7 +143,7 @@ def assert_ssm_parameter_no_namespace_overwrites(key, path_prefix=''):
         # parameters = ssm.describe_parameters(ParameterFilters=[{'Key':'Type', 'Values':['String']},{'Key':'Name', 'Values':[path]}])
         response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Values':[path]}])
         if len(response['Parameters']) > 0:
-            raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would overwrite parameter '{1}'.".format(key, subKey))
+            raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would otherwise overwrite parameter '{1}'.".format(key, subKey))
 
 
 

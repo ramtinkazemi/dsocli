@@ -54,7 +54,7 @@ class AwsSsmTemplateProvider(TemplateProvider):
         Logger.debug(f"Locating SSM template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if found and not found['Type'] == 'StringList':
-            raise DSOException(f"Failed to add template '{key}' becasue becasue the key is not available in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+            raise DSOException(f"Failed to add template '{key}' becasue the key is not available in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         path = get_ssm_path(context=AppConfigs.context, key=key, path_prefix=self.get_path_prefix())
         Logger.debug(f"Adding SSM template: path={path}")
         response = add_ssm_template(path, contents)

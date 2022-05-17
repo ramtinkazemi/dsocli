@@ -112,10 +112,19 @@ def merge_dicts(source, destination, merge_key=None):
 
         return found
 
-    if not source: return destination
+    if source is None: 
+        return destination
 
     if not type(source) == type(destination):
-        raise Exception("Failed to merge, source and destination must be of the same type.")
+        # if type(source) == dict and type(destination) == list:
+        #     from collections import OrderedDict
+        #     # from collections.abc import Iterable   # import directly from collections for Python < 3.3
+        #     # if isinstance(destination, Iterable):
+        #     destination = OrderedDict({index:i for i, index in enumerate(destination.copy())})
+        #     # else:
+        #         # raise Exception(f"Failed to merge source ({source}) and destination ({destination}) due to incompatible types: {type(source)} and {type(destination)}")
+        # else:
+        raise Exception(f"Failed to merge source ({source}) and destination ({destination}) due to incompatible types: {type(source)} and {type(destination)}")
 
     if isinstance(source, dict):
         for key, value in source.items():
@@ -146,11 +155,12 @@ def flatten_dict(input, prefixed_key = '', delimiter = '.'):
     def visit(input, prefixed_key, delimiter, output):
         if isinstance(input, dict):
             for key, value in input.items():
-                new_key = f"{prefixed_key}{delimiter}{key}" if prefixed_key else f"{key}"
+                new_key = f'{prefixed_key}{delimiter}{key}' if prefixed_key else f'{key}'
                 visit(value, new_key, delimiter, output)
         elif isinstance(input, list):
             for idx, item in enumerate(input):
-                visit(item, f"{prefixed_key}{delimiter}{idx}", delimiter, output)
+                new_key = f'{prefixed_key}{delimiter}{idx}' if prefixed_key else f'{idx}'
+                visit(item, new_key, delimiter, output)
         else:
             output[prefixed_key] = input
 
@@ -168,46 +178,89 @@ def deflatten_dict(input: dict, delimiter = '.'):
 
 
 
-def get_dict_item(dic, keys, create=True):
+def get_dict_item(dic, keys, create=True, default=None, leaf_only=False):
     for i in range(0, len(keys)):
         key = keys[i]
         if isinstance(dic, dict):
             if not key in dic.keys():
                 if create:
-                    dic[key] = {}
+                    dic[key] = default
                 else:
                     return None
             dic = dic[key]
         elif isinstance(dic, list):
-            raise DSOException("Lists items are not allowed '{0}'. Must be converted to dictionary.".format('.'.join(keys[0:i])))
+            key = int(key)
+            if key >= len(dic):
+                return None
+            dic = dic[key]
+            # raise DSOException("Lists items are not allowed '{0}'. Must be converted to dictionary.".format('.'.join(keys[0:i])))
         else:
             return None
+    if leaf_only and type(dic) in [dict, tuple]:
+        return None
     return dic
+    
     
 
 
-
 def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=False):
-    parent_item = get_dict_item(dic, keys[:-1])
-    lastKey = keys[-1]
-    ### parent item is expected to be a dictionary
-    if not isinstance(parent_item, dict):
-        if overwrite_parent:
-            grand_parent_item = get_dict_item(dic, keys[:-2])
-            grand_parent_item[keys[-2]] = {}
-            parent_item = grand_parent_item[keys[-2]]
-            Logger.warn("'{0}' was overwritten by '{1}.".format('.'.join(keys[:-1]),'.'.join(keys)))
+    
+    def set_list_value(alist, idx):
+        ### idx must be a number
+        if idx < len(alist):
+            if isinstance(alist[idx], dict) or isinstance(alist[idx], list) or isinstance(alist[idx], set) or isinstance(alist[idx], tuple):
+                if overwrite_children:
+                    Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
+                else:
+                    raise DSOException("Failed to set '{0}' becasue it would otherwise overwrite an existing item of type '{1}'.".format('.'.join(keys), type(alist)))
+            alist[idx] = value
+        elif idx == len(alist):
+            alist.append(value)
         else:
-            raise DSOException("Failed to set '{0}' becasue it would overwrite parent item '{1}' which is not a dictionary but of type '{2}'.".format('.'.join(keys), '.'.join(keys[:-1]), type(parent_item)))
-    if lastKey in parent_item.keys():
-        ### item is expected to be a basic type (string, number, ...)
-        if isinstance(parent_item[lastKey], dict) or isinstance(parent_item[lastKey], list) or isinstance(parent_item[lastKey], set) or isinstance(parent_item[lastKey], tuple):
-            if overwrite_children:
-                Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
-            else:
-                raise DSOException("Failed to set '{0}' becasue it would overwrite an existing item of type '{1}'.".format('.'.join(keys), type(parent_item)))
-    parent_item[lastKey] = value
+            raise DSOException(f"Index '{idx}' exceeded list size: '{'.'.join(keys[:-1])}'")
 
+
+    lastKey = keys[-1]
+
+    if lastKey == '*':
+        lastKey = len(parent_item)
+        keys[-1] = str(lastKey)
+
+    try: 
+        lastKey = int(lastKey)
+        parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])        
+    except:
+        parent_item = get_dict_item(dic, keys[:-1], create=True, default={})        
+
+    if isinstance(parent_item, list):
+        set_list_value(parent_item, lastKey)
+        
+    elif isinstance(parent_item, dict):
+        if lastKey in parent_item.keys():
+            ### item is expected to be a basic type (string, number, ...)
+            if isinstance(parent_item[lastKey], dict) or isinstance(parent_item[lastKey], list) or isinstance(parent_item[lastKey], set) or isinstance(parent_item[lastKey], tuple):
+                if overwrite_children:
+                    Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
+                else:
+                    raise DSOException("Failed to set '{0}' becasue it would otherwise overwrite a '{1}'.".format('.'.join(keys), type(parent_item[lastKey])))
+        parent_item[lastKey] = value
+    else:
+        if overwrite_parent or parent_item is None:
+            grand_parent_item = get_dict_item(dic, keys[:-2])
+            ### are we dealing with a list or a dict?
+            if type(lastKey) == int:
+                grand_parent_item[keys[-2]] = []
+                parent_item = grand_parent_item[keys[-2]]
+                set_dict_value(parent_item, lastKey)
+            else:
+                grand_parent_item[keys[-2]] = {}
+                parent_item = grand_parent_item[keys[-2]]
+                parent_item[lastKey] = value
+            Logger.warn(f"'{'.'.join(keys[:-1])}' was overwritten by '{'.'.join(keys)}'.")
+        else:
+            raise DSOException("Failed to set '{0}' becasue it would otherwise overwrite parent item '{1}' which is not a dictionary but of type '{2}'.".format('.'.join(keys), '.'.join(keys[:-1]), type(parent_item)))
+
+    return '.'.join(keys)
 
 
 def del_dict_item(dic, keys, force=False):

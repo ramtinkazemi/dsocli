@@ -51,7 +51,7 @@ class AwsSsmSecretProvider(SecretProvider):
         Logger.debug(f"Locating SSM secret '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if found and not found['Type'] == 'SecureString':
-            raise DSOException(f"Failed to add secret '{key}' becasue becasue the key is not available in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+            raise DSOException(f"Failed to add secret '{key}' becasue the key is not available in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         path = get_ssm_path(context=AppConfigs.context, key=key, path_prefix=self.get_path_prefix())
         Logger.debug(f"Adding SSM secret: path={path}")
         response = add_ssm_secret(path, value)

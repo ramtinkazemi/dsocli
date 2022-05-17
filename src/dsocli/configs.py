@@ -2,6 +2,7 @@
 from .constants import *
 from .providers import KeyValueStoreProvider, Providers
 from .logger import Logger
+from .appconfigs import ContextSource
 
 
 class ConfigProvider(KeyValueStoreProvider):
@@ -19,37 +20,34 @@ class ConfigProvider(KeyValueStoreProvider):
 
 class ConfigService():
 
-    def list(self, service, uninherited=False, filter=None):
+    def list(self, uninherited=False, filter=None):
         from .appconfigs import AppConfigs
-        self.service = service
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Listing configurations: namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
-        response = provider.list(service=service, uninherited=uninherited, filter=filter)
+        Logger.debug(f"Listing configurations: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        response = provider.list(uninherited=uninherited, filter=filter)
         return response
 
 
-    def set(self, key, value, service):
+    def set(self, key, value):
         from .appconfigs import AppConfigs
-        self.service = service
         # self.validate_key(key)
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Setting configuration '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
-        return provider.set(key=key, value=value, service=service)
+        Logger.debug(f"Setting configuration '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        return provider.set(key=key, value=value)
 
 
-    def get(self, key, service):
+    def get(self, key, revision=None, uninherited=False, rendered=True):
         from .appconfigs import AppConfigs
-        self.service = service
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Getting configuration '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
-        return provider.get(key=key, service=service)
+        Logger.debug(f"Getting configuration '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        return provider.get(key=key, revision=revision, uninherited=uninherited, rendered=rendered)
 
 
     # def history(self, key):
     #   from .appconfigs import AppConfigs
     #     self.config = config
     #     provider = Providers.ConfigProvider()
-    #     Logger.debug(f"Fetching history of configuration '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+    #     Logger.debug(f"Fetching history of configuration '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
     #     return provider.history(service=service, key)
 
 
@@ -57,7 +55,7 @@ class ConfigService():
         from .appconfigs import AppConfigs
         self.service = service
         provider = Providers.ConfigProvider()
-        Logger.debug(f"Unsetting configuration '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+        Logger.debug(f"Unsetting configuration '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         return provider.unset(key=key, service=service)
 
 
