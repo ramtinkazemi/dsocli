@@ -144,7 +144,7 @@ class TemplateService():
                 os.makedirs(os.path.dirname(renderPath), exist_ok=True)
 
             try:
-                jinjaTemplate = jinja_env.from_string(self.get(key)['Contents'])
+                jinjaTemplate = jinja_env.from_string(self.get(key, rendred=False)['Contents'])
             except:
                 Logger.error(f"Failed to load template: {key}")
                 raise
