@@ -279,17 +279,17 @@ CLI_COMMANDS_SHORT_HELP = {
 CLI_PARAMETERS_HELP = {
     'common': {
         'working_dir': "Path to a (local) directory where the DSO application configuration resides. By default, the current working directory will be used if the option is not provided.",
-        'verbosity' : "Specify the logging verbosity, where 0 is for logging critical fatal errors only, 1 also logs error messages, 2 also logs warnings, 3 also logs information messages, 4 also logs debug messages, and finally 5 logs everything.",
+        'verbosity' : "Specifies the logging verbosity, where 0 is for logging critical fatal errors only, 1 also logs error messages, 2 also logs warnings, 3 also logs information messages, 4 also logs debug messages, and finally 5 logs everything.",
         'stage' : "Target a specific stage using the stage identifier, which is combination of a name and an optional number, where name must conform to ^([a-zA-Z][a-zA-Z0-9]+)$ regex expression. If no /<number> is specified, the default environment (/0) in the given context will be target.",
         'input' : "Path to a (local) file defining the input data. Use '-' to read from the shell pipe or stdin. Use '--format' to specify the format if needed.",
-        'format': "Specify the format of the output or the input if mixed with the '--input' option.",
+        'format': "Specifies the format of the output or the input if mixed with the '--input' option.",
         'config': "Comma separated list of key/value pairs to temporarily override the current DSO application configuration. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.",
         'query': "Customize output using JMESPath query language.",
         'query_all': "Include all the available fields in the ouput.",
         'global_scope': "Use the global scope.",
         'namespace_scope': "Use the namespace scope.",
         'filter': "Use a regex pattern to filter result by the provider.",
-        'context': "Specify the context to be used.",
+        'context': "Specifies the context to be used.",
     },
     'parameter': {
         'key': "The key of the parameter. See KEY argument for more details.",
@@ -326,6 +326,7 @@ CLI_PARAMETERS_HELP = {
         'override_inherited': "Explicitly override inherited configuration locally.",
         'setup': "Run a setup wizard to assist configuring the DSO application.",
         'uninherited': "Select only condifuration settings which are specific to the gievn context, i.e. not inherited from the parent contexts.",
+        'source': "Specifies the source of configuration settings.",
     },
     'package': {
         'key': "The key of the package. See KEY argument for more details.",

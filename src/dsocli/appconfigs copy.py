@@ -17,9 +17,9 @@ from .enum_utils import OrderedEnum
 
 
 class ConfigSource(OrderedEnum):
-    All = 10
-    Local = 20
-    Remote = 30
+    local = 10
+    remote = 30
+    merged = 40
 
 
 class ContextSource(OrderedEnum):
@@ -57,7 +57,7 @@ _init_config = {
 _default_config = {
     'kind': 'dso/application',
     'version': 1,
-    'namespace': 'generic',
+    'namespace': '',
     'application': '',
     'config': {
         'provider': {
@@ -280,29 +280,29 @@ class AppConfigService:
 
     def render_root_config(self, silent=False):
         ### call update using not rendered config for in-place rendering of the root config iteself
-        self.update_merged_config(rendered=False)
+        # self.update_merged_config(rendered_root=False)
         ### now do the rendering
         # self.root_config_rendered = load_file(self.root_config_file_path, pre_render_values=self.meta_vars)
         self.root_config_rendered = render_dict_values(self.root_config, values=self.meta_vars, silent=silent)
-        self.update_merged_config()
+        # self.update_merged_config()
 
 
     def render_local_config(self, silent=False):
         ### call update using not rendered config for in-place rendering of the root config iteself
-        self.update_merged_config(rendered=False)
+        # self.update_merged_config(rendered_local=False)
         ### now do the rendering
         # self.local_config_rendered = load_file(self.local_config_rendered, pre_render_values=self.meta_vars)
         self.local_config_rendered = render_dict_values(self.local_config, values=self.meta_vars, silent=silent)
-        self.update_merged_config()
+        # self.update_merged_config()
 
 
     def render_remote_configs(self, silent=False):
         ### call update using not rendered config for in-place rendering of the remote config iteself
-        self.update_merged_config(rendered=False)
+        # self.update_merged_config(rendered_remote=False)
         ### now do the rendering
         # self.local_config_rendered = load_file(self.local_config_rendered, pre_render_values=self.meta_vars)
         self.remote_configs_rendered = render_dict_values(self.remote_configs, values=self.meta_vars, silent=silent)
-        self.update_merged_config()
+        # self.update_merged_config()
 
 
     def dict_to_config_string(self, dic):
@@ -326,17 +326,32 @@ class AppConfigService:
 
         return result
 
-    ### support rendering only on local config
-    def update_merged_config(self, use_defaults=True, use_calculated=True, use_root=True, use_local=True, use_remote=True, rendered=True):
+
+    def update_merged_config(self, use_defaults=True, use_root=True, use_local=True, use_remote=True, rendered_root=True, rendered_local=True, rendered_remote=True):
         self.merged_config = {}
         if use_defaults:
             self.merged_config = get_default_config()
         if use_remote:
-            merge_dicts(self.remote_configs_rendered if rendered else self.remote_configs, self.merged_config)
+            if rendered_remote:
+                self.render_remote_configs()
+                useMe = self.remote_configs_rendered
+            else:
+                useMe = self.remote_configs
+            merge_dicts(useMe, self.merged_config)
         if use_root:
-            merge_dicts(self.root_config_rendered if rendered else self.root_config, self.merged_config)
+            if rendered_root:
+                self.render_root_config()
+                useMe = self.root_config_rendered
+            else:
+                useMe = self.root_config
+            merge_dicts(useMe, self.merged_config)
         if use_local:
-            merge_dicts(self.local_config_rendered if rendered else self.local_config, self.merged_config)
+            if rendered_local:
+                self.render_local_config()
+                useMe = self.local_config_rendered
+            else:
+                useMe = self.local_config
+            merge_dicts(useMe, self.merged_config)
         
         if use_defaults:
             ### save provider ids set in app config before merging with service providers' default config
@@ -364,29 +379,28 @@ class AppConfigService:
         merge_dicts(self.overriden_config, self.merged_config)
 
         ### update context
-        self.context = Context(self.merged_config.get('namespace', ''), self.merged_config.get('application', ''), self.stage, self.scope)
+        self.context = Context(self.merged_config['namespace'], self.merged_config['application'], self.stage, self.scope)
 
         ### add calculated configs on the fly at last
-        if use_calculated:
-            self.merged_config['context'] = {
-                'effective': {
-                    'namespace': self.namespace,
-                    'application': self.application,
-                    'stage': self.short_stage,
-                    'env': self.env,
-                    'scope': str(self.scope)
-                },
-                'target': {
-                    'namespace': self.get_namespace(ContextSource.Target),
-                    'application': self.get_application(ContextSource.Target),
-                    'stage': self.get_stage(ContextSource.Target, short=True),
-                    'env': Stages.parse_env(self.get_stage(ContextSource.Target)),
-                    'scope': str(self.scope)
-                },
-            }
-            self.merged_config['stage'] = self.get_stage(ContextSource.Target, short=True)
-            self.merged_config['env'] = Stages.parse_env(self.get_stage(ContextSource.Target))
-            self.merged_config['scope'] = str(self.scope)
+        self.merged_config['context'] = {
+            'effective': {
+                'namespace': self.namespace,
+                'application': self.application,
+                'stage': self.short_stage,
+                'env': self.env,
+                'scope': str(self.scope)
+            },
+            'target': {
+                'namespace': self.get_namespace(ContextSource.Target),
+                'application': self.get_application(ContextSource.Target),
+                'stage': self.get_stage(ContextSource.Target, short=True),
+                'env': Stages.parse_env(self.get_stage(ContextSource.Target)),
+                'scope': str(self.scope)
+            },
+        }
+        self.merged_config['stage'] = self.get_stage(ContextSource.Target, short=True)
+        self.merged_config['env'] = Stages.parse_env(self.get_stage(ContextSource.Target))
+        self.merged_config['scope'] = str(self.scope)
 
 
     def check_version(self):
@@ -632,24 +646,19 @@ class AppConfigService:
         self.save_local_config()
 
 
-    def list(self, uninherited=False, filter=None, rendered=False, source=ConfigSource.All):
+    def list(self, uninherited=False, filter=None, rendered=False, source=ConfigSource.merged):
         Logger.info("Listing configuration settings...")
-        if source == ConfigSource.Local:                
-            if rendered:
-                self.render_local_config()
-            self.update_merged_config(use_remote=False, rendered=rendered)
+        ### service config must return full list, do not use with filter
+        if source == ConfigSource.local:
+            self.update_merged_config(rendered_root=rendered, rendered_local=rendered, use_remote=False)
             result = flatten_dict(self.merged_config.copy())
-        elif source == ConfigSource.Remote:
+        elif source == ConfigSource.remote:
             self.load_remote_configs(uninherited=uninherited)
-            if rendered:
-                self.render_remote_configs()
-            self.update_merged_config(use_defaults=False, use_calculated=False, use_local=False, use_root=False, rendered=rendered)
+            self.update_merged_config(use_local=False, use_root=False, rendered_remote=rendered)
             result = flatten_dict(merge_dicts(self.remote_configs, self.merged_config.copy()))
-        elif source == ConfigSource.All:
+        elif source == ConfigSource.merged:
             self.load_remote_configs(uninherited=uninherited)
-            if rendered:
-                self.render_local_config()
-            self.update_merged_config(rendered=rendered)
+            self.update_merged_config(rendered_root=rendered, rendered_local=rendered, rendered_remote=rendered)
             result = flatten_dict(merge_dicts(self.remote_configs, self.merged_config.copy()))
         processed = []
         for key, value in result.items():

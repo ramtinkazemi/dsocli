@@ -10,7 +10,7 @@ from stdiomask import getpass
 from .constants import *
 from .cli_constants import *
 from .exceptions import DSOException
-from .appconfigs import AppConfigs, ContextSource
+from .appconfigs import AppConfigs, ContextSource, ConfigSource
 import dsocli.logger as logger
 from .parameters import Parameters
 from .secrets import Secrets
@@ -160,7 +160,7 @@ def add_parameter(key, value, stage, global_scope, namespace_scope, input, forma
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         if input:
-            validate_none_provided([key], ["KEY"], ["'-i' / '--input'"])
+            validate_none_provided([key, value], ["KEY", "VALUE"], ["'-i' / '--input'"])
             parameters = read_data(input, 'Parameters', ['Key', 'Value'], format)
 
             ### eat possible enclosing (double) quotes when source is file, stdin has already eaten them!
@@ -934,8 +934,8 @@ def delete_secret(key, stage, global_scope, namespace_scope, input, format, verb
 
 @command_doc(CLI_COMMANDS_HELP['template']['add'])
 @template.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['add'])
-# @click.option('--contents', 'contents_path', metavar='<path>', required=False, type=click.Path(exists=False, file_okay=True, dir_okay=True), callback=check_file_path, help=CLI_PARAMETERS_HELP['template']['contents_path'])
-@click.argument('contents_path', required=False, metavar='PATH', callback=check_file_path)
+# @click.option('--contents', 'contents_path', metavar='<path>', required=False, type=click.Path(exists=False, file_okay=True, dir_okay=True), callback=ConfigSource_from_string, help=CLI_PARAMETERS_HELP['template']['contents_path'])
+@click.argument('contents_path', required=False, metavar='PATH', callback=ConfigSource_from_string)
 @click.argument('key', required=False)
 @click.option('--recursive', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['template']['recursive'])
 @click.option('-r', '--render-path', metavar='<path>', required=False, help=CLI_PARAMETERS_HELP['template']['render_path'])
@@ -2013,17 +2013,18 @@ def config_init(setup, override_inherited, input, global_scope, namespace_scope,
 @config.command('list', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['list'])
 @click.option('-u','--uninherited', 'uninherited', is_flag=True, default=False, help=CLI_PARAMETERS_HELP['config']['uninherited'])
 @click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+@click.option('--rendered', is_flag=True, default=False, help=CLI_PARAMETERS_HELP['config']['rendered'])
+@click.option('--source', required=False, type=click.Choice(['local', 'remote', 'all']), default='all', show_default=True, callback=config_source_from_string, help=CLI_PARAMETERS_HELP['config']['source'])
+@click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
+@click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'shell']), default='shell', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
-@click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
-@click.option('--rendered', is_flag=True, default=False, help=CLI_PARAMETERS_HELP['config']['rendered'])
-@click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
-@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_list(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, rendered, uninherited, filter, query, query_all, format):
+def config_list(stage, rendered, source, uninherited, filter, query, query_all, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
 
@@ -2034,6 +2035,9 @@ def config_list(stage, global_scope, namespace_scope, verbosity, config_override
 
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
+
+        if format == 'shell' and (query or query_all):
+            Logger.warn("Query customizaion was ignored, becasue output format is 'shell'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Configuration: Configuration[*].{Key: Key, Value: Value}}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -2048,7 +2052,8 @@ def config_list(stage, global_scope, namespace_scope, verbosity, config_override
         Logger.set_verbosity(verbosity)
         validate_command_usage()
         AppConfigs.load(working_dir, config_override, stage, ignore_errors=True, scope=scope)
-        result = AppConfigs.list(uninherited=uninherited, filter=filter, rendered=rendered)
+        
+        result = AppConfigs.list(uninherited=uninherited, filter=filter, rendered=rendered, source=source)
 
         if len(result['Configuration']) == 0:
             Logger.warn("No configuration settings found.")
@@ -2085,7 +2090,7 @@ def config_list(stage, global_scope, namespace_scope, verbosity, config_override
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def get_config(key, stage, global_scope, namespace_scope, revision, query, query_all, format, verbosity, config_override, working_dir):
+def config_get(key, stage, global_scope, namespace_scope, revision, query, query_all, format, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
 
@@ -2131,7 +2136,7 @@ def get_config(key, stage, global_scope, namespace_scope, revision, query, query
 @config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['set'])
 @click.argument('key', required=False)
 @click.argument('value', required=False)
-@click.option('--value', 'value_option', metavar='<value>', required=False, help=CLI_PARAMETERS_HELP['config']['value'])
+# @click.option('--value', 'value_option', metavar='<value>', required=False, help=CLI_PARAMETERS_HELP['config']['value'])
 # @click.option('--global', 'global_', is_flag=True, default=False, help=CLI_PARAMETERS_HELP['config']['global'])
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['config']['input'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
@@ -2140,12 +2145,12 @@ def get_config(key, stage, global_scope, namespace_scope, revision, query, query
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_set(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input):
+def config_set(key, value, stage, input, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
 
     def validate_command_usage():
-        nonlocal working_dir, scope, value
+        nonlocal working_dir, scope
 
         if not working_dir: working_dir = os.getcwd()
 
@@ -2153,15 +2158,17 @@ def config_set(stage, global_scope, namespace_scope, verbosity, config_override,
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         if input:
-            validate_none_provided([value, value_option], ["VALUE", "'--value'"], ["'-i' / '--input'"])
+            validate_none_provided([key, value], ["KEY", "VALUE"], ["'-i' / '--input'"])
             try:
                 value = yaml.load(input, yaml.SafeLoader)
             # except yaml.YAMLError as e:
             except:
                 raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format('yaml'))
         else:
-            value = validate_only_one_provided([value, value_option], ["VALUE", "'--value'"])
-
+            validate_provided(key, "'KEY'")
+            if not value:
+                Logger.warn("Null was taken as value.")
+            # validate_provided(value, "'VALUE'")
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()

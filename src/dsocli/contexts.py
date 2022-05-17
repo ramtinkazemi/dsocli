@@ -1,13 +1,11 @@
-from .enum_utils import OrderedEnum
 from .constants import *
 from .logger import Logger
 from .dict_utils import *
-from pathlib import Path
 from .file_utils import *
-from .exceptions import DSOException
 from .stages import Stages
 from .constants import *
 from .exceptions import DSOException
+from .enum_utils import OrderedEnum
 
 
 class ContextScope(OrderedEnum):
@@ -15,18 +13,6 @@ class ContextScope(OrderedEnum):
     Namespace = 20
     Global = 30
 
-    @classmethod
-    def from_str(cls, text, case_sensitive=False):
-        if case_sensitive:
-            items = [item.lower() for item in dir(cls) if not item.startswith('_')]
-            if text.lower() in items:
-                return getattr(cls, text)
-            return None
-        else:
-            items = [item for item in dir(cls) if not item.startswith('_')]
-            if text in items:
-                return getattr(cls, text)
-            return None
 
 
 context_translation_matrix = {
