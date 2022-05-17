@@ -809,7 +809,7 @@ def edit_secret(key, stage, global_scope, namespace_scope, verbosity, config_ove
 
 @command_doc(CLI_COMMANDS_HELP['secret']['history'])
 @secret.command('history', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['secret']['history'])
-@click.argument('key', required=False)
+@click.argument('key', required=True)
 @click.option('-d', '--decrypt', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['secret']['decrypt'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
@@ -1195,6 +1195,7 @@ def list_template(stage, uninherited, include_contents, filter, global_scope, na
 @click.argument('key', required=True)
 @click.option('--revision', metavar='<revision-id', required=False, help=CLI_PARAMETERS_HELP['parameter']['revision'])
 # @click.option('-p', '--path', 'include_contents', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['template']['include_contents'])
+@click.option('--raw', required=False, is_flag=True, default=False, help=CLI_PARAMETERS_HELP['template']['rendered'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'raw']), default='raw', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -1204,7 +1205,7 @@ def list_template(stage, uninherited, include_contents, filter, global_scope, na
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def get_template(key, revision, stage, global_scope, namespace_scope, query, query_all, format, verbosity, config_override, working_dir):
+def get_template(key, revision, raw, stage, global_scope, namespace_scope, query, query_all, format, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
 
@@ -1227,7 +1228,7 @@ def get_template(key, revision, stage, global_scope, namespace_scope, query, que
         validate_command_usage()
         AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
 
-        result = Templates.get(key, revision)
+        result = Templates.get(key, revision, rendred=not raw)
         output = format_data(result, query, format)
         Pager.page(output)
 
@@ -1317,7 +1318,7 @@ def edit_template(key, stage, global_scope, namespace_scope, verbosity, config_o
 
 @command_doc(CLI_COMMANDS_HELP['template']['history'])
 @template.command('history', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['history'])
-@click.argument('key', required=False)
+@click.argument('key', required=True)
 @click.option('-p', '--path', 'include_contents', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['template']['include_contents'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])

@@ -57,6 +57,19 @@ class TemplateService():
 
         return f'.{os.sep}' + os.path.relpath(os.path.join(self.default_render_path, key), AppConfigs.working_dir) 
 
+    def get_all_params(self, silent=False):
+        if not silent:
+            Logger.info("Loading secrets...")
+        secrets = Secrets.list(uninherited=False, decrypt=True)
+        if not silent:
+            Logger.info("Loading parameters...")
+        parameters = Parameters.list(uninherited=False)
+        merged = deflatten_dict({x['Key']: x['Value'] for x in secrets['Secrets']})
+        merge_dicts(deflatten_dict({x['Key']: x['Value'] for x in parameters['Parameters']}), merged)
+        merge_dicts(AppConfigs.meta_vars, merged)
+        return merged
+
+
     def list(self, uninherited=False, include_contents=False, filter=None):
         provider = Providers.TemplateProvider()
         Logger.info(f"Listing templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
@@ -80,10 +93,14 @@ class TemplateService():
             AppConfigs.register_template_custom_render_path(key, render_path)
         return result
 
-    def get(self, key, revision=None):
+    def get(self, key, revision=None, rendred=True):
         provider = Providers.TemplateProvider()
         Logger.info(f"Getting template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         result = provider.get(key, revision)
+        if rendred:
+            Logger.info("Rendering...")
+            template = jinja2.Environment(loader=jinja2.BaseLoader).from_string(result['Contents'])
+            result['Contents'] = template.render(self.get_all_params())
         result['RenderPath'] = self.get_template_render_path(key)
         return result
 
@@ -103,17 +120,8 @@ class TemplateService():
 
         Logger.info(f"Rendering templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
 
-        Logger.info("Loading secrets...")
-        secrets = Secrets.list(uninherited=False, decrypt=True)
-
-        Logger.info("Loading parameters...")
-        parameters = Parameters.list(uninherited=False)
-
-        Logger.info("Merging all parameters...")
-        merged = deflatten_dict({x['Key']: x['Value'] for x in secrets['Secrets']})
-        merge_dicts(deflatten_dict({x['Key']: x['Value'] for x in parameters['Parameters']}), merged)
-        merge_dicts(AppConfigs.meta_vars, merged)
-
+        merged = self.get_all_params()
+        
         Logger.info("Loading templates...")
         templates = self.list(filter=filter)['Templates']
 

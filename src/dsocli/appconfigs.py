@@ -246,7 +246,7 @@ class AppConfigService:
             if not silent_warnings: Logger.warn(MESSAGES['NoDSOConfigFound'])
             return
 
-        Logger.debug(f"Local DSO configuration found: path={self.local_config_file_path}")
+        Logger.debug(f"Local configuration found: path={self.local_config_file_path}")
 
         try:
             self.local_config = load_file(self.local_config_file_path)

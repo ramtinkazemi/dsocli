@@ -316,7 +316,8 @@ CLI_PARAMETERS_HELP = {
         'contents_path' : "Path to a local file or directory containing the template contents.",
         'recursive' : "Add files recursively.",
         'uninherited': "Select only templates which are specific to the gievn context, i.e. not inherited from the parent contexts.",
-        'include_contents': "Include template contenets in the output. ",
+        'include_contents': "Include template contenets in the output.",
+        'rendered': "Specifies whether render or raw contents.",
     },
     'config': {
         'key': "The key of the configuration setting",
