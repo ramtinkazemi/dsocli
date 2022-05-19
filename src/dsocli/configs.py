@@ -51,12 +51,11 @@ class ConfigService():
     #     return provider.history(service=service, key)
 
 
-    def unset(self, key, service):
+    def unset(self, key):
         from .appconfigs import AppConfigs
-        self.service = service
         provider = Providers.ConfigProvider()
         Logger.debug(f"Unsetting configuration '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        return provider.unset(key=key, service=service)
+        return provider.unset(key=key)
 
 
 Configs = ConfigService()

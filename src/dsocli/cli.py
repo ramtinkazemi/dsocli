@@ -2241,6 +2241,7 @@ def config_set(key, value, remote, stage, input, format, global_scope, namespace
 @command_doc(CLI_COMMANDS_HELP['config']['unset'])
 @config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['unset'])
 @click.argument('key', required=False)
+@click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 # @click.option('--global', 'global_', is_flag=True, default=False, help=CLI_PARAMETERS_HELP['config']['global'])
@@ -2250,19 +2251,22 @@ def config_set(key, value, remote, stage, input, format, global_scope, namespace
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_unset(key, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def config_unset(key, remote, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
-    configurations = []
 
     scope = ContextScope.App
+    source = ConfigSource.Local
+    configurations = []
 
     def validate_command_usage():
-        nonlocal working_dir, scope, configurations
+        nonlocal working_dir, scope, configurations, source
 
         if not working_dir: working_dir = os.getcwd()
 
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
+
+        source = ConfigSource.Remote if remote else ConfigSource.Local
 
         if input:
             validate_none_provided([key], ["KEY"], ["'-i' / '--input'"])
@@ -2284,7 +2288,7 @@ def config_unset(key, stage,  input, format, global_scope, namespace_scope, verb
         else:
             failed = [x['Key'] for x in configurations]
             for setting in configurations:
-                success.append(AppConfigs.unset(setting['Key']))
+                success.append(AppConfigs.unset(setting['Key'], source=source))
                 failed.remove(setting['Key'])
 
     except DSOException as e:

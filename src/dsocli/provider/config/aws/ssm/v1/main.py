@@ -142,11 +142,10 @@ class AwsSsmConfigProvider(ConfigProvider):
 
 
 
-    def unset(self, key, service):
-        self.service = service
-        Logger.debug(f"Locating configuration setting '{key}' on SSM: service={service}")
+    def unset(self, key):
+        Logger.debug(f"Locating configuration setting '{key}'...")
         ### only configuration owned by the context can be deleted, hence uninherited=True
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(service), uninherited=True)
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
             raise DSOException(f"Configuration '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         else:

@@ -735,12 +735,29 @@ class AppConfigService:
             
 
 
-    def unset(self, key, service=None):
-        if service:  ### use config service
-            from .configs import Configs
-            return Configs.unset(service=service, key=key)
-        else:
-            Logger.info(f"Unsetting '{key}' from configurations...")
+    def unset(self, key, source=ConfigSource.Local):
+        Logger.info(f"Unsetting configuration setting '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        if source == ConfigSource.All:
+            result = get_dict_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
+            if result:
+                return {
+                    'Key' : key,
+                    'Value' : result,
+                    'Source': 'local',
+                    'Path': os.path.join(self.config_dir, self.config_file)
+                }   
+            else:
+                Logger.debug(f"Configuration setting '{key}' not found locally.")     
+                if self.config_provider:
+                    from .configs import Configs
+                    result = Configs.get(key=key, revision=revision, uninherited=uninherited, rendered=rendered)
+                    if not result:
+                        raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextSource.Target)}, application={self.get_application(ContextSource.Target)}, stage={self.get_stage(ContextSource.Target)}, scope={self.scope}")
+                    return result
+                else:
+                    Logger.warn("Remote configiguration is not availbale becasue config provider has not been set.")
+                    return {}
+        elif source == ConfigSource.Local:
             parent = get_dict_item(self.local_config, key.split('.')[:-1])
             if parent and key.split('.')[-1] in parent:
                 del_dict_item(dic=self.local_config, keys=key.split('.'))
@@ -749,6 +766,18 @@ class AppConfigService:
                 self.load_local_config()
             else:
                 raise DSOException(f"'{key}' not found in configuratoin settings.")
+            return {
+                    'Key' : key,
+                    'Value' : result,
+                    'Source': 'local'
+                }        
+        elif source == ConfigSource.Remote:
+            from .configs import Configs
+            result = Configs.unset(key=key)
+            if not result:
+                raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextSource.Target)}, application={self.get_application(ContextSource.Target)}, stage={self.get_stage(ContextSource.Target)}, scope={self.scope}")
+            return result        
+
 
 
 AppConfigs = AppConfigService()
