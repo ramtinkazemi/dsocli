@@ -268,16 +268,7 @@ class AppConfigService:
             pid = self.get_provider_id(service)
         self.remote_config = {}
         from .configs import Configs
-        # for service in all_services:
-        #     serviceConfigs = Configs.list(service, uninherited, filter)
-        #     print(serviceConfigs)
-        #     pid = self.get_provider_id(service)
-        #     if pid:
-        #         conf = deflatten_dict({x['Key']: x['Value'] for x in serviceConfigs})
-        #         merge_dicts({service: conf}, self.remote_config)
-        
-        remoteConf = deflatten_dict({x['Key']: x['Value'] for x in  Configs.list(uninherited, filter)})
-        merge_dicts(remoteConf, self.remote_config)
+        self.remote_config = deflatten_dict({x['Key']: x['Value'] for x in  Configs.list(uninherited=uninherited, filter=filter)})
         self.update_merged_config()
 
 
@@ -330,7 +321,7 @@ class AppConfigService:
         return result
 
     ### support rendering only on local config
-    def update_merged_config(self, use_defaults=True, use_calculated=True, use_root=True, use_local=True, use_remote=True, rendered=True):
+    def update_merged_config(self, use_defaults=True, use_calculated=True, use_root=True, use_local=True, use_remote=True, rendered=False):
         self.merged_config = {}
         if use_defaults:
             self.merged_config = get_default_config()
@@ -641,14 +632,14 @@ class AppConfigService:
             if rendered:
                 self.render_local_config()
             self.update_merged_config(use_remote=False, rendered=rendered)
-            response = flatten_dict(self.merged_config.copy())
+            response = flatten_dict(self.merged_config)
         elif source == ConfigSource.Remote:
             if self.config_provider:
                 self.load_remote_config(uninherited=uninherited)
                 if rendered:
                     self.render_remote_config()
                 self.update_merged_config(use_defaults=False, use_calculated=False, use_local=False, use_root=False, rendered=rendered)
-                response = flatten_dict(merge_dicts(self.remote_config, self.merged_config.copy()))
+                response = flatten_dict(self.merged_config)
             else:
                 Logger.warn("Remote configiguration is not availbale becasue config provider has not been set.")
                 response = {}
@@ -658,9 +649,10 @@ class AppConfigService:
             else:
                 Logger.warn("Remote configiguration is not availbale becasue config provider has not been set.")
             if rendered:
+                self.render_remote_config()
                 self.render_local_config()
             self.update_merged_config(rendered=rendered)
-            response = flatten_dict(merge_dicts(self.remote_config, self.merged_config.copy()))
+            response = flatten_dict(self.merged_config)
         
         result = []
         for key, value in response.items():

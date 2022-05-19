@@ -20,11 +20,11 @@ class ConfigProvider(KeyValueStoreProvider):
 
 class ConfigService():
 
-    def list(self, uninherited=False, filter=None):
+    def list(self, filter=None, uninherited=False):
         from .appconfigs import AppConfigs
         provider = Providers.ConfigProvider()
         Logger.debug(f"Listing configurations: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        response = provider.list(uninherited=uninherited, filter=filter)
+        response = provider.list(filter=filter, uninherited=uninherited)
         return response
 
 

@@ -67,7 +67,8 @@ def load_ssm_path(result, path, parameter_type, used_path_prefix='', decrypt=Fal
         ctx_path = path[len(used_path_prefix):]
         ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
         details = {
-                    'Value': unescape_curly_brackets(parameter['Value']) if parameter_type == 'StringList' else decode_nulls(parameter['Value']), 
+                    # 'Value': unescape_curly_brackets(parameter['Value']) if parameter_type == 'StringList' else decode_nulls(parameter['Value']), 
+                    'Value': decode_nulls(unescape_curly_brackets(parameter['Value'])),
                     'Path': parameter['Name'],
                     'Version': parameter['Version'],
                     'Stage': ctx.short_stage,
@@ -149,7 +150,7 @@ def assert_ssm_parameter_no_namespace_overwrites(key, path_prefix=''):
 
 def add_ssm_paramater(path, value):
     ssm = boto3.session.Session().client(service_name='ssm')
-    return ssm.put_parameter(Name=path, Value=encode_nulls(value), Type='String', Overwrite=True)
+    return ssm.put_parameter(Name=path, Value=escape_curly_brackets(encode_nulls(value)), Type='String', Overwrite=True)
 
 
 
@@ -164,22 +165,22 @@ def add_ssm_template(path, contents):
     return ssm.put_parameter(Name=path, Value=escape_curly_brackets(contents), Type='StringList', Overwrite=True)
 
 
-def __get_ssm_parameter_history(name, decrypt=False):
+def do_get_ssm_parameter_history(name, decrypt=False):
     ssm = boto3.session.Session().client(service_name='ssm')
     return ssm.get_parameter_history(Name=name, WithDecryption=decrypt)
 
 
 
 def get_ssm_parameter_history(name):
-    response = __get_ssm_parameter_history(name)
+    response = do_get_ssm_parameter_history(name)
     for i in range(0, len(response['Parameters'])):
-        response['Parameters'][i]['Value'] = decode_nulls(response['Parameters'][i]['Value'])
+        response['Parameters'][i]['Value'] = decode_nulls(unescape_curly_brackets(response['Parameters'][i]['Value']))
     return response
 
 
 
 def get_ssm_secret_history(name, decrypt=False):
-    response = __get_ssm_parameter_history(name, decrypt)
+    response = do_get_ssm_parameter_history(name, decrypt)
     if decrypt:
         for i in range(0, len(response['Parameters'])):
             response['Parameters'][i]['Value'] = decode_nulls(response['Parameters'][i]['Value'])
@@ -188,7 +189,7 @@ def get_ssm_secret_history(name, decrypt=False):
 
 
 def get_ssm_template_history(name):
-    response = __get_ssm_parameter_history(name)
+    response = do_get_ssm_parameter_history(name)
     for i in range(0, len(response['Parameters'])):
         response['Parameters'][i]['Value'] = unescape_curly_brackets(response['Parameters'][i]['Value'])
     return response

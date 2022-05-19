@@ -1,3 +1,5 @@
+import re
+from unittest import result
 from .logger import Logger
 from .exceptions import DSOException
 
@@ -178,63 +180,89 @@ def deflatten_dict(input: dict, delimiter = '.'):
 
 
 
-def get_dict_item(dic, keys, create=True, default=None, leaf_only=False):
+def get_dict_item(dic, keys, create=True, default={}, leaf_only=False):
     for i in range(0, len(keys)):
         key = keys[i]
         if isinstance(dic, dict):
-            if not key in dic.keys():
+            if not key in dic.keys() or dic[key] is None:
                 if create:
-                    dic[key] = default
+                    dic[key] = default.copy() ### !Important
                 else:
                     return None
             dic = dic[key]
         elif isinstance(dic, list):
             key = int(key)
             if key >= len(dic):
-                return None
+                raise IndexError()
             dic = dic[key]
-            # raise DSOException("Lists items are not allowed '{0}'. Must be converted to dictionary.".format('.'.join(keys[0:i])))
         else:
-            return None
+            raise NotImplementedError()
     if leaf_only and type(dic) in [dict, tuple]:
         return None
     return dic
     
-    
+def safe_str_to_number(s):
+    try:
+        return int(s.strip())
+    except:
+        try:
+            return float(s.strip())
+        except:
+            return s
+            
+
+
 
 
 def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=False):
     
-    def set_list_value(alist, idx):
+    def set_list_value(alist, idx, value):
         ### idx must be a number
         if idx < len(alist):
             if isinstance(alist[idx], dict) or isinstance(alist[idx], list) or isinstance(alist[idx], set) or isinstance(alist[idx], tuple):
                 if overwrite_children:
                     Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
                 else:
-                    raise DSOException("Failed to set '{0}' becasue it would otherwise overwrite an existing item of type '{1}'.".format('.'.join(keys), type(alist)))
+                    raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item '{'.'.join(keys)}' of type {type(alist)}`.")
             alist[idx] = value
         elif idx == len(alist):
             alist.append(value)
         else:
-            raise DSOException(f"Index '{idx}' exceeded list size: '{'.'.join(keys[:-1])}'")
-
+            raise DSOException(f"Index '{idx}' exceeded list size: {'.'.join(keys[:-1])}.{len(alist)}")
 
     lastKey = keys[-1]
-
+    
+    ### are we appending to a list?
     if lastKey == '*':
+        parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])
+        if not isinstance(parent_item, list):
+            raise DSOException(f"Index qualifiers can only be used with lists not with {type(parent_item)}.")
         lastKey = len(parent_item)
         keys[-1] = str(lastKey)
+    else:
+        ### are we dealing with a list?
+        try:
+            lastKey = int(lastKey)
+        except:
+            parent_item = get_dict_item(dic, keys[:-1], create=True, default={})
+        else:
+            parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])     
+            if not isinstance(parent_item, list):
+                raise DSOException(f"Index qualifiers can only be used with lists not with {type(parent_item)}.")
 
-    try: 
-        lastKey = int(lastKey)
-        parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])        
-    except:
-        parent_item = get_dict_item(dic, keys[:-1], create=True, default={})        
+    ### is value a comma separated list enclosed in brackets?
+    if re.match(r'^\[(.*)\]$', value):
+        value = re.sub(r"^\[", "", re.sub(r"\]$", "", value))
+        value = list(map(lambda x: safe_str_to_number(x), re.findall('([^,]+)', value)))
+         ### alow overrwrite the entire list
+        if parent_item[lastKey]is None or isinstance(parent_item[lastKey], list):
+            overwrite_children = True
+        else:
+            raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
 
     if isinstance(parent_item, list):
-        set_list_value(parent_item, lastKey)
-        
+        set_list_value(parent_item, lastKey, value)
+
     elif isinstance(parent_item, dict):
         if lastKey in parent_item.keys():
             ### item is expected to be a basic type (string, number, ...)
@@ -242,7 +270,7 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
                 if overwrite_children:
                     Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
                 else:
-                    raise DSOException("Failed to set '{0}' becasue it would otherwise overwrite a '{1}'.".format('.'.join(keys), type(parent_item[lastKey])))
+                    raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
         parent_item[lastKey] = value
     else:
         if overwrite_parent or parent_item is None:
@@ -251,14 +279,13 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
             if type(lastKey) == int:
                 grand_parent_item[keys[-2]] = []
                 parent_item = grand_parent_item[keys[-2]]
-                set_dict_value(parent_item, lastKey)
+                set_dict_value(parent_item, lastKey, value)
             else:
                 grand_parent_item[keys[-2]] = {}
                 parent_item = grand_parent_item[keys[-2]]
                 parent_item[lastKey] = value
-            Logger.warn(f"'{'.'.join(keys[:-1])}' was overwritten by '{'.'.join(keys)}'.")
         else:
-            raise DSOException("Failed to set '{0}' becasue it would otherwise overwrite parent item '{1}' which is not a dictionary but of type '{2}'.".format('.'.join(keys), '.'.join(keys[:-1]), type(parent_item)))
+            raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item '{'.'.join(keys[:-1])}' of type {type(parent_item)}.")
 
     return '.'.join(keys)
 

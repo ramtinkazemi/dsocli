@@ -47,15 +47,14 @@ class LocalConfigProvider(ConfigProvider):
 
 
 
-    def set(self, service, key, value):
-        self.service = service
+    def set(self, key, value):
         Logger.debug(f"Adding local configuration setting '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         response = add_local_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix(service))
         return response
 
 
 
-    def list(self, service, uninherited=False, filter=None):
+    def list(self, uninherited=False, filter=None):
         self.service = service
         Logger.debug(f"Listing local configuration settings: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
         settings = load_context_local_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(service), uninherited=uninherited, filter=filter)
