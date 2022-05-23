@@ -13,7 +13,7 @@ CLI_COMMANDS_HELP = {
                 KEY: The identifier of the parameter. It may also be provided using the '--key' option.\n
                 """,
         'edit': """Edit the current value of a parameter.\n
-                ** Tips: 1) The parameter may be inherited from the parent contexts or owned by the given context.\n
+                ** Tips: 1) The parameter must be owned by the given context.\n
                 KEY: The identifier of the parameter. It may also be provided using the '--key' option.\n
                 """,
         'delete': """Delete a parameter from a context.\n
@@ -24,18 +24,6 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The parameter may be inherited from the parent contexts or owned by the given context.\n
                 KEY: The identifier of the parameter. It may also be provided using the '--key' option.\n
                 """,
-        'config': {
-                'get': """Get parameter provider configuration setting(s).\n
-                        KEY: The key of the configuration setting
-                        """,
-                'set': """Set parameter provider configuration setting(s).\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset parameter provider configuration setting(s).\n
-                        KEY: The key of the configuration
-                        """,
-        },
     },
     'secret': {
         'add': """Add a secret to a context, or update a secret if it is already existing in the context.\n
@@ -51,7 +39,7 @@ CLI_COMMANDS_HELP = {
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'edit': """Edit the current value of a secret.\n
-                ** Tips: 1) The secret may be inherited from the parent contexts or owned by the given context.\n
+                ** Tips: 1) The secret must be owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'delete': """Delete a secret from a context.\n
@@ -62,18 +50,6 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The secret may be inherited from the parent contexts or owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
-        'config': {
-                'get': """Get secret provider configuration setting(s).\n
-                        KEY: The key of the configuration setting
-                        """,
-                'set': """Set secret provider configuration setting(s).\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset secret provider configuration setting(s).\n
-                        KEY: The key of the configuration
-                        """,
-        },
     },
     'template': {
         'add': """Add a template to a context, or update the contents if it is already existing in the context.\n
@@ -88,7 +64,7 @@ CLI_COMMANDS_HELP = {
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'edit': """Edit the contents of a template.\n
-                ** Tips: 1) The template may be inherited from the parent contexts or owned by the given context.\n
+                ** Tips: 1) The template must be owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'delete': """Delete a template from a context.\n
@@ -101,18 +77,6 @@ CLI_COMMANDS_HELP = {
                 """,
         'render': """Render templates in a context.\n
                     """,
-        'config': {
-                'get': """Get template provider configuration setting(s).\n
-                        KEY: The key of the configuration setting
-                        """,
-                'set': """Set template provider configuration setting(s).\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset template provider configuration setting(s).\n
-                        KEY: The key of the configuration
-                        """,
-        },                
     },
     'config': {
         'list': """Return the list of configuration settings in a context.\n
@@ -122,18 +86,22 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration
                 """,
-        'set': """Set DSO application configuration.\n
+        'add': """Add DSO application configuration.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration. It may also be provided using the '--key' option.\n
                 VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
                 """,
-        'unset': """Unset DSO application configuration.\n
+        'delete': """Delete DSO application configuration.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration
                 """,
         'init': """Initialize DSO configuration for the working directory.\n
                 ** Tips: 1) Use --input to load connfiguration from a file.\n
                 The option '--working-dir' can be used to specify a different working directory than the current directory where dso is running in.\n
+                """,
+        'edit': """Edit the current value of a configuration setting.\n
+                ** Tips: 1) The setting must be owned by the given context.\n
+                KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
       },
     'package': {
@@ -151,18 +119,6 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The inherited package cannot be deleted. The context must be the owner of the secret or a not found error will be returned. 2) Multiple packages may be deleted at once using the '--input' option.\n
                 KEY: The identifier of the package to be deleted. It may also be provided using the '--key' option.\n
                 """,
-        'config': {
-                'get': """Get package provider configuration setting(s).\n
-                        KEY: The key of the configuration setting
-                        """,
-                'set': """Set package provider configuration setting(s).\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset package provider configuration setting(s).\n
-                        KEY: The key of the configuration
-                        """,
-        },
     },
     'release': {
         'create': """Create a deployment release, and adds it to artifact store.\n
@@ -179,19 +135,6 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The inherited release cannot be deleted. The context must be the owner of the secret or a not found error will be returned. 2) Multiple releases may be deleted at once using the '--input' option.\n
                 KEY: The identifier of the release to be deleted. It may also be provided using the '--key' option.\n
                 """,
-
-        'config': {
-                'get': """Get release provider configuration setting(s).\n
-                        KEY: The key of the configuration setting
-                        """,
-                'set': """Set release provider configuration setting(s).\n
-                        KEY: The key of the configuration. It may also be provided using the '--key' option.\n
-                        VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
-                        """,
-                'unset': """Unset release provider configuration setting(s).\n
-                        KEY: The key of the configuration
-                        """,
-        },
     },
     'network': {
         'subnet': """Get subnet plan layout of the applcation.\n
@@ -208,11 +151,6 @@ CLI_COMMANDS_SHORT_HELP = {
         'edit': "Edit the value of a parameter.",
         'delete': "Delete one or multiple parameters from the application.",
         'history': "Get the revision history of a parameter.",
-        'config': {
-                'get': "Get parameter provider configuration setting(s).",
-                'set': "Set parameter provider configuration setting(s)",
-                'unset': "Unset parameter provider configuration setting(s).",
-        },
     },
     'secret': {
         'list': "List secrets available to the application.",
@@ -221,12 +159,6 @@ CLI_COMMANDS_SHORT_HELP = {
         'edit': "Edit the value of a secret.",
         'delete': "Delete one or multiple secrets from the application.",
         'history': "Get the revision history of a secret.",
-        'config': {
-                'get': "Get secret provider configuration setting(s).",
-                'set': "Set secret provider configuration setting(s)",
-                'unset': "Unset secret provider configuration setting(s).",
-        },
-
     },
     'template': {
         'list': "List templates available to the application.",
@@ -236,41 +168,26 @@ CLI_COMMANDS_SHORT_HELP = {
         'delete': "Delete one or multiple templates from the application.",
         'history': "Get the revision history of a template.",
         'render': "Render templates using parameters and secrets in a context.",
-        'config': {
-                'get': "Get template provider configuration setting(s).",
-                'set': "Set template provider configuration setting(s)",
-                'unset': "Unset template provider configuration setting(s).",
-        },
     },
     'package': {
         'list': "List packages built for the application available on arctifact store.",
         'build': "Build a distributable package for the application.",
         'get': "Download a build package from arctifact store.",
         'delete': "Delete a build package from arctifact store.",
-        'config': {
-                'get': "Get package provider configuration setting(s).",
-                'set': "Set package provider configuration setting(s)",
-                'unset': "Unset package provider configuration setting(s).",
-        },
-
     },
     'release': {
         'list': "List deployment releases for the application.",
         'create': "Create a deployment release for the application.",
         'get': "Download an application deployment release.",
         'delete': "Delete a deployment release from the application.",
-        'config': {
-                'get': "Get release provider configuration setting(s).",
-                'set': "Set release provider configuration setting(s)",
-                'unset': "Unset release provider configuration setting(s).",
-        },
     },
     'config': {
         'list': "List configuration settings available to the application.",
         'get': "Get DSO application configuration.",
-        'set': "Set DSO application configuration.",
-        'unset': "Delete a DSO application configuration.",
+        'add': "Add DSO application configuration.",
+        'delete': "Delete a DSO application configuration.",
         'init': "Initialize DSO application in the working directory.",
+        'edit': "Edit the value of a configuration setting.",
     },
     'network': {
         'subnet': "Get subnet plan layout of the application.",

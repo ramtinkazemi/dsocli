@@ -11,7 +11,7 @@ from .logger import Logger
 from .dict_utils import merge_dicts, deflatten_dict
 from .exceptions import DSOException
 from .stages import Stages
-from .appconfigs import AppConfigs, ContextSource
+from .appconfigs import AppConfigs, ContextMode
 
 
 key_regex_pattern = r"^[a-zA-Z]([./a-zA-Z0-9_-]*[a-zA-Z0-9])?$"
@@ -72,7 +72,7 @@ class TemplateService():
 
     def list(self, uninherited=False, include_contents=False, filter=None):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Listing templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.info(f"Listing templates: namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         response = provider.list(uninherited, include_contents, filter)
         for template in response:
             key = template['Key']
@@ -85,7 +85,7 @@ class TemplateService():
     def add(self, key, contents, render_path):
         self.validate_key(key)
         provider = Providers.TemplateProvider()
-        Logger.info(f"Adding template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.info(f"Adding template '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         Logger.debug(f"Template: key={key}, render_path={render_path}")
         result = provider.add(key, contents)
         result['RenderPath'] = render_path
@@ -97,7 +97,7 @@ class TemplateService():
 
     def get(self, key, revision=None, rendred=True):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Getting template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.info(f"Getting template '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         result = provider.get(key, revision)
         if rendred:
             Logger.info("Rendering...")
@@ -108,19 +108,19 @@ class TemplateService():
 
     def history(self, key, include_contents=False):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Fetching history of template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.info(f"Fetching history of template '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         return provider.history(key, include_contents)
 
     def delete(self, key):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Deleting template '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.info(f"Deleting template '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         result = provider.delete(key)
         AppConfigs.unregister_template_custom_render_path(key)
         return result
 
     def render(self, filter=None):
 
-        Logger.info(f"Rendering templates: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.info(f"Rendering templates: namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
 
         merged = self.get_all_params()
         

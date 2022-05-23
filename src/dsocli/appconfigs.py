@@ -4,7 +4,6 @@ import re
 import sys
 import imp
 from functools import reduce
-from click.core import F
 from .constants import *
 from .logger import Logger
 from .dict_utils import *
@@ -12,19 +11,15 @@ from pathlib import Path
 from .file_utils import *
 from .exceptions import DSOException
 from .stages import Stages
-from .contexts import Context, ContextScope
+from .contexts import Context, ContextScope, ContextMode
 from .enum_utils import OrderedEnum
 
 
-class ConfigSource(OrderedEnum):
+class ConfigOrigin(OrderedEnum):
     All = 10
     Local = 20
     Remote = 30
 
-
-class ContextSource(OrderedEnum):
-    Target = 10
-    Effective = 30
 
 
 _init_config = {
@@ -84,7 +79,7 @@ _default_config = {
         },
         'renderPath': {}
     },
-    'artifactStore': {
+    'artifactory': {
         'provider': {
             'id': '',
             'spec': {}
@@ -114,7 +109,7 @@ _default_config = {
 
 }
 
-all_services = ['config', 'parameter', 'secret', 'template', 'artifactStore', 'package', 'release']
+all_services = ['config', 'parameter', 'secret', 'template', 'artifactory', 'package', 'release']
 
 
 def get_init_config():
@@ -371,15 +366,15 @@ class AppConfigService:
                     'scope': str(self.scope)
                 },
                 'target': {
-                    'namespace': self.get_namespace(ContextSource.Target),
-                    'application': self.get_application(ContextSource.Target),
-                    'stage': self.get_stage(ContextSource.Target, short=True),
-                    'env': Stages.parse_env(self.get_stage(ContextSource.Target)),
+                    'namespace': self.get_namespace(ContextMode.Target),
+                    'application': self.get_application(ContextMode.Target),
+                    'stage': self.get_stage(ContextMode.Target, short=True),
+                    'env': Stages.parse_env(self.get_stage(ContextMode.Target)),
                     'scope': str(self.scope)
                 },
             }
-            self.merged_config['stage'] = self.get_stage(ContextSource.Target, short=True)
-            self.merged_config['env'] = Stages.parse_env(self.get_stage(ContextSource.Target))
+            self.merged_config['stage'] = self.get_stage(ContextMode.Target, short=True)
+            self.merged_config['env'] = Stages.parse_env(self.get_stage(ContextMode.Target))
             self.merged_config['scope'] = str(self.scope)
 
 
@@ -416,10 +411,10 @@ class AppConfigService:
     def namespace(self):
         return self.get_namespace()
 
-    def get_namespace(self, source=ContextSource.Effective):
-        if source == ContextSource.Target:
+    def get_namespace(self, source=ContextMode.Effective):
+        if source == ContextMode.Target:
             result = self.context.target[0]
-        elif source == ContextSource.Effective:
+        elif source == ContextMode.Effective:
             result = self.context.effective[0]
         
         return result
@@ -430,10 +425,10 @@ class AppConfigService:
         return self.get_application()
 
 
-    def get_application(self, source=ContextSource.Effective):
-        if source == ContextSource.Target:
+    def get_application(self, source=ContextMode.Effective):
+        if source == ContextMode.Target:
             result = self.context.target[1]
-        elif source == ContextSource.Effective:
+        elif source == ContextMode.Effective:
             result = self.context.effective[1]
         
         return result
@@ -443,10 +438,10 @@ class AppConfigService:
     def stage(self):
         return self.get_stage()
 
-    def get_stage(self, source=ContextSource.Effective, short=False):
-        if source == ContextSource.Target:
+    def get_stage(self, source=ContextMode.Effective, short=False):
+        if source == ContextMode.Target:
             result = self.context.target[2]
-        elif source == ContextSource.Effective:
+        elif source == ContextMode.Effective:
             result = self.context.effective[2]
         
         if short:
@@ -494,8 +489,8 @@ class AppConfigService:
         return self.get_provider_id('template')
 
     @property
-    def artifactStore_provider(self):
-        return self.get_provider_id('artifactStore')
+    def artifactory_provider(self):
+        return self.get_provider_id('artifactory')
 
     @property
     def package_provider(self):
@@ -531,8 +526,8 @@ class AppConfigService:
     def template_spec(self, key):
         return self.get_provider_spec('template', key)
 
-    def artifactStore_spec(self, key):
-        return self.get_provider_spec('artifactStore', key)
+    def artifactory_spec(self, key):
+        return self.get_provider_spec('artifactory', key)
 
     def package_spec(self, key):
         return self.get_provider_spec('package', key)
@@ -626,14 +621,14 @@ class AppConfigService:
         self.save_local_config()
 
 
-    def list(self, uninherited=False, filter=None, rendered=False, source=ConfigSource.All):
-        Logger.info(f"Listing configuration settings: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        if source == ConfigSource.Local:                
+    def list(self, uninherited=False, filter=None, rendered=False, source=ConfigOrigin.All):
+        Logger.info(f"Listing configuration settings: namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
+        if source == ConfigOrigin.Local:                
             if rendered:
                 self.render_local_config()
             self.update_merged_config(use_remote=False, rendered=rendered)
             response = flatten_dict(self.merged_config)
-        elif source == ConfigSource.Remote:
+        elif source == ConfigOrigin.Remote:
             if self.config_provider:
                 self.load_remote_config(uninherited=uninherited)
                 if rendered:
@@ -643,7 +638,7 @@ class AppConfigService:
             else:
                 Logger.warn("Remote configiguration is not availbale becasue config provider has not been set.")
                 response = {}
-        elif source == ConfigSource.All:
+        elif source == ConfigOrigin.All:
             if self.config_provider:
                 self.load_remote_config(uninherited=uninherited)
             else:
@@ -667,9 +662,9 @@ class AppConfigService:
         return {'Configuration': sorted(result, key=itemgetter('Key'))}
 
 
-    def set(self, key, value, source=ConfigSource.Local):
-        Logger.info(f"Setting configuration '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        if source == ConfigSource.Local:
+    def add(self, key, value, source=ConfigOrigin.Local):
+        Logger.info(f"Setting configuration '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
+        if source == ConfigOrigin.Local:
             if not os.path.exists(self.local_config_file_path):
                 raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
             key = set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=False, overwrite_children=False)
@@ -677,20 +672,20 @@ class AppConfigService:
             return {
                 'Key' : key,
                 'Value' : value,
-                'Source': 'local',
+                'Origin': 'local',
                 'Path': self.config_dir
             }            
             # self.load_local_config(render=False)
-        elif source == ConfigSource.Remote:
+        elif source == ConfigOrigin.Remote:
             from .configs import Configs
             return Configs.set(key=key, value=value)
         else:
             raise NotImplementedError()
 
 
-    def get(self, key, revision=None, uninherited=False, rendered=True, source=ConfigSource.All):
-        Logger.info(f"Getting configuration setting '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        if source == ConfigSource.All:
+    def get(self, key, revision=None, uninherited=False, rendered=True, source=ConfigOrigin.All):
+        Logger.info(f"Getting configuration setting '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
+        if source == ConfigOrigin.All:
             if not rendered:
                 self.update_merged_config(use_remote=False, rendered=False)
             result = get_dict_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
@@ -698,7 +693,7 @@ class AppConfigService:
                 return {
                     'Key' : key,
                     'Value' : result,
-                    'Source': 'local',
+                    'Origin': 'local',
                     'Path': os.path.join(self.config_dir, self.config_file)
                 }   
             else:
@@ -707,58 +702,57 @@ class AppConfigService:
                     from .configs import Configs
                     result = Configs.get(key=key, revision=revision, uninherited=uninherited, rendered=rendered)
                     if not result:
-                        raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextSource.Target)}, application={self.get_application(ContextSource.Target)}, stage={self.get_stage(ContextSource.Target)}, scope={self.scope}")
+                        raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
                     return result
                 else:
                     Logger.warn("Remote configiguration is not availbale becasue config provider has not been set.")
                     return {}
-        elif source == ConfigSource.Local:
+        elif source == ConfigOrigin.Local:
             if not rendered:
                 self.update_merged_config(use_remote=False, rendered=False)
             result = get_dict_item(self.merged_config, key.split('.'), create=False)
             if not result:
-                raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextSource.Target)}, application={self.get_application(ContextSource.Target)}, stage={self.get_stage(ContextSource.Target)}, scope={self.scope}")
+                raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
             return {
                     'Key' : key,
                     'Value' : result,
-                    'Source': 'local'
+                    'Origin': 'local'
                 }        
-        elif source == ConfigSource.Remote:
+        elif source == ConfigOrigin.Remote:
             from .configs import Configs
             if not rendered:
                 self.update_merged_config(use_remote=False, rendered=False)
             result = Configs.get(key=key, revision=revision, uninherited=uninherited, rendered=rendered)
             if not result:
-                raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextSource.Target)}, application={self.get_application(ContextSource.Target)}, stage={self.get_stage(ContextSource.Target)}, scope={self.scope}")
+                raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
             return result
 
             
-    def unset_remote(self, key):
+    def delete_remote(self, key):
         from .configs import Configs
-        return Configs.unset(key=key)
+        return Configs.delete(key=key)
 
-    def unset_local(self, key):
+    def delete_local(self, key):
         parent = get_dict_item(self.local_config, key.split('.')[:-1])
         if parent and key.split('.')[-1] in parent:
             del_dict_item(dic=self.local_config, keys=key.split('.'))
             del_dict_empty_item(dic=self.local_config, keys=key.split('.')[:-1])
             self.save_local_config()
-            self.load_local_config()
+            # self.load_local_config()
         else:
-            raise DSOException(f"'{key}' not found in configuratoin settings.")
+            raise DSOException(f"'{key}' not found in configuration settings.")
         return {
                 'Key' : key,
-                'Value' : result,
-                'Source': 'local'
+                'Origin': 'local'
             }   
             
 
-    def unset(self, key, source=ConfigSource.Local):
-        Logger.info(f"Unsetting configuration setting '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
-        if source == ConfigSource.Local:
-            return self.unset_local(key)
-        elif source == ConfigSource.Remote:
-            return self.unset_remote(key)
+    def delete(self, key, source=ConfigOrigin.Local):
+        Logger.info(f"Deleting configuration setting '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
+        if source == ConfigOrigin.Local:
+            return self.delete_local(key)
+        elif source == ConfigOrigin.Remote:
+            return self.delete_remote(key)
         else:
             raise NotImplementedError()
   

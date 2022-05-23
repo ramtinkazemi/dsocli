@@ -4,7 +4,7 @@ import click
 from .logger import Logger
 from .cli_constants import *
 import tempfile
-from .appconfigs import ConfigSource
+from .appconfigs import ConfigOrigin
 
 
 class MuOption(click.Option):
@@ -111,7 +111,7 @@ def command_doc(value):
     return _doc
 
 
-def ConfigSource_from_string(ctx, param, value, has_wildcards=False):
+def ConfigOrigin_from_string(ctx, param, value, has_wildcards=False):
     if not value: return
     if value == '-':
         with tempfile.NamedTemporaryFile("w", delete=False) as f:
@@ -124,4 +124,4 @@ def ConfigSource_from_string(ctx, param, value, has_wildcards=False):
     return value
 
 def config_source_from_string(ctx, param, value):
-    return ConfigSource.from_str(value)
+    return ConfigOrigin.from_str(value)

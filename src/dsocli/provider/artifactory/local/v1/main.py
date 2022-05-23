@@ -6,7 +6,6 @@ from dsocli.templates import TemplateProvider
 from dsocli.stages import Stages
 from dsocli.constants import *
 from dsocli.exceptions import DSOException
-from dsocli.contexts import Contexts
 from dsocli.local_utils import *
 from dsocli.settings import *
 

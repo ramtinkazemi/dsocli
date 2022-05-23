@@ -1,7 +1,7 @@
 
 from .constants import *
 from .providers import ProviderBase, Providers
-from .artifacts import ArtifactStore
+from .artifacts import Artifactory
 from .logger import Logger
 from .exceptions import DSOException
 from .stages import Stages
@@ -105,7 +105,7 @@ class ReleaseService():
     def list(self, filter=None):
         provider = Providers.ReleaseProvider()
         Logger.info(f"Listing releases: namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
-        response = ArtifactStore.list(service=self.service_name, filter=filter)
+        response = Artifactory.list(service=self.service_name, filter=filter)
         result = {'Releases': response['Artifacts']}
         return result
 
@@ -123,16 +123,16 @@ class ReleaseService():
         Logger.info(f"Adding release '{artifactKey}' to artifact store...")
         # changed = Logger.decrease_verbosity()
         # try:
-        #     response = ArtifactStore.add(filepath=artifact, key=artifactKey ,service=self.service_name)
+        #     response = Artifactory.add(filepath=artifact, key=artifactKey ,service=self.service_name)
         # finally:
         #     if changed: Logger.increase_verbosity()
-        response = ArtifactStore.add(filepath=artifact, key=artifactKey ,service=self.service_name)
+        response = Artifactory.add(filepath=artifact, key=artifactKey ,service=self.service_name)
         return response
 
 
     def get(self, key):
         Logger.info(f"Getting release '{key}': namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
-        response = ArtifactStore.get(key=key, service=self.service_name)
+        response = Artifactory.get(key=key, service=self.service_name)
         return response
 
 
@@ -145,7 +145,7 @@ class ReleaseService():
 
     def delete(self, key):
         Logger.info(f"Deleting release '{key}': namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
-        response = ArtifactStore.delete(key=key, service=self.service_name)
+        response = Artifactory.delete(key=key, service=self.service_name)
         return response
 
 

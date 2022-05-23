@@ -4,7 +4,6 @@ from .dict_utils import *
 from .file_utils import *
 from .stages import Stages
 from .constants import *
-from .exceptions import DSOException
 from .enum_utils import OrderedEnum
 
 
@@ -13,7 +12,9 @@ class ContextScope(OrderedEnum):
     Namespace = 20
     Global = 30
 
-
+class ContextMode(OrderedEnum):
+    Target = 10
+    Effective = 30
 
 context_translation_matrix = {
     'default': {

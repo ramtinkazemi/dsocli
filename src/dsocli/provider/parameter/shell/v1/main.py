@@ -1,6 +1,6 @@
 import os
 from dsocli.logger import Logger
-from dsocli.appconfigs import AppConfigs, ContextSource
+from dsocli.appconfigs import AppConfigs, ContextMode
 from dsocli.providers import Providers
 from dsocli.parameters import ParameterProvider
 from dsocli.constants import *
@@ -44,13 +44,13 @@ class ShellParameterProvider(ParameterProvider):
 
 
     def add(self, key, value):
-        Logger.debug(f"Adding shell parameter '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.debug(f"Adding shell parameter '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         response = add_shell_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
         return response
 
 
     def list(self, uninherited=False, filter=None):
-        Logger.debug(f"Listing shell parameters: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.debug(f"Listing shell parameters: namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         parameters = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
         result = []
         for key, details in parameters.items():
@@ -66,10 +66,10 @@ class ShellParameterProvider(ParameterProvider):
     def get(self, key, revision=None, uninherited=False, rendered=True):
         if revision:
             Logger.warn(f"Parameter provider 'shell/v1' does not support versioning. Revision request ignored.")
-        Logger.debug(f"Getting shell parameter '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.debug(f"Getting shell parameter '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, rendered=rendered)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+            raise DSOException(f"Parameter '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         # if len(found) > 1:
         #     raise DSOException(f"Mutiple parameters found with the same key '{key}' in the given context.")
         result = {
@@ -82,10 +82,10 @@ class ShellParameterProvider(ParameterProvider):
     def history(self, key):
         Logger.warn(f"Parameter provider 'shell/v1' does not support versioning.")
 
-        Logger.debug(f"Getting shell parameter '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.debug(f"Getting shell parameter '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+            raise DSOException(f"Parameter '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         result = { "Revisions":
             [{
                 'RevisionId': '0',
@@ -98,11 +98,11 @@ class ShellParameterProvider(ParameterProvider):
 
 
     def delete(self, key):
-        Logger.debug(f"Locating parameter '{key}': namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+        Logger.debug(f"Locating parameter '{key}': namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         ### only parameters owned by the config can be deleted, hence uninherited=True
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Parameter '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextSource.Target)}, application={AppConfigs.get_application(ContextSource.Target)}, stage={AppConfigs.get_stage(ContextSource.Target)}, scope={AppConfigs.scope}")
+            raise DSOException(f"Parameter '{key}' not found in the given context: namespace={AppConfigs.get_namespace(ContextMode.Target)}, application={AppConfigs.get_application(ContextMode.Target)}, stage={AppConfigs.get_stage(ContextMode.Target)}, scope={AppConfigs.scope}")
         Logger.info(f"Deleting parameter: path={found[key]['Path']}")
         delete_shell_parameter(found[key]['Path'], key=key)
         result = {

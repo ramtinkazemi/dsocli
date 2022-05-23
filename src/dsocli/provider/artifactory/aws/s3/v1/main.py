@@ -1,6 +1,6 @@
 from dsocli.exceptions import DSOException
 from dsocli.logger import Logger
-from dsocli.providers import Providers, ArtifactStoreProvider
+from dsocli.providers import Providers, ArtifactoryProvider
 from dsocli.stages import Stages
 from dsocli.constants import *
 from dsocli.contexts import Contexts
@@ -19,18 +19,18 @@ def get_default_spec():
     return __default_spec.copy()
 
 
-class AwsS3ArtifactStoreProvider(ArtifactStoreProvider):
+class AwsS3ArtifactoryProvider(ArtifactoryProvider):
 
     def __init__(self):
-        super().__init__('artifactStore/aws/s3/v1')
+        super().__init__('artifactory/aws/s3/v1')
 
 
     def get_bucket_name(self):
-        return AppConfigsartifactStore_spec('bucket')
+        return AppConfigsartifactory_spec('bucket')
 
-    ### adds service name to the artifactStore prefix
+    ### adds service name to the artifactory prefix
     def get_path_prefix(self, service):
-        storePathPrefix = AppConfigsartifactStore_spec('pathPrefix')
+        storePathPrefix = AppConfigsartifactory_spec('pathPrefix')
         if not storePathPrefix.endswith('/'): storePathPrefix += '/'
         return storePathPrefix + service
 
@@ -170,4 +170,4 @@ class AwsS3ArtifactStoreProvider(ArtifactStoreProvider):
 
 
 def register():
-    Providers.register(AwsS3ArtifactStoreProvider())
+    Providers.register(AwsS3ArtifactoryProvider())

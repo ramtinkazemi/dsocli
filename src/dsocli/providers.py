@@ -35,7 +35,7 @@ class KeyValueStoreProvider(ProviderBase):
         raise NotImplementedError()
 
 
-class ArtifactStoreProvider(ProviderBase):
+class ArtifactoryProvider(ProviderBase):
     def list(self):
         raise NotImplementedError()
     def upload(self):
@@ -98,10 +98,10 @@ class ProviderService():
             raise DSOException(MESSAGES['ProviderNotSet'].format('Template'))
         return self.get_provider('template/' + AppConfigs.template_provider)
 
-    def ArtifactStoreProvider(self):
-        if not AppConfigs.artifactStore_provider:
-            raise DSOException(MESSAGES['ProviderNotSet'].format('ArtifactStore'))
-        return self.get_provider('artifactStore/' + AppConfigs.artifactStore_provider)
+    def ArtifactoryProvider(self):
+        if not AppConfigs.artifactory_provider:
+            raise DSOException(MESSAGES['ProviderNotSet'].format('Artifactory'))
+        return self.get_provider('artifactory/' + AppConfigs.artifactory_provider)
 
     def PackageProvider(self):
         if not AppConfigs.package_provider:

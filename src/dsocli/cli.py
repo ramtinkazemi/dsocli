@@ -10,7 +10,7 @@ from stdiomask import getpass
 from .constants import *
 from .cli_constants import *
 from .exceptions import DSOException
-from .appconfigs import AppConfigs, ContextSource, ConfigSource
+from .appconfigs import AppConfigs, ConfigOrigin
 import dsocli.logger as logger
 from .parameters import Parameters
 from .secrets import Secrets
@@ -386,7 +386,7 @@ def edit_parameter(key, stage, global_scope, namespace_scope, verbosity, config_
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, AppConfigs.get_namespace(ContextSource.Target), AppConfigs.get_application(ContextSource.Target), AppConfigs.get_stage(ContextSource.Target, short=True), AppConfigs.scope))
+            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
 
 
     except DSOException as e:
@@ -790,7 +790,7 @@ def edit_secret(key, stage, global_scope, namespace_scope, verbosity, config_ove
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['SecretNotFound'].format(key, AppConfigs.get_namespace(ContextSource.Target), AppConfigs.get_application(ContextSource.Target), AppConfigs.get_stage(ContextSource.Target, short=True), AppConfigs.scope))
+            raise DSOException(CLI_MESSAGES['SecretNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
 
 
     except DSOException as e:
@@ -936,8 +936,8 @@ def delete_secret(key, stage, global_scope, namespace_scope, input, format, verb
 
 @command_doc(CLI_COMMANDS_HELP['template']['add'])
 @template.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['add'])
-# @click.option('--contents', 'contents_path', metavar='<path>', required=False, type=click.Path(exists=False, file_okay=True, dir_okay=True), callback=ConfigSource_from_string, help=CLI_PARAMETERS_HELP['template']['contents_path'])
-@click.argument('contents_path', required=False, metavar='PATH', callback=ConfigSource_from_string)
+# @click.option('--contents', 'contents_path', metavar='<path>', required=False, type=click.Path(exists=False, file_okay=True, dir_okay=True), callback=ConfigOrigin_from_string, help=CLI_PARAMETERS_HELP['template']['contents_path'])
+@click.argument('contents_path', required=False, metavar='PATH', callback=ConfigOrigin_from_string)
 @click.argument('key', required=False)
 @click.option('--recursive', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['template']['recursive'])
 @click.option('-r', '--render-path', metavar='<path>', required=False, help=CLI_PARAMETERS_HELP['template']['render_path'])
@@ -1301,7 +1301,7 @@ def edit_template(key, stage, global_scope, namespace_scope, verbosity, config_o
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['TemplateNotFound'].format(key, AppConfigs.get_namespace(ContextSource.Target), AppConfigs.get_application(ContextSource.Target), AppConfigs.get_stage(ContextSource.Target, short=True), AppConfigs.scope))
+            raise DSOException(CLI_MESSAGES['TemplateNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
 
     except DSOException as e:
         Logger.error(e.message)
@@ -1973,7 +1973,7 @@ def delete_release(stage, verbosity, config_override, working_dir, key, input, f
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_init(setup, override_inherited, input, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def init_config(setup, override_inherited, input, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     init_config = None
 
@@ -2033,10 +2033,10 @@ def config_init(setup, override_inherited, input, global_scope, namespace_scope,
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_list(filter, stage, rendered, local, remote, uninherited, query, query_all, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def list_config(filter, stage, rendered, local, remote, uninherited, query, query_all, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
-    source = ConfigSource.All
+    source = ConfigOrigin.All
 
     def validate_command_usage():
         nonlocal working_dir, scope, query, source
@@ -2047,7 +2047,7 @@ def config_list(filter, stage, rendered, local, remote, uninherited, query, quer
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
         
         validate_not_all_provided([local, remote], ["'--local'", "'--remote'"])
-        source = ConfigSource.Local if local else ConfigSource.Remote if remote else ConfigSource.All
+        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else ConfigOrigin.All
 
         if format == 'compact' and (query or query_all):
             Logger.warn("Query customizaion was ignored, becasue output format is 'compact'. Use '-f'/'--format' to change it.")
@@ -2106,10 +2106,10 @@ def config_list(filter, stage, rendered, local, remote, uninherited, query, quer
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_get(key, revision, raw, local, remote, stage, global_scope, namespace_scope, query, query_all, format, verbosity, config_override, working_dir):
+def get_config(key, revision, raw, local, remote, stage, global_scope, namespace_scope, query, query_all, format, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
-    source = ConfigSource.All
+    source = ConfigOrigin.All
 
     def validate_command_usage():
         nonlocal working_dir, scope, query, source
@@ -2120,7 +2120,7 @@ def config_get(key, revision, raw, local, remote, stage, global_scope, namespace
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         validate_not_all_provided([local, remote], ["'--local'", "'--remote'"])
-        source = ConfigSource.Local if local else ConfigSource.Remote if remote else ConfigSource.All
+        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else ConfigOrigin.All
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -2150,10 +2150,8 @@ def config_get(key, revision, raw, local, remote, stage, global_scope, namespace
 
 
 
-
-
-@command_doc(CLI_COMMANDS_HELP['config']['set'])
-@config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['set'])
+@command_doc(CLI_COMMANDS_HELP['config']['add'])
+@config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['add'])
 @click.argument('key', required=False)
 @click.argument('value', required=False)
 @click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
@@ -2165,10 +2163,10 @@ def config_get(key, revision, raw, local, remote, stage, global_scope, namespace
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_set(key, value, remote, stage, input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def add_config(key, value, remote, stage, input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
-    source = ConfigSource.Local
+    source = ConfigOrigin.Local
     configurations = []
 
     def validate_command_usage():
@@ -2179,7 +2177,7 @@ def config_set(key, value, remote, stage, input, format, global_scope, namespace
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        source = ConfigSource.Remote if remote else ConfigSource.Local
+        source = ConfigOrigin.Remote if remote else ConfigOrigin.Local
 
         if input:
             validate_none_provided([key, value], ["KEY", "VALUE"], ["'-i' / '--input'"])
@@ -2210,7 +2208,7 @@ def config_set(key, value, remote, stage, input, format, global_scope, namespace
         else:
             failed = [x['Key'] for x in configurations]
             for setting in configurations:
-                success.append(AppConfigs.set(setting['Key'], setting['Value'], source=source))
+                success.append(AppConfigs.add(setting['Key'], setting['Value'], source=source))
                 failed.remove(setting['Key'])
 
     except DSOException as e:
@@ -2238,8 +2236,8 @@ def config_set(key, value, remote, stage, input, format, global_scope, namespace
 
 
 
-@command_doc(CLI_COMMANDS_HELP['config']['unset'])
-@config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['unset'])
+@command_doc(CLI_COMMANDS_HELP['config']['delete'])
+@config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['delete'])
 @click.argument('key', required=False)
 @click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
@@ -2251,11 +2249,10 @@ def config_set(key, value, remote, stage, input, format, global_scope, namespace
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def config_unset(key, remote, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
-
+def delete_config(key, remote, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
-    source = ConfigSource.Local
+    source = ConfigOrigin.Local
     configurations = []
 
     def validate_command_usage():
@@ -2266,7 +2263,7 @@ def config_unset(key, remote, stage,  input, format, global_scope, namespace_sco
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        source = ConfigSource.Remote if remote else ConfigSource.Local
+        source = ConfigOrigin.Remote if remote else ConfigOrigin.Local
 
         if input:
             validate_none_provided([key], ["KEY"], ["'-i' / '--input'"])
@@ -2288,7 +2285,7 @@ def config_unset(key, remote, stage,  input, format, global_scope, namespace_sco
         else:
             failed = [x['Key'] for x in configurations]
             for setting in configurations:
-                success.append(AppConfigs.unset(setting['Key'], source=source))
+                success.append(AppConfigs.delete(setting['Key'], source=source))
                 failed.remove(setting['Key'])
 
     except DSOException as e:
@@ -2315,7 +2312,78 @@ def config_unset(key, remote, stage,  input, format, global_scope, namespace_sco
 
 
 
-def config_service_get(service, stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
+@command_doc(CLI_COMMANDS_HELP['config']['edit'])
+@config.command('edit', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['edit'])
+@click.argument('key', required=True)
+@click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
+@click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
+@click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
+@click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
+@click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
+@click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
+@click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
+def edit_config(key, remote, stage, global_scope, namespace_scope, verbosity, config_override, working_dir):
+
+    scope = ContextScope.App
+    source = ConfigOrigin.Local
+
+    def validate_command_usage():
+        nonlocal working_dir, scope, source
+
+        if not working_dir: working_dir = os.getcwd()
+
+        validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
+        scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
+
+        source = ConfigOrigin.Remote if remote else ConfigOrigin.Local
+
+    try:
+        Logger.set_verbosity(verbosity)
+        validate_command_usage()
+        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+
+        ### always edit raw (not rendered) values, e.g. in compact/v1 providers
+        result = AppConfigs.get(key, uninherited=True, rendered=False, source=source)
+        if result:
+            value = format_data(result, 'Value', 'raw')
+            from tempfile import NamedTemporaryFile
+            ### this code was nicer, but throws permission denided exception on Windows!
+            # with NamedTemporaryFile(mode='w', encoding='utf-8', delete=True) as tf:
+            #     tf.write(value)
+            #     tf.flush()
+            #     value, changed = Editor.edit(tf.name)
+            tf = NamedTemporaryFile(mode='w', encoding='utf-8', delete=False)
+            try:
+                tf.write(value)
+                tf.flush()
+                value, changed = Editor.edit(tf.name)
+            finally:
+                tf.close()
+                os.unlink(tf.name)
+            if changed:
+                AppConfigs.set(key, value, source=source)
+            else:
+                Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
+        else:
+            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
+
+    except DSOException as e:
+        Logger.error(e.message)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
+        sys.exit(1)
+    except Exception as e:
+        msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
+        Logger.fatal(msg)
+        if verbosity >= logger.EXCEPTION:
+            import traceback
+            traceback.print_exc() ### FIXME to print to logger instead of stdout
+        sys.exit(2)
+
+
+
+def service_get_config(service, stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
     
     filter = None
     scope = ContextScope.App
@@ -2385,7 +2453,7 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_parameter_get(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
+# def parameter_get_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
 
 #     config_service_get('parameter', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format)
 
@@ -2405,7 +2473,7 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_secret_get(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
+# def secret_get_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
 
 #     config_service_get('secret', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format)
 
@@ -2425,7 +2493,7 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_template_get(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
+# def template_get_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
 
 #     config_service_get('template', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format)
 
@@ -2445,7 +2513,7 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_package_get(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
+# def package_get_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
 
 #     config_service_get('package', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format)
 
@@ -2465,12 +2533,12 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_release_get(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
+# def release_get_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format):
 
 #     config_service_get('release', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, query, query_all, format)
 
 
-# def config_service_set(service, stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format): 
+# def service_set_config(service, stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format): 
 #     settings = []
 
 #     scope = ContextScope.App
@@ -2545,8 +2613,8 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 
 
 
-# @command_doc(CLI_COMMANDS_HELP['parameter']['config']['set'])
-# @parameter_config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['parameter']['config']['set'])
+# @command_doc(CLI_COMMANDS_HELP['parameter']['config']['add'])
+# @parameter_config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['parameter']['config']['add'])
 # @click.argument('key', required=False)
 # # @click.argument('value', required=False)
 # @click.option('--value', 'value_option', metavar='<value>', required=False, help=CLI_PARAMETERS_HELP['config']['value'])
@@ -2561,13 +2629,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_parameter_set(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
+# def parameter_set_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
 
 #     config_service_set('parameter', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['secret']['config']['set'])
-# @secret_config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['secret']['config']['set'])
+# @command_doc(CLI_COMMANDS_HELP['secret']['config']['add'])
+# @secret_config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['secret']['config']['add'])
 # @click.argument('key', required=False)
 # # @click.argument('value', required=False)
 # @click.option('--value', 'value_option', metavar='<value>', required=False, help=CLI_PARAMETERS_HELP['config']['value'])
@@ -2582,13 +2650,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_secret_set(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
+# def secret_set_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
 
 #     config_service_set('secret', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['template']['config']['set'])
-# @template_config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['config']['set'])
+# @command_doc(CLI_COMMANDS_HELP['template']['config']['add'])
+# @template_config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['config']['add'])
 # @click.argument('key', required=False)
 # # @click.argument('value', required=False)
 # @click.option('--value', 'value_option', metavar='<value>', required=False, help=CLI_PARAMETERS_HELP['config']['value'])
@@ -2603,13 +2671,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_template_set(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
+# def template_set_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
 
 #     config_service_set('template', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['package']['config']['set'])
-# @package_config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['package']['config']['set'])
+# @command_doc(CLI_COMMANDS_HELP['package']['config']['add'])
+# @package_config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['package']['config']['add'])
 # @click.argument('key', required=False)
 # # @click.argument('value', required=False)
 # @click.option('--value', 'value_option', metavar='<value>', required=False, help=CLI_PARAMETERS_HELP['config']['value'])
@@ -2624,13 +2692,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_package_set(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
+# def package_set_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
 
 #     config_service_set('package', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['release']['config']['set'])
-# @release_config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['release']['config']['set'])
+# @command_doc(CLI_COMMANDS_HELP['release']['config']['add'])
+# @release_config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['release']['config']['add'])
 # @click.argument('key', required=False)
 # # @click.argument('value', required=False)
 # @click.option('--value', 'value_option', metavar='<value>', required=False, help=CLI_PARAMETERS_HELP['config']['value'])
@@ -2645,13 +2713,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_release_set(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
+# def release_set_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format):
 
 #     config_service_set('release', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, value, value_option, input, format)
 
 
 
-# def config_service_unset(service, stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
+# def service_delete_config(service, stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
 
 #     settings = []
 
@@ -2686,7 +2754,7 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 #         else:
 #             failed = [x['Key'] for x in settings]
 #             for setting in settings:
-#                 success.append(Configs.unset(key=setting['Key'], service=service))
+#                 success.append(Configs.delete(key=setting['Key'], service=service))
 #                 failed.remove(setting['Key'])
 
 #     except DSOException as e:
@@ -2712,8 +2780,8 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 #             Pager.page(output)
 
 
-# @command_doc(CLI_COMMANDS_HELP['parameter']['config']['unset'])
-# @parameter_config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['parameter']['config']['unset'])
+# @command_doc(CLI_COMMANDS_HELP['parameter']['config']['delete'])
+# @parameter_config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['parameter']['config']['delete'])
 # @click.argument('key', required=False)
 # # @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 # @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='compact', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2726,13 +2794,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_parameter_unset(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
+# def parameter_delete_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
 
-#     config_service_unset('parameter', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
+#     config_service_delete('parameter', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['secret']['config']['unset'])
-# @secret_config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['secret']['config']['unset'])
+# @command_doc(CLI_COMMANDS_HELP['secret']['config']['delete'])
+# @secret_config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['secret']['config']['delete'])
 # @click.argument('key', required=False)
 # # @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 # @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='compact', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2745,13 +2813,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_secret_unset(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
+# def secret_delete_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
 
-#     config_service_unset('secret', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
+#     config_service_delete('secret', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['template']['config']['unset'])
-# @template_config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['config']['unset'])
+# @command_doc(CLI_COMMANDS_HELP['template']['config']['delete'])
+# @template_config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['config']['delete'])
 # @click.argument('key', required=False)
 # # @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 # @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='compact', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2764,13 +2832,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_template_unset(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
+# def template_delete_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
 
-#     config_service_unset('template', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
+#     config_service_delete('template', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['package']['config']['unset'])
-# @package_config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['package']['config']['unset'])
+# @command_doc(CLI_COMMANDS_HELP['package']['config']['delete'])
+# @package_config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['package']['config']['delete'])
 # @click.argument('key', required=False)
 # # @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 # @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='compact', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2783,13 +2851,13 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_package_unset(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
+# def package_delete_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
 
-#     config_service_unset('package', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
+#     config_service_delete('package', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
 
 
-# @command_doc(CLI_COMMANDS_HELP['release']['config']['unset'])
-# @release_config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['release']['config']['unset'])
+# @command_doc(CLI_COMMANDS_HELP['release']['config']['delete'])
+# @release_config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['release']['config']['delete'])
 # @click.argument('key', required=False)
 # # @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 # @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='compact', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2802,9 +2870,9 @@ def config_service_get(service, stage, global_scope, namespace_scope, verbosity,
 # @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 # @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 # @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-# def config_release_unset(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
+# def release_delete_config(stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format):
 
-#     config_service_unset('release', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
+#     config_service_delete('release', stage, global_scope, namespace_scope, verbosity, config_override, working_dir, key, input, format)
 
 
 
