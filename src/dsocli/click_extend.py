@@ -4,7 +4,7 @@ import click
 from .logger import Logger
 from .cli_constants import *
 import tempfile
-from .appconfigs import ConfigOrigin
+from .configs import ConfigOrigin
 
 
 class MuOption(click.Option):

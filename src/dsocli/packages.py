@@ -4,7 +4,7 @@ from .providers import ProviderBase, Providers
 from .artifacts import Artifactory
 from .logger import Logger
 from .exceptions import DSOException
-from .appconfigs import AppConfigs
+from .configs import Config
 
 
 key_regex_pattern = r"^[a-zA-Z]([./a-zA-Z0-9_-]*[a-zA-Z0-9])?$"
@@ -103,7 +103,7 @@ class PackageService():
 
     def list(self, filter=None):
         provider = Providers.PackageProvider()
-        Logger.info(f"Listing packages: namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+        Logger.info(f"Listing packages: namespace={Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         response = Artifactory.list(service=self.service_name, filter=filter)
         result = {'Packages': response['Artifacts']}
         return result
@@ -111,7 +111,7 @@ class PackageService():
 
     def build(self):
         provider = Providers.PackageProvider()
-        Logger.info(f"Building package: namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+        Logger.info(f"Building package: namespace={Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         artifact = provider.build()
         major = self.version_major
         minor = self.version_minor
@@ -130,7 +130,7 @@ class PackageService():
 
 
     def get(self, key):
-        Logger.info(f"Getting package '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+        Logger.info(f"Getting package '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         response = Artifactory.get(key=key, service=self.service_name)
         return response
 
@@ -138,12 +138,12 @@ class PackageService():
     # def history(self, key):
     #     self.config = config
     #     provider = Providers.PackageProvider()
-    #     Logger.info(f"Fetching history of package '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+    #     Logger.info(f"Fetching history of package '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.short_stage}")
     #     return provider.history(key)
 
 
     def delete(self, key):
-        Logger.info(f"Deleting package '{key}': namespace={AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+        Logger.info(f"Deleting package '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         response = Artifactory.delete(key=key, service=self.service_name)
         return response
 

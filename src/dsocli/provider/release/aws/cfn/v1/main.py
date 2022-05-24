@@ -8,7 +8,7 @@ from dsocli.constants import *
 from dsocli.contexts import Contexts
 from dsocli.aws_s3_utils import *
 from dsocli.settings import *
-from dsocli.appconfigs import AppConfigs
+from dsocli.configs import Config
 
 
 __default_spec = {
@@ -26,7 +26,7 @@ class AwsCfnReleaseProvider(ReleaseProvider):
         super().__init__('release/aws/cfn/v1')
 
     def create(self):
-        Logger.debug(f"Building CFN release: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
+        Logger.debug(f"Building CFN release: namespace:{Config.namespace}, application={Config.application}, stage={Config.stage}")
         return 'release1.zip'
 
 

@@ -10,7 +10,7 @@ from stdiomask import getpass
 from .constants import *
 from .cli_constants import *
 from .exceptions import DSOException
-from .appconfigs import AppConfigs, ConfigOrigin
+from .configs import Config, ConfigOrigin
 import dsocli.logger as logger
 from .parameters import Parameters
 from .secrets import Secrets
@@ -29,7 +29,6 @@ from pathlib import Path
 from .dict_utils import *
 from .settings import *
 from .contexts import ContextScope
-from .configs import Configs
 
 modify_click_usage_error()
 
@@ -181,7 +180,7 @@ def add_parameter(key, value, stage, global_scope, namespace_scope, input, forma
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(parameters) == 0:
             Logger.warn("No parameter provided to add.")
@@ -257,7 +256,7 @@ def list_parameter(stage, uninherited, filter, global_scope, namespace_scope, qu
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Parameters.list(uninherited, filter)
         if len(result['Parameters']) == 0:
@@ -287,7 +286,7 @@ def list_parameter(stage, uninherited, filter, global_scope, namespace_scope, qu
 @click.option('--revision', metavar='<revision-id', required=False, help=CLI_PARAMETERS_HELP['parameter']['revision'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'raw']), default='raw', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'text']), default='text', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
@@ -306,8 +305,8 @@ def get_parameter(key, stage, global_scope, namespace_scope, revision, query, qu
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        if format == 'raw' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'raw'. Use '-f'/'--format' to change it.")
+        if format == 'text' and (query or query_all):
+            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -315,7 +314,7 @@ def get_parameter(key, stage, global_scope, namespace_scope, revision, query, qu
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Parameters.get(key, revision)
         output = format_data(result, query, format)
@@ -361,12 +360,12 @@ def edit_parameter(key, stage, global_scope, namespace_scope, verbosity, config_
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         ### always edit raw (not rendered) values, e.g. in compact/v1 providers
         result = Parameters.get(key, uninherited=True, rendered=False)
         if result:
-            value = format_data(result, 'Value', 'raw')
+            value = format_data(result, 'Value', 'text')
             from tempfile import NamedTemporaryFile
             ### this code was nicer, but throws permission denided exception on Windows!
             # with NamedTemporaryFile(mode='w', encoding='utf-8', delete=True) as tf:
@@ -386,7 +385,7 @@ def edit_parameter(key, stage, global_scope, namespace_scope, verbosity, config_
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
+            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, Config.get_namespace(ContextMode.Target), Config.get_application(ContextMode.Target), Config.get_stage(ContextMode.Target, short=True), Config.scope))
 
 
     except DSOException as e:
@@ -435,7 +434,7 @@ def history_parameter(key, stage, global_scope, namespace_scope, query, query_al
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Parameters.history(key)
         output = format_data(result, query, format)
@@ -494,7 +493,7 @@ def delete_parameter(key, stage, global_scope, namespace_scope, input, format, v
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(parameters) == 0:
             Logger.warn("No parameter provided to delete.")
@@ -581,7 +580,7 @@ def add_secret(key, value, stage, global_scope, namespace_scope, ask_password, i
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(secrets) == 0:
             Logger.warn("No secret provided to add.")
@@ -646,7 +645,7 @@ def list_secret(stage, global_scope, namespace_scope, uninherited, decrypt, filt
         if format == 'compact' and (query or query_all):
             Logger.warn("Query customizaion was ignored, becasue output format is 'compact'. Use '-f'/'--format' to change it.")
 
-        defaultQuery = '{Secrets: Secrets[*].{Key: Key, Value: Value, Scope: Scope, Origin: Origin}}'
+        defaultQuery = '{Secrets: Secrets[*].{Key: Key, Value: Value, Scope: Scope, Context: Context}}'
         query = validate_query_argument(query, query_all, defaultQuery)
 
         if filter:
@@ -658,7 +657,7 @@ def list_secret(stage, global_scope, namespace_scope, uninherited, decrypt, filt
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Secrets.list(uninherited, decrypt, filter)
         if len(result['Secrets']) == 0:
@@ -688,7 +687,7 @@ def list_secret(stage, global_scope, namespace_scope, uninherited, decrypt, filt
 @click.option('--revision', metavar='<revision-id', required=False, help=CLI_PARAMETERS_HELP['parameter']['revision'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'raw']), default='raw', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'text']), default='text', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
@@ -707,8 +706,8 @@ def get_secret(stage, global_scope, namespace_scope, key, revision, query, query
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        if format == 'raw' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'raw'. Use '-f'/'--format' to change it.")
+        if format == 'text' and (query or query_all):
+            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -717,7 +716,7 @@ def get_secret(stage, global_scope, namespace_scope, key, revision, query, query
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Secrets.get(key, revision, decrypt=True)
 
@@ -764,12 +763,12 @@ def edit_secret(key, stage, global_scope, namespace_scope, verbosity, config_ove
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         ### always edit raw values (rendered/decrypted), e.g. in compact/v1 providers
         result = Secrets.get(key, uninherited=True, decrypt=False)
         if result:
-            value = format_data(result, 'Value', 'raw')
+            value = format_data(result, 'Value', 'text')
             from tempfile import NamedTemporaryFile
             ### this code was nicer, but throws permission denided exception on Windows!
             # with NamedTemporaryFile(mode='w', encoding='utf-8', delete=True) as tf:
@@ -790,7 +789,7 @@ def edit_secret(key, stage, global_scope, namespace_scope, verbosity, config_ove
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['SecretNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
+            raise DSOException(CLI_MESSAGES['SecretNotFound'].format(key, Config.get_namespace(ContextMode.Target), Config.get_application(ContextMode.Target), Config.get_stage(ContextMode.Target, short=True), Config.scope))
 
 
     except DSOException as e:
@@ -841,7 +840,7 @@ def history_secret(key, stage, global_scope, namespace_scope, decrypt, query, qu
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Secrets.history(key, decrypt)
 
@@ -900,7 +899,7 @@ def delete_secret(key, stage, global_scope, namespace_scope, input, format, verb
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(secrets) == 0:
             Logger.warn("No secret provided to delete.")
@@ -1054,7 +1053,7 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
 
             ### use the current dir as the base for render path
             if not render_path:
-                # render_path = f'{AppConfigs.config_dir}{os.sep}output{os.sep}**{os.sep}*'
+                # render_path = f'{Config.config_dir}{os.sep}output{os.sep}**{os.sep}*'
                 render_path = f'**{os.sep}*'
             else:
                 if not '*' in render_path:
@@ -1083,7 +1082,7 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(templates) == 0:
             Logger.warn("No template provided to add.")
@@ -1168,7 +1167,7 @@ def list_template(stage, uninherited, include_contents, filter, global_scope, na
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Templates.list(uninherited, include_contents, filter)
         if len(result['Templates']) == 0:
@@ -1201,7 +1200,7 @@ def list_template(stage, uninherited, include_contents, filter, global_scope, na
 @click.option('--raw', required=False, is_flag=True, default=False, help=CLI_PARAMETERS_HELP['template']['rendered'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'raw']), default='raw', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'text']), default='text', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
@@ -1220,8 +1219,8 @@ def get_template(key, revision, raw, stage, global_scope, namespace_scope, query
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        if format == 'raw' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'raw'. Use '-f'/'--format' to change it.")
+        if format == 'text' and (query or query_all):
+            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Contents: Contents}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1229,7 +1228,7 @@ def get_template(key, revision, raw, stage, global_scope, namespace_scope, query
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Templates.get(key, revision, rendred=not raw)
         output = format_data(result, query, format)
@@ -1275,12 +1274,12 @@ def edit_template(key, stage, global_scope, namespace_scope, verbosity, config_o
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Templates.list(uninherited=True, include_contents=True, filter=f"^{key}$")
         if result['Templates']:
-            contents = format_data(result, '{Contents: Templates[0].Contents}', 'raw')
-            renderPath = format_data(result, '{RenderPath: Templates[0].RenderPath}', 'raw')
+            contents = format_data(result, '{Contents: Templates[0].Contents}', 'text')
+            renderPath = format_data(result, '{RenderPath: Templates[0].RenderPath}', 'text')
             from tempfile import NamedTemporaryFile
             ### this code was nicer, but throws permission denided exception on Windows!
             # with NamedTemporaryFile(mode='w', encoding='utf-8', delete=True) as tf:
@@ -1301,7 +1300,7 @@ def edit_template(key, stage, global_scope, namespace_scope, verbosity, config_o
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['TemplateNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
+            raise DSOException(CLI_MESSAGES['TemplateNotFound'].format(key, Config.get_namespace(ContextMode.Target), Config.get_application(ContextMode.Target), Config.get_stage(ContextMode.Target, short=True), Config.scope))
 
     except DSOException as e:
         Logger.error(e.message)
@@ -1354,7 +1353,7 @@ def history_template(stage, key, include_contents, global_scope, namespace_scope
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         result = Templates.history(key, include_contents)
         output = format_data(result, query, format)
@@ -1415,7 +1414,7 @@ def delete_template(key, input, format, stage, global_scope, namespace_scope, ve
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(templates) == 0:
             Logger.warn("No template provided to delete.")
@@ -1479,7 +1478,7 @@ def render_template(stage, filter, global_scope, namespace_scope, verbosity, con
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
         response = Templates.render(filter)
         if response:
             result = {'Success': response, 'Failure': []}
@@ -1537,7 +1536,7 @@ def list_package(stage, filter, query, query_all, format, verbosity, config_over
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         result = Packages.list(filter)
         if len(result['Packages']) == 0:
@@ -1588,7 +1587,7 @@ def get_package(stage, verbosity, config_override, working_dir, key, query, quer
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         result = Packages.get(key=key)
         output = format_data(result, query, format)
@@ -1614,7 +1613,7 @@ def get_package(stage, verbosity, config_override, working_dir, key, query, quer
 @click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'text']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
@@ -1641,7 +1640,7 @@ def build_package(stage, verbosity, config_override, working_dir, filter, query,
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         result = Packages.build()
         output = format_data(result, query, format)
@@ -1697,7 +1696,7 @@ def delete_package(stage, verbosity, config_override, working_dir, key, input, f
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         if len(packages) == 0:
             Logger.warn("No packages provided to delete.")
@@ -1766,7 +1765,7 @@ def list_release(stage, verbosity, config_override, working_dir, filter, query, 
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         result = Releases.list(filter)
         if len(result['Releases']) == 0:
@@ -1818,7 +1817,7 @@ def get_release(stage, verbosity, config_override, working_dir, key, query, quer
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         result = Releases.get(key=key)
         output = format_data(result, query, format)
@@ -1844,7 +1843,7 @@ def get_release(stage, verbosity, config_override, working_dir, key, query, quer
 @click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'raw']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'text']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
@@ -1871,7 +1870,7 @@ def create_release(stage, verbosity, config_override, working_dir, filter, query
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         result = Releases.create()
         output = format_data(result, query, format)
@@ -1928,7 +1927,7 @@ def delete_release(stage, verbosity, config_override, working_dir, key, input, f
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ContextScope.App)
+        Config.load(working_dir, config_override, stage, ContextScope.App)
 
         if len(releases) == 0:
             Logger.warn("No releases provided to delete.")
@@ -1995,10 +1994,10 @@ def init_config(setup, override_inherited, input, global_scope, namespace_scope,
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        # AppConfigs.load(working_dir if working_dir else os.getcwd(),
+        # Config.load(working_dir if working_dir else os.getcwd(),
         #                 'global' if global_scope else 'namespace' if namespace_scope else 'application',
         #                 config_override)
-        AppConfigs.init(working_dir, custom_init_config=init_config, config_overrides_string=config_override, override_inherited=override_inherited)
+        Config.init(working_dir, custom_init_config=init_config, config_overrides_string=config_override, override_inherited=override_inherited)
 
     except DSOException as e:
         Logger.error(e.message)
@@ -2047,7 +2046,7 @@ def list_config(filter, stage, rendered, local, remote, uninherited, query, quer
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
         
         validate_not_all_provided([local, remote], ["'--local'", "'--remote'"])
-        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else ConfigOrigin.All
+        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else source
 
         if format == 'compact' and (query or query_all):
             Logger.warn("Query customizaion was ignored, becasue output format is 'compact'. Use '-f'/'--format' to change it.")
@@ -2064,9 +2063,9 @@ def list_config(filter, stage, rendered, local, remote, uninherited, query, quer
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ignore_errors=True, scope=scope)
+        Config.load(working_dir, config_override, stage, ignore_errors=True, scope=scope)
         
-        result = AppConfigs.list(uninherited=uninherited, filter=filter, rendered=rendered, source=source)
+        result = Config.list(uninherited=uninherited, filter=filter, rendered=rendered, source=source)
 
         if len(result['Configuration']) == 0:
             Logger.warn("No configuration settings found.")
@@ -2099,7 +2098,7 @@ def list_config(filter, stage, rendered, local, remote, uninherited, query, quer
 @click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
-@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'raw']), default='raw', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
+@click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'text']), default='text', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
@@ -2120,7 +2119,7 @@ def get_config(key, revision, raw, local, remote, stage, global_scope, namespace
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         validate_not_all_provided([local, remote], ["'--local'", "'--remote'"])
-        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else ConfigOrigin.All
+        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else source
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -2128,9 +2127,9 @@ def get_config(key, revision, raw, local, remote, stage, global_scope, namespace
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
-        result = AppConfigs.get(key, revision=revision, rendered=not raw, source=source)
+        result = Config.get(key, revision=revision, rendered=not raw, source=source)
         output = format_data(result, query, format)
         Pager.page(output)
 
@@ -2154,6 +2153,7 @@ def get_config(key, revision, raw, local, remote, stage, global_scope, namespace
 @config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['add'])
 @click.argument('key', required=False)
 @click.argument('value', required=False)
+@click.option('--local', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['local'])
 @click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['config']['input'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2163,7 +2163,7 @@ def get_config(key, revision, raw, local, remote, stage, global_scope, namespace
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def add_config(key, value, remote, stage, input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def add_config(key, value, local, remote, stage, input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
     source = ConfigOrigin.Local
@@ -2177,7 +2177,8 @@ def add_config(key, value, remote, stage, input, format, global_scope, namespace
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        source = ConfigOrigin.Remote if remote else ConfigOrigin.Local
+        validate_not_all_provided([local, remote], ["'--local'", "'--remote'"])
+        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else source
 
         if input:
             validate_none_provided([key, value], ["KEY", "VALUE"], ["'-i' / '--input'"])
@@ -2201,14 +2202,14 @@ def add_config(key, value, remote, stage, input, format, global_scope, namespace
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(configurations) == 0:
             Logger.warn("No parameter provided to add.")
         else:
             failed = [x['Key'] for x in configurations]
             for setting in configurations:
-                success.append(AppConfigs.add(setting['Key'], setting['Value'], source=source))
+                success.append(Config.add(setting['Key'], setting['Value'], source=source))
                 failed.remove(setting['Key'])
 
     except DSOException as e:
@@ -2239,6 +2240,7 @@ def add_config(key, value, remote, stage, input, format, global_scope, namespace
 @command_doc(CLI_COMMANDS_HELP['config']['delete'])
 @config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['delete'])
 @click.argument('key', required=False)
+@click.option('--local', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['local'])
 @click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2249,7 +2251,7 @@ def add_config(key, value, remote, stage, input, format, global_scope, namespace
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def delete_config(key, remote, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def delete_config(key, local, remote, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
     source = ConfigOrigin.Local
@@ -2263,7 +2265,8 @@ def delete_config(key, remote, stage,  input, format, global_scope, namespace_sc
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        source = ConfigOrigin.Remote if remote else ConfigOrigin.Local
+        validate_not_all_provided([local, remote], ["'--local'", "'--remote'"])
+        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else source
 
         if input:
             validate_none_provided([key], ["KEY"], ["'-i' / '--input'"])
@@ -2278,14 +2281,14 @@ def delete_config(key, remote, stage,  input, format, global_scope, namespace_sc
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         if len(configurations) == 0:
             Logger.warn("No configuration setting provided to delete.")
         else:
             failed = [x['Key'] for x in configurations]
             for setting in configurations:
-                success.append(AppConfigs.delete(setting['Key'], source=source))
+                success.append(Config.delete(setting['Key'], source=source))
                 failed.remove(setting['Key'])
 
     except DSOException as e:
@@ -2315,6 +2318,7 @@ def delete_config(key, remote, stage,  input, format, global_scope, namespace_sc
 @command_doc(CLI_COMMANDS_HELP['config']['edit'])
 @config.command('edit', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['edit'])
 @click.argument('key', required=True)
+@click.option('--local', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['local'])
 @click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
@@ -2322,7 +2326,7 @@ def delete_config(key, remote, stage,  input, format, global_scope, namespace_sc
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def edit_config(key, remote, stage, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def edit_config(key, local, remote, stage, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
     source = ConfigOrigin.Local
@@ -2335,17 +2339,18 @@ def edit_config(key, remote, stage, global_scope, namespace_scope, verbosity, co
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        source = ConfigOrigin.Remote if remote else ConfigOrigin.Local
+        validate_not_all_provided([local, remote], ["'--local'", "'--remote'"])
+        source = ConfigOrigin.Local if local else ConfigOrigin.Remote if remote else source
 
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
         ### always edit raw (not rendered) values, e.g. in compact/v1 providers
-        result = AppConfigs.get(key, uninherited=True, rendered=False, source=source)
+        result = Config.get(key, uninherited=True, rendered=False, source=source)
         if result:
-            value = format_data(result, 'Value', 'raw')
+            value = format_data(result, 'Value', 'text')
             from tempfile import NamedTemporaryFile
             ### this code was nicer, but throws permission denided exception on Windows!
             # with NamedTemporaryFile(mode='w', encoding='utf-8', delete=True) as tf:
@@ -2361,11 +2366,11 @@ def edit_config(key, remote, stage, global_scope, namespace_scope, verbosity, co
                 tf.close()
                 os.unlink(tf.name)
             if changed:
-                AppConfigs.set(key, value, source=source)
+                Config.set(key, value, source=source)
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:
-            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, AppConfigs.get_namespace(ContextMode.Target), AppConfigs.get_application(ContextMode.Target), AppConfigs.get_stage(ContextMode.Target, short=True), AppConfigs.scope))
+            raise DSOException(CLI_MESSAGES['ParameterNotFound'].format(key, Config.get_namespace(ContextMode.Target), Config.get_application(ContextMode.Target), Config.get_stage(ContextMode.Target, short=True), Config.scope))
 
     except DSOException as e:
         Logger.error(e.message)
@@ -2411,10 +2416,10 @@ def service_get_config(service, stage, global_scope, namespace_scope, verbosity,
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage, ignore_errors=True, scope=scope)
+        Config.load(working_dir, config_override, stage, ignore_errors=True, scope=scope)
 
-        # result = AppConfigs.get(key, configScope)
-        result = Configs.list(service=service, uninherited=True, filter=filter)
+        # result = Config.get(key, configScope)
+        result = RemoteConfig.list(service=service, uninherited=True, filter=filter)
 
         if len(result['Configuration']) == 0:
             Logger.warn("No configuration settings found.")
@@ -2575,10 +2580,10 @@ def service_get_config(service, stage, global_scope, namespace_scope, verbosity,
 #         Logger.set_verbosity(verbosity)
 #         validate_command_usage()
 #         # Contexts.load(working_dir=working_dir)
-#         AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+#         Config.load(working_dir, config_override, stage=stage, scope=scope)
 #         # ctx = ContextService()
 #         # ctx.load(working_dir=working_dir, context_name=context_name, namespace=namespace, application=application, stage=stage=scope)
-#         # cfg = ConfigService()
+#         # cfg = RemoteConfigService()
 #         # cfg.load(working_dir=working_dir, config_overrides_string=config_override, context_service=ctx)
 
 #         if len(settings) == 0:
@@ -2586,7 +2591,7 @@ def service_get_config(service, stage, global_scope, namespace_scope, verbosity,
 #         else:
 #             failed = [x['Key'] for x in settings]
 #             for setting in settings:
-#                 success.append(Configs.set(key=setting['Key'], value=setting['Value'], service=service))
+#                 success.append(RemoteConfig.set(key=setting['Key'], value=setting['Value'], service=service))
 #                 failed.remove(setting['Key'])
 
 #     except DSOException as e:
@@ -2747,14 +2752,14 @@ def service_get_config(service, stage, global_scope, namespace_scope, verbosity,
 #     try:
 #         Logger.set_verbosity(verbosity)
 #         validate_command_usage()
-#         AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+#         Config.load(working_dir, config_override, stage=stage, scope=scope)
 
 #         if len(settings) == 0:
 #             Logger.warn("No configuration setting provided to delete.")
 #         else:
 #             failed = [x['Key'] for x in settings]
 #             for setting in settings:
-#                 success.append(Configs.delete(key=setting['Key'], service=service))
+#                 success.append(RemoteConfig.delete(key=setting['Key'], service=service))
 #                 failed.remove(setting['Key'])
 
 #     except DSOException as e:
@@ -2903,13 +2908,13 @@ def network_subnet(stage, global_scope, namespace_scope, verbosity, config_overr
     try:
         Logger.set_verbosity(verbosity)
         validate_command_usage()
-        AppConfigs.load(working_dir, config_override, stage=stage, scope=scope)
+        Config.load(working_dir, config_override, stage=stage, scope=scope)
 
-        with open(AppConfigs.network('subnetPlan'), 'r') as f:
+        with open(Config.network('subnetPlan'), 'r') as f:
             subnet_plan = yaml.safe_load(f)
 
         if mode == 'app':
-            result = Networks.layout_subnet_plan(subnet_plan, filters={'plan': AppConfigs.network('plan'), 'selector': AppConfigs.network('selector')}, summary=False)
+            result = Networks.layout_subnet_plan(subnet_plan, filters={'plan': Config.network('plan'), 'selector': Config.network('selector')}, summary=False)
         else:
             result = Networks.layout_subnet_plan(subnet_plan, summary=(mode == 'summary'))
 

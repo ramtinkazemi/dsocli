@@ -6,7 +6,7 @@ from dsocli.constants import *
 from dsocli.contexts import Contexts
 from dsocli.aws_s3_utils import *
 from dsocli.settings import *
-from dsocli.appconfigs import AppConfigs
+from dsocli.configs import Config
 
 
 __default_spec = {
@@ -48,9 +48,9 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
                 # 'RevisionId': str(response['Version']),
                 'Key': key,
                 'Context': {
-                    'Namespace': AppConfigs.namespace,
-                    'Application': AppConfigs.application,
-                    'Stage': AppConfigs.stage,
+                    'Namespace': Config.namespace,
+                    'Application': Config.application,
+                    'Stage': Config.stage,
                 },
             }
         result.update(response)
@@ -61,14 +61,14 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         Logger.debug(f"Getting artifact '{key}' from S3: bucket={self.get_bucket_name()}")
         response = s3_context_get_file(bucket=self.get_bucket_name(), key=key, path_prefix=self.get_path_prefix(service))
         if not response:
-            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         result = {
                 # 'RevisionId': str(response['Version']),
                 'Key': key,
                 'Context': {
-                    'Namespace': AppConfigs.namespace,
-                    'Application': AppConfigs.application,
-                    'Stage': AppConfigs.stage,
+                    'Namespace': Config.namespace,
+                    'Application': Config.application,
+                    'Stage': Config.stage,
                 },
             }
         result.update(response)
@@ -83,7 +83,7 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         #             'Date': artifact[0]['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
         #             'Key': key, 
         #             'Scope': found['Scope'],
-        #             'Origin': found['Origin'],
+        #             'Context': found['Context'],
         #             'User': artifact[0]['LastModifiedUser'],
         #             'Path': found['Name'],
         #             'Contents': artifact[0]['Value'],
@@ -92,13 +92,13 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         #     ### get specific revision
         #     artifact = [x for x in artifact if str(x['Version']) == revision]
         #     if not artifact:
-        #         raise DSOException(f"Revision '{revision}' not found for artifact '{key}' in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+        #         raise DSOException(f"Revision '{revision}' not found for artifact '{key}' in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         #     result = {
         #             'RevisionId': str(artifact[0]['Version']),
         #             'Date': artifact[0]['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
         #             'Key': key, 
         #             'Scope': found['Scope'],
-        #             'Origin': found['Origin'],
+        #             'Context': found['Context'],
         #             'Path': found['Name'],
         #             'User': artifact[0]['LastModifiedUser'],
         #             'Contents': artifact[0]['Value'],
@@ -112,10 +112,10 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         Logger.debug(f"Locating artifact '{key}' from S3: bucket={self.get_bucket_name()}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, service=self.get_path_prefix())
         if not found:
-            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         else:
             if not found['Type'] == 'StringList':
-                raise DSOException(f"Storage '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+                raise DSOException(f"Storage '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         Logger.debug(f"Getting S3 artifact: path={found['Name']}")
         response = get_ssm_parameter_history(found['Name'])
         artifact = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)
@@ -126,7 +126,7 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
                     'Date': artifact['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
                     'Key': key,
                     # 'Scope': found['Scope'],
-                    # 'Origin': found['Origin'],
+                    # 'Context': found['Context'],
                     'User': artifact['LastModifiedUser'],
                     # 'Path': found['Name'],
                     'Contents': artifact[0]['Value'],
@@ -140,7 +140,7 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
                     'Date': artifact['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
                     'Key': key,
                     # 'Scope': found['Scope'],
-                    # 'Origin': found['Origin'],
+                    # 'Context': found['Context'],
                     'User': artifact['LastModifiedUser'],
                     # 'Path': found['Name'],
                 } for artifact in artifact]
@@ -154,14 +154,14 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         Logger.debug(f"Deleting artifact '{key}' from S3: bucket={self.get_bucket_name()}")
         response = s3_context_delete_file(bucket=self.get_bucket_name(), key=key, path_prefix=self.get_path_prefix(service))
         if not response:
-            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.short_stage}")
+            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
         result = {
                 # 'RevisionId': str(response['Version']),
                 'Key': key,
                 'Context': {
-                    'Namespace': AppConfigs.namespace,
-                    'Application': AppConfigs.application,
-                    'Stage': AppConfigs.stage,
+                    'Namespace': Config.namespace,
+                    'Application': Config.application,
+                    'Stage': Config.stage,
                 },
             }
         result.update(response)

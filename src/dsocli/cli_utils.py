@@ -109,7 +109,7 @@ def format_data(data, query, format, compress=True, mainkeys=None):
 
     ### tab separated with no headers
     ### expects list(dict), or a dict, otherwise best-effort
-    elif format == 'raw':
+    elif format == 'text':
         outputStream = ''
         if isinstance(result, list):
             for i in range(0, len(result)):
@@ -134,7 +134,7 @@ def format_data(data, query, format, compress=True, mainkeys=None):
                         else:
                             valuesStr = str(item) if not item is None else ''
                         outputStream += f"{valuesStr}"
-                        if i < len(childList)-1: outputStream += ','
+                        if i < len(childList)-1: outputStream += '\n'
                 else:
                     outputStream = '\t'.join(map(lambda x: str(x) if not x is None else '', list(result.values())))
             elif len(keys) > 1:
@@ -314,7 +314,7 @@ def read_data(input, parent_key, keys, format):
                 record[keys[i]] = row[i]
             result.append(record)
 
-    elif format == 'raw':
+    elif format == 'text':
         if parent_key: 
             raise NotImplementedError()
 

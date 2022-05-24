@@ -8,7 +8,7 @@ from dsocli.constants import *
 from dsocli.contexts import Contexts
 from dsocli.aws_s3_utils import *
 from dsocli.settings import *
-from dsocli.appconfigs import AppConfigs
+from dsocli.configs import Config
 
 __default_spec = {
     'foo': 'bar',
@@ -25,7 +25,7 @@ class AwsCfnPackageProvider(PackageProvider):
         super().__init__('package/aws/cfn/v1')
 
     def build(self):
-        Logger.debug(f"Building CFN package: namespace:{AppConfigs.namespace}, application={AppConfigs.application}, stage={AppConfigs.stage}")
+        Logger.debug(f"Building CFN package: namespace:{Config.namespace}, application={Config.application}, stage={Config.stage}")
         return 'package1.zip'
 
 

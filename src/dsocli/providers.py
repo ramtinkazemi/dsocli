@@ -1,6 +1,6 @@
 import os
 import imp
-from .appconfigs import AppConfigs
+from .configs import Config
 from .constants import *
 from .logger import Logger
 from .exceptions import DSOException
@@ -48,6 +48,19 @@ class ArtifactoryProvider(ProviderBase):
         raise NotImplementedError()
 
 
+class RemoteConfigProvider(KeyValueStoreProvider):
+    def list(self, filter=None, uninherited=False):
+        raise NotImplementedError()
+    def add(self, key, value):
+        raise NotImplementedError()
+    def get(self, key, revision=None, uninherited=False, rendered=True):
+        raise NotImplementedError()
+    def history(self, key):
+        raise NotImplementedError()
+    def delete(self, key):
+        raise NotImplementedError()
+
+
 class ProviderService():
     __providers = {}
 
@@ -58,7 +71,7 @@ class ProviderService():
 
     def load_provider(self, provider_slug):
         Logger.debug(f"Loading provider '{provider_slug}'...")
-        providerPackagePath = os.path.join(AppConfigs.install_path, 'provider', provider_slug)
+        providerPackagePath = os.path.join(Config.install_path, 'provider', provider_slug)
         if not os.path.exists(providerPackagePath):
             raise DSOException(f"Provider '{provider_slug}' not found.")
         imp.load_package(provider_slug, providerPackagePath).register()
@@ -78,39 +91,39 @@ class ProviderService():
         else:
             raise DSOException(f"No provider has registered for '{provider_slug}'.")
 
-    def ConfigProvider(self):
-        if not AppConfigs.config_provider:
+    def RemoteConfigProvider(self):
+        if not Config.config_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Config'))
-        return self.get_provider('config/' + AppConfigs.config_provider)
+        return self.get_provider('config/' + Config.config_provider)
 
     def ParameterProvider(self):
-        if not AppConfigs.parameter_provider:
+        if not Config.parameter_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Parameter'))
-        return self.get_provider('parameter/' + AppConfigs.parameter_provider)
+        return self.get_provider('parameter/' + Config.parameter_provider)
 
     def SecretProvider(self):
-        if not AppConfigs.secret_provider:
+        if not Config.secret_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Secret'))
-        return self.get_provider('secret/' + AppConfigs.secret_provider)
+        return self.get_provider('secret/' + Config.secret_provider)
 
     def TemplateProvider(self):
-        if not AppConfigs.template_provider:
+        if not Config.template_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Template'))
-        return self.get_provider('template/' + AppConfigs.template_provider)
+        return self.get_provider('template/' + Config.template_provider)
 
     def ArtifactoryProvider(self):
-        if not AppConfigs.artifactory_provider:
+        if not Config.artifactory_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Artifactory'))
-        return self.get_provider('artifactory/' + AppConfigs.artifactory_provider)
+        return self.get_provider('artifactory/' + Config.artifactory_provider)
 
     def PackageProvider(self):
-        if not AppConfigs.package_provider:
+        if not Config.package_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Package'))
-        return self.get_provider('package/' + AppConfigs.package_provider)
+        return self.get_provider('package/' + Config.package_provider)
 
     def ReleaseProvider(self):
-        if not AppConfigs.release_provider:
+        if not Config.release_provider:
             raise DSOException(MESSAGES['ProviderNotSet'].format('Release'))
-        return self.get_provider('release/' + AppConfigs.release_provider)
+        return self.get_provider('release/' + Config.release_provider)
 
 Providers = ProviderService()

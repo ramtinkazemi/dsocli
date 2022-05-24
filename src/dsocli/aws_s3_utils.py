@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError
 from .logger import Logger
 import logging
 from .file_utils import *
-from dsocli.appconfigs import AppConfigs
+from dsocli.configs import Config
 
 logging.getLogger('botocore').setLevel(Logger.mapped_level)
 logging.getLogger('boto').setLevel(Logger.mapped_level)
@@ -42,7 +42,7 @@ def get_s3_path(context, path_prefix='', key=None):
 #                     'ETag': archive['ETag'],
 #                     'Stage': ctx.short_stage,
 #                     'Scope': ctx.scope_translation,
-#                     'Origin': {
+#                     'Context': {
 #                         'Namespace': ctx.namespace,
 #                         'Application': ctx.application,
 #                         'Stage': ctx.stage,
@@ -58,7 +58,7 @@ def get_s3_path(context, path_prefix='', key=None):
 
 # def s3_context_list_files(bucket, path_prefix='', uninherited=False, filter=None, object_kind='object'):
 #     ### construct search path in hierachy with no key specified
-#     paths = Contexts.get_hierachy_paths(context=AppConfigs.context, key=None, path_prefix=path_prefix, ignore_stage=AppConfigs.stage is None, uninherited=uninherited)
+#     paths = Contexts.get_hierachy_paths(context=Config.context, key=None, path_prefix=path_prefix, ignore_stage=Config.stage is None, uninherited=uninherited)
 #     archives = {}
 #     for path in paths:
 #         Logger.debug(f"Loading S3 path: bucket={bucket}, path={path}")
@@ -90,7 +90,7 @@ def list_s3_objects(bucket, path, filter=None):
 
 
 def s3_context_list_files(bucket, path_prefix='', filter=None):
-    path = get_s3_path(AppConfigs.context, path_prefix, key=None)
+    path = get_s3_path(Config.context, path_prefix, key=None)
     Logger.debug(f"Loading S3 path: bucket={bucket}, path={path}")
     response = list_s3_objects(bucket, path, filter)
     return response
@@ -100,7 +100,7 @@ def s3_context_list_files(bucket, path_prefix='', filter=None):
 def s3_context_add_file(filepath, bucket, key, path_prefix=''):
     s3 = boto3.session.Session().client(service_name='s3')
     transferConfig = boto3.s3.transfer.TransferConfig(multipart_threshold=UPLOAD_MULTIPART_THRESHOLD, max_concurrency=UPLOAD_MULTIPART_CONCURRENCY, multipart_chunksize=UPLOAD_MULTIPART_CHUNK_SIZE, use_threads=True)
-    path = get_s3_path(AppConfigs.context, path_prefix, key)
+    path = get_s3_path(Config.context, path_prefix, key)
     Logger.debug(f"Uploading S3 object: bucket={bucket}, path={path}")
     s3.upload_file(filepath, bucket, path, Config=transferConfig)
     result = {
@@ -113,7 +113,7 @@ def s3_context_add_file(filepath, bucket, key, path_prefix=''):
 
 def s3_context_get_file(bucket, key, path_prefix=''):
     s3 = boto3.session.Session().client(service_name='s3')
-    path = get_s3_path(AppConfigs.context, path_prefix, key)
+    path = get_s3_path(Config.context, path_prefix, key)
     Logger.debug(f"Downloading S3 object: bucket={bucket}, path={path}")
     try:
         s3.download_file(Bucket=bucket, Key=path, Filename=key)
@@ -134,7 +134,7 @@ def s3_context_get_file(bucket, key, path_prefix=''):
 
 def s3_context_delete_file(bucket, key, path_prefix=''):
     s3 = boto3.session.Session().client(service_name='s3')
-    path = get_s3_path(AppConfigs.context, path_prefix, key)
+    path = get_s3_path(Config.context, path_prefix, key)
     Logger.debug(f"Deleting S3 object: bucket={bucket}, path={path}")
     try:
         s3.head_object(Bucket=bucket, Key=path)

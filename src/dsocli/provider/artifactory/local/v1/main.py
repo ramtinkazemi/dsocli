@@ -1,6 +1,6 @@
 import os
 from dsocli.logger import Logger
-from dsocli.appconfigs import AppConfigs
+from dsocli.configs import Config
 from dsocli.providers import Providers
 from dsocli.templates import TemplateProvider
 from dsocli.stages import Stages
@@ -11,7 +11,7 @@ from dsocli.settings import *
 
 
 __default_spec = {
-    'path': os.path.join(AppConfigs.config_dir, 'templates'),
+    'path': os.path.join(Config.config_dir, 'templates'),
 }
 
 
@@ -57,7 +57,7 @@ class LocalTemplateProvider(TemplateProvider):
         result = {
                 'Key': key,
                 'Stage': Stages.shorten(config.stage),
-                'Origin': response['Origin'], 
+                'Context': response['Context'], 
                 'Path': response['Path'],
             }
         return result
@@ -108,7 +108,7 @@ class LocalTemplateProvider(TemplateProvider):
                 'Key': key,
                 'Stage': config.short_stage,
                 'Scope': found[key]['Scope'], 
-                'Origin': found[key]['Origin'], 
+                'Context': found[key]['Context'], 
                 'Path': found[key]['Path'],
             }
         return result

@@ -251,14 +251,17 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
                 raise DSOException(f"Index qualifiers can only be used with lists not with {type(parent_item)}.")
 
     ### is value a comma separated list enclosed in brackets?
-    if re.match(r'^\[(.*)\]$', value):
-        value = re.sub(r"^\[", "", re.sub(r"\]$", "", value))
-        value = list(map(lambda x: safe_str_to_number(x), re.findall('([^,]+)', value)))
-         ### alow overrwrite the entire list
-        if parent_item[lastKey]is None or isinstance(parent_item[lastKey], list):
-            overwrite_children = True
+    if type(value) == str:
+        if re.match(r'^\[(.*)\]$', value):
+            value = re.sub(r"^\[", "", re.sub(r"\]$", "", value))
+            value = list(map(lambda x: safe_str_to_number(x), re.findall('([^,]+)', value)))
+            ### alow overrwrite the entire list
+            if parent_item[lastKey]is None or isinstance(parent_item[lastKey], list):
+                overwrite_children = True
+            else:
+                raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
         else:
-            raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
+            value = safe_str_to_number(value)
 
     if isinstance(parent_item, list):
         set_list_value(parent_item, lastKey, value)

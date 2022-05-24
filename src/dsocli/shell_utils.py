@@ -6,7 +6,7 @@ from dsocli.file_utils import *
 from dsocli.exceptions import DSOException
 from dsocli.dict_utils import *
 from dsocli.local_utils import *
-from dsocli.appconfigs import AppConfigs
+from dsocli.configs import Config
 
 def expand_shell_parameters(parameters):
     for param in parameters:
