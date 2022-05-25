@@ -84,11 +84,12 @@ def render_dict_values(dict, values, silent=False):
     try:
         rendered = template.render(values)
     except Exception as e:
-        if not silent: Logger.error(f"Render failed.")
-        msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
-        raise DSOException(msg)
-
-    return json.loads(rendered)
+        if not silent: 
+            msg = getattr(e, 'message', getattr(e, 'msg', str(e)))
+            Logger.error(f"Render failed: {msg}")
+        return dict
+    else:
+        return json.loads(rendered)
 
 
 def get_format_from_file_name(file_name):

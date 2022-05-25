@@ -32,21 +32,28 @@ _init_config = {
     'config': {
         'provider': {
             'id': 'local/v1',
+            'spec': {}
         },
     },
     'parameter': {
         'provider': {
             'id': 'local/v1',
+            'spec': {}
+
         },
     },
     'secret': {
         'provider': {
             'id': 'shell/v1',
+            'spec': {}
+
         },
     },
     'template': {
         'provider': {
             'id': 'local/v1',
+            'spec': {}
+
         },
     },    
 }
@@ -232,7 +239,7 @@ class ConfigService:
         self.update_merged_config()
 
 
-    def load_local_config(self, silent_warnings=False, render=True):
+    def load_local_config(self, silent_warnings=False, render=False):
         self.local_config = {}
         self.local_config_rendered = {}
         self.local_config_dir_path = os.path.join(self.working_dir, self.config_dir)
@@ -313,7 +320,7 @@ class ConfigService:
 
         return result
 
-    def update_merged_config(self, use_defaults=True, use_calculated=True, use_local=True, use_remote=True, rendered=False):
+    def update_merged_config(self, use_defaults=True, use_calculated=True, use_root=True, use_local=True, use_remote=True, rendered=False):
         self.merged_config = {}
         if use_defaults:
             self.merged_config = get_default_config()
@@ -324,14 +331,17 @@ class ConfigService:
                 merge_dicts(self.remote_config_rendered, self.merged_config)
             else:
                 merge_dicts(self.remote_config, self.merged_config)                
-        if use_local:
+        if use_root:
             if rendered:
                 self.render_root_config()
-                self.render_local_config()
                 merge_dicts(self.root_config_rendered, self.merged_config)
-                merge_dicts(self.local_config_rendered, self.merged_config)
             else:
                 merge_dicts(self.root_config, self.merged_config)                
+        if use_local:
+            if rendered:
+                self.render_local_config()
+                merge_dicts(self.local_config_rendered, self.merged_config)
+            else:
                 merge_dicts(self.local_config, self.merged_config)                
         
         if use_defaults:
@@ -475,8 +485,8 @@ class ConfigService:
     def get_provider_id(self, service):
         try:
             result = self.merged_config[service]['provider']['id'] or os.getenv(f"DSO_{service.upper()}_PROVIDER")
-        except KeyError:
-            raise DSOException("Invalid dso configuration schema.")
+        except:
+            raise DSOException(f"Invalid dso configuration schema: {service}")
         return result
 
     @property
@@ -628,45 +638,56 @@ class ConfigService:
         self.save_local_config()
 
 
-    def list(self, uninherited=False, filter=None, rendered=False, source=ConfigOrigin.All):
-        Logger.info(f"Listing configuration settings: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
-        if source == ConfigOrigin.Local:                
-            if rendered:
-                self.render_local_config()
-            self.update_merged_config(use_remote=False, rendered=rendered)
-            response = flatten_dict(self.merged_config)
-        elif source == ConfigOrigin.Remote:
-            if self.config_provider:
-                self.load_remote_config(uninherited=uninherited)
-                if rendered:
-                    self.render_remote_config()
-                self.update_merged_config(use_defaults=False, use_calculated=False, use_local=False, use_root=False, rendered=rendered)
-                response = flatten_dict(self.merged_config)
-            else:
-                Logger.warn("Remote configiguration is not availbale because config provider has not been set.")
-                response = {}
-        elif source == ConfigOrigin.All:
-            if self.config_provider:
-                self.load_remote_config(uninherited=uninherited)
-            else:
-                Logger.warn("Remote configiguration is not availbale because config provider has not been set.")
-            if rendered:
-                self.render_remote_config()
-                self.render_local_config()
-            self.update_merged_config(rendered=rendered)
-            response = flatten_dict(self.merged_config)
-        
+    def list_local(self, filter=None):
+        self.update_merged_config(use_remote=False) 
+        response = flatten_dict(self.merged_config)
         result = []
         for key, value in response.items():
             if filter and not re.match(filter, key): continue
             item = {
-                'Key': key,
-                'Value': value
-              }
+                'Key' : key,
+                'Value': value,
+                'Context': 'local',
+                'Path': os.path.join(self.config_dir, self.config_file)
+            }
             result.append(item)
 
+        return result
+    
+    def list_remote(self, uninherited=False, filter=None):
+        if self.config_provider:
+            response = RemoteConfig.list(uninherited=uninherited, filter=filter)
+        else:
+            Logger.warn("Remote configiguration is not availbale because config provider has not been set.")
+            response = []
+        return response
+
+
+    def list(self, uninherited=False, filter=None, rendered=False, source=ConfigOrigin.All):
+        Logger.info(f"Listing configuration settings: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
+        if source == ConfigOrigin.Local:  
+            response = self.list_local(filter=filter)
+        elif source == ConfigOrigin.Remote:
+            response = self.list_remote(uninherited=uninherited, filter=filter)
+        elif source == ConfigOrigin.All:
+            local_response = self.list_local(filter=filter)
+            response = self.list_remote(uninherited=uninherited, filter=filter)
+            key_index = {response[i]['Key']:i for i in range(len(response))}
+            for item in local_response:
+                if item['Key'] in key_index:
+                    response[key_index[item['Key']]] = item
+                    Logger.warn(f"'{item['Key']}' was overriden locally.")
+                else:
+                    response.append(item)
+
+        if rendered:
+            self.load_remote_config()
+            self.load_root_config()
+            self.load_local_config()
+            response = render_dict_values(response, self.merged_config)
+
         from operator import itemgetter
-        return {'Configuration': sorted(result, key=itemgetter('Key'))}
+        return {'Configuration': sorted(response, key=itemgetter('Key'))}
 
 
     def add(self, key, value, source=ConfigOrigin.Local):
@@ -690,12 +711,10 @@ class ConfigService:
 
 
 
-    def get_local(self, key, rendered=True):
-        self.update_merged_config()
+    def get_local(self, key):
+        self.update_merged_config(use_remote=False)
         response = get_dict_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
         if response:
-            if rendered:
-                response = render_dict_values(response, values=self.merged_config)
             return {
                 'Key' : key,
                 'Value' : response,
@@ -705,52 +724,56 @@ class ConfigService:
         else:
             return {}
 
-    def get_remote(self, key, revision, uninherited=False, rendered=True):
-        self.load_remote_config(uninherited=uninherited)
-        self.update_merged_config()
-        result = RemoteConfig.get(key=key, revision=revision, uninherited=uninherited, rendered=rendered)
+    def get_remote(self, key, revision, uninherited=False):
+        result = RemoteConfig.get(key=key, revision=revision, uninherited=uninherited)
         if not result:
             raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
-        if rendered:
-            result = render_dict_values(result, self.merged_config)
         return result
 
 
     def get(self, key, revision=None, uninherited=False, rendered=True, source=ConfigOrigin.All):
         Logger.info(f"Getting configuration setting '{key}': namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
         if source == ConfigOrigin.All:
-            result = self.get_local(key, rendered=rendered)
-            if result:
-                return result  
-            else:
+            result = self.get_local(key)
+            if not result:
                 Logger.debug(f"Configuration setting '{key}' not found locally.")   
                 if self.config_provider:
-                    result = self.get_remote(key=key, revision=revision, uninherited=uninherited, rendered=rendered)
+                    result = self.get_remote(key=key, revision=revision, uninherited=uninherited)
                     if not result:
                         raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
-                    return result
                 else:
                     Logger.warn("Remote configiguration is not availbale because config provider has not been set.")
-                    return {}
+                    result = {}
         elif source == ConfigOrigin.Local:
-            result = self.get_local(key, rendered=rendered)
+            result = self.get_local(key)
             if not result:
                 raise DSOException(f"Configuration setting '{key}' not found locally.")   
-            return result
         elif source == ConfigOrigin.Remote:
-            result = self.get_remote(key=key, revision=revision, uninherited=uninherited, rendered=rendered)
-            return result
+            result = self.get_remote(key=key, revision=revision, uninherited=uninherited)
 
+        if result and rendered:
+            ### load everything for rendering purpose only
+            self.load_remote_config()
+            self.load_root_config()
+            self.load_local_config()
+            self.update_merged_config()
+            result['Value'] = render_dict_values(result['Value'], values=self.merged_config, silent=False)
+
+        return result
             
+
     def delete_remote(self, key):
         return RemoteConfig.delete(key=key)
 
 
     def delete_local(self, key):
         parent = get_dict_item(self.local_config, key.split('.')[:-1])
-        if parent and key.split('.')[-1] in parent:
+        lastKey = key.split('.')[-1]
+        if parent and type(parent) in [dict, list, tuple] and lastKey:
             value = get_dict_item(dic=self.local_config, keys=key.split('.'), create=False, leaf_only=True)
-            del_dict_item(dic=self.local_config, keys=key.split('.'))
+            if value is None:
+                raise DSOException(f"'{key}' not found in configuration settings locally.")
+            del_dict_item(dic=self.local_config, keys=key.split('.'), leaf_only=True, silent=False)
             del_dict_empty_item(dic=self.local_config, keys=key.split('.')[:-1])
             self.save_local_config()
             self.load_local_config(render=False)

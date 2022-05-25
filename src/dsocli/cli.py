@@ -2366,7 +2366,7 @@ def edit_config(key, local, remote, stage, global_scope, namespace_scope, verbos
                 tf.close()
                 os.unlink(tf.name)
             if changed:
-                Config.set(key, value, source=source)
+                Config.add(key, value, source=source)
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:

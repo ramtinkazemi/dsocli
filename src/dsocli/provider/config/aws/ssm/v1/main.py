@@ -1,8 +1,7 @@
 import boto3
 from dsocli.exceptions import DSOException
 from dsocli.logger import Logger
-from dsocli.providers import Providers
-from dsocli.configs import RemoteConfigProvider
+from dsocli.providers import Providers, RemoteConfigProvider
 from dsocli.constants import *
 from dsocli.aws_ssm_utils import *
 from dsocli.configs import Config, ContextMode

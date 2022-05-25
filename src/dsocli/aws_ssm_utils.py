@@ -102,7 +102,7 @@ def locate_ssm_parameter_in_context_hierachy(key, path_prefix='', uninherited=Fa
     paths = Contexts.get_hierachy_paths(context=Config.context, key=key, path_prefix=path_prefix, ignore_stage=Config.stage is None, uninherited=uninherited, reverse=True)
     ssm = boto3.session.Session().client(service_name='ssm')
     for path in paths:
-        Logger.debug(f"Describing SSM parameters: path={path}")
+        Logger.debug(f"Describing SSM parameter: path={path}")
         response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Values':[path]}])
         if len(response['Parameters']) > 0:
             ctx_path = path[len(path_prefix):]
@@ -140,7 +140,7 @@ def assert_ssm_parameter_no_namespace_overwrites(key, path_prefix=''):
     for n in range(len(namespaces)-1):
         subKey = '.'.join(namespaces[0:n+1])
         path = get_ssm_path(Config.context, subKey, path_prefix)
-        Logger.debug(f"Describing SSM parameters: path={path}")
+        Logger.debug(f"Describing SSM parameter: path={path}")
         # parameters = ssm.describe_parameters(ParameterFilters=[{'Key':'Type', 'Values':['String']},{'Key':'Name', 'Values':[path]}])
         response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Values':[path]}])
         if len(response['Parameters']) > 0:

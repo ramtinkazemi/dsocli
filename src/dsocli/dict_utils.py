@@ -117,15 +117,10 @@ def merge_dicts(source, destination, merge_key=None):
     if source is None: 
         return destination
 
+    # if destination is None:
+    #     destination = type(source)()
+
     if not type(source) == type(destination):
-        # if type(source) == dict and type(destination) == list:
-        #     from collections import OrderedDict
-        #     # from collections.abc import Iterable   # import directly from collections for Python < 3.3
-        #     # if isinstance(destination, Iterable):
-        #     destination = OrderedDict({index:i for i, index in enumerate(destination.copy())})
-        #     # else:
-        #         # raise Exception(f"Failed to merge source ({source}) and destination ({destination}) due to incompatible types: {type(source)} and {type(destination)}")
-        # else:
         raise Exception(f"Failed to merge source ({source}) and destination ({destination}) due to incompatible types: {type(source)} and {type(destination)}")
 
     if isinstance(source, dict):
@@ -256,7 +251,7 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
             value = re.sub(r"^\[", "", re.sub(r"\]$", "", value))
             value = list(map(lambda x: safe_str_to_number(x), re.findall('([^,]+)', value)))
             ### alow overrwrite the entire list
-            if parent_item[lastKey]is None or isinstance(parent_item[lastKey], list):
+            if not lastKey in parent_item or parent_item[lastKey] is None or isinstance(parent_item[lastKey], list):
                 overwrite_children = True
             else:
                 raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
@@ -293,23 +288,45 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
     return '.'.join(keys)
 
 
-def del_dict_item(dic, keys, force=False):
+def del_dict_item(dic, keys, leaf_only=False, silent=False):
     parent_item = get_dict_item(dic, keys[:-1], create=False)
-    if not parent_item or not keys[-1] in parent_item:
+    if not parent_item:
         return False
+    if type(parent_item) == dict:
+        if not keys[-1] in parent_item:
+            return False
+        item = parent_item[keys[-1]]
+        if isinstance(item, dict):
+            if leaf_only:
+                if not silent:
+                    raise DSOException("'{0}' is a dictionary and cannot be deleted.".format('.'.join(keys)))
+                return False
 
-    if isinstance(parent_item[keys[-1]], dict) and not force:
-        raise DSOException("'{0}' is a non-empty namespace and cannot be deleted.".format('.'.join(keys)))
+        parent_item.pop(keys[-1])
+        return True
 
-    parent_item.pop(keys[-1])
-    return True
+    elif type(parent_item) == list:
+        if int(keys[-1]) >= len(parent_item):
+            return False
+        item =  parent_item[int(keys[-1])]
+
+        if isinstance(item, dict):
+            if leaf_only:
+                if not silent:
+                    raise DSOException("'{0}' is a dictionary and cannot be deleted.".format('.'.join(keys)))
+                return False
+
+        parent_item.pop(int(keys[-1]))
+        return True
+    else:
+        raise NotImplementedError()
 
 
 
 def del_dict_empty_item(dic, keys):
     item = get_dict_item(dic, keys)
     if not item:
-        del_dict_item(dic, keys, force=True)
+        del_dict_item(dic, keys, leaf_only=False)
         if len(keys) > 1:
             del_dict_empty_item(dic, keys[:-1])
 

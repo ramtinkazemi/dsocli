@@ -10,7 +10,7 @@ from dsocli.settings import *
 
 
 __default_spec = {
-    'path': os.path.join(Config.config_dir, 'parameters'),
+    'path': os.path.join(Config.config_dir, 'parameter'),
     'store': 'shell.json',
 }
 
