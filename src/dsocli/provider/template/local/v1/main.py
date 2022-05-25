@@ -77,7 +77,7 @@ class LocalTemplateProvider(TemplateProvider):
 
     def history(self, key, include_contents=False):
         Logger.warn(f"Template provider 'local/v1' does not support history.")
-        Logger.debug(f"Getting template '{key}': namesape={Config.namespace}, application={Config.application}, stage={Config.stage}")
+        Logger.debug(f"Getting template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), include_contents=include_contents, uninherited=True)
         if not found:
             raise DSOException(f"Template '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
@@ -107,7 +107,6 @@ class LocalTemplateProvider(TemplateProvider):
                 'Path': found[key]['Path'],
             }
         return result
-
 
 
 def register():

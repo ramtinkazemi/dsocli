@@ -46,9 +46,9 @@ class AwsSsmSecretProvider(SecretProvider):
 
 
     def add(self, key, value):
-        Logger.debug(f"Checking SSM secret overwrites '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.stage}")
+        Logger.debug(f"Checking SSM secret overwrites '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         assert_ssm_parameter_no_namespace_overwrites(key=key, path_prefix=self.get_path_prefix())
-        Logger.debug(f"Locating SSM secret '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.stage}")
+        Logger.debug(f"Locating SSM secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if found and not found['Type'] == 'SecureString':
             raise DSOException(f"Failed to add secret '{key}' becasue the key is not available in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
@@ -73,7 +73,7 @@ class AwsSsmSecretProvider(SecretProvider):
 
 
     def get(self, key, revision=None, uninherited=False, decrypt=False):
-        Logger.debug(f"Locating SSM secret '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.stage}")
+        Logger.debug(f"Locating SSM secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:
             raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
@@ -145,7 +145,7 @@ class AwsSsmSecretProvider(SecretProvider):
 
 
     def delete(self, key):
-        Logger.debug(f"Locating SSM secret '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.stage}")
+        Logger.debug(f"Locating SSM secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         ### only secrets owned by the context can be deleted, hence uninherited=True
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:

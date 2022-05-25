@@ -102,7 +102,7 @@ class LocalConfigProvider(RemoteConfigProvider):
         ### only configs owned by the config can be deleted, hence uninherited=True
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Configuration setting '{key}' not found in the given context: namesape={Config.namespace}, application={Config.application}, stage={Config.short_stage}")
+            raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         Logger.info(f"Deleting configuration setting '{key}': path={found[key]['Path']}")
         delete_local_parameter(found[key]['Path'], key=key)
         result = {

@@ -80,7 +80,7 @@ class ShellParameterProvider(ParameterProvider):
 
 
     def history(self, key):
-        Logger.warn(f"Parameter provider 'shell/v1' does not support histoey.")
+        Logger.warn(f"Parameter provider 'shell/v1' does not support history.")
 
         Logger.debug(f"Getting shell parameter '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)

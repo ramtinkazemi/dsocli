@@ -1,9 +1,8 @@
 from dsocli.exceptions import DSOException
 from dsocli.logger import Logger
 from dsocli.providers import Providers, ArtifactoryProvider
-from dsocli.stages import Stages
 from dsocli.constants import *
-from dsocli.contexts import Contexts
+from dsocli.contexts import ContextMode
 from dsocli.aws_s3_utils import *
 from dsocli.settings import *
 from dsocli.configs import Config
@@ -61,7 +60,7 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         Logger.debug(f"Getting artifact '{key}' from S3: bucket={self.get_bucket_name()}")
         response = s3_context_get_file(bucket=self.get_bucket_name(), key=key, path_prefix=self.get_path_prefix(service))
         if not response:
-            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
+            raise DSOException(f"Artifact '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = {
                 # 'RevisionId': str(response['Version']),
                 'Key': key,
@@ -92,7 +91,7 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         #     ### get specific revision
         #     artifact = [x for x in artifact if str(x['Version']) == revision]
         #     if not artifact:
-        #         raise DSOException(f"Revision '{revision}' not found for artifact '{key}' in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
+        #         raise DSOException(f"Revision '{revision}' not found for artifact '{key}' in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         #     result = {
         #             'RevisionId': str(artifact[0]['Version']),
         #             'Date': artifact[0]['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
@@ -112,10 +111,10 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         Logger.debug(f"Locating artifact '{key}' from S3: bucket={self.get_bucket_name()}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, service=self.get_path_prefix())
         if not found:
-            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
+            raise DSOException(f"Artifact '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:
             if not found['Type'] == 'StringList':
-                raise DSOException(f"Storage '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
+                raise DSOException(f"Storage '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         Logger.debug(f"Getting S3 artifact: path={found['Name']}")
         response = get_ssm_parameter_history(found['Name'])
         artifact = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)
@@ -154,7 +153,7 @@ class AwsS3ArtifactoryProvider(ArtifactoryProvider):
         Logger.debug(f"Deleting artifact '{key}' from S3: bucket={self.get_bucket_name()}")
         response = s3_context_delete_file(bucket=self.get_bucket_name(), key=key, path_prefix=self.get_path_prefix(service))
         if not response:
-            raise DSOException(f"Artifact '{key}' not found in the given context: namespace:{Config.namespace}, application={Config.application}, stage={Config.short_stage}")
+            raise DSOException(f"Artifact '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = {
                 # 'RevisionId': str(response['Version']),
                 'Key': key,

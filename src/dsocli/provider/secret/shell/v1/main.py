@@ -44,13 +44,13 @@ class ShellSecretProvider(SecretProvider):
 
 
     def add(self, key, value):
-        Logger.debug(f"Adding shell secret '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.stage}")
+        Logger.debug(f"Adding shell secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         response = add_shell_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
         return response
 
 
     def list(self, uninherited=False, decrypt=False, filter=None):
-        Logger.debug(f"Listing shell secrets: namespace={Config.namespace}, application={Config.application}, stage={Config.stage}")
+        Logger.debug(f"Listing shell secrets: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         secrets = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
         result = []
         for key, details in secrets.items():
