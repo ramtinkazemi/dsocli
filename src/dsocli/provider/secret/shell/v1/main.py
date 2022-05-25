@@ -69,10 +69,7 @@ class ShellSecretProvider(SecretProvider):
         Logger.debug(f"Getting shell secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, rendered=decrypt)
         if not found:
-            if uninherited:
-                raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-            else:
-                raise DSOException(f"Secret '{key}' not found nor inherited in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+            raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = {
                 'Key': key, 
             }
@@ -81,12 +78,12 @@ class ShellSecretProvider(SecretProvider):
 
 
     def history(self, key, decrypt=False):
-        Logger.warn(f"Secret provider 'shell/v1' does not support versioning.")
+        Logger.warn(f"Secret provider 'shell/v1' does not support history.")
 
         Logger.debug(f"Getting shell secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
+        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
-            raise DSOException(f"Secret '{key}' not found nor inherited in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+            raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = { "Revisions":
             [{
                 'RevisionId': '0',

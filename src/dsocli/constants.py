@@ -21,6 +21,6 @@ MESSAGES = {
     'DSOConfigNewer': "Application is configured to use a newer version of dso, expected '{0}', got '{1}'.",
     'DSOConfigOlder': "Application is configured to use an older version of dso, expected '{0}', got '{1}'.",
     'DSOConfigurationNotFound': 'DSO configuration not found.',
-    'NoDSOConfigFound': "DSO configuration not found in the working directory.",
+    'NoDSOConfigFound': "DSO configuration not found in the working directory. Run 'dso config init' to create it.",
     'EnteredSecretValuesNotMatched': "Entered values for the secret did not macth.",
 }

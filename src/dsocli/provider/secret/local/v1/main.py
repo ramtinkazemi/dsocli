@@ -81,10 +81,10 @@ class LocalSecretProvider(SecretProvider):
 
 
     def history(self, key, decrypt=False):
-        Logger.warn(f"Secret provider 'local/v1' does not support versioning.")
+        Logger.warn(f"Secret provider 'local/v1' does not support history.")
 
         Logger.debug(f"Getting local secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
+        found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
             raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = { "Revisions":

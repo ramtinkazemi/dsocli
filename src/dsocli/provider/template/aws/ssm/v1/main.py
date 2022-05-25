@@ -76,9 +76,9 @@ class AwsSsmTemplateProvider(TemplateProvider):
 
     def get(self, key, revision=None):
         Logger.debug(f"Locating SSM template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix())
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
-            raise DSOException(f"Template '{key}' not found nor inherited in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+            raise DSOException(f"Template '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:
             if not found['Type'] == 'StringList':
                 raise DSOException(f"Template '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
@@ -119,7 +119,7 @@ class AwsSsmTemplateProvider(TemplateProvider):
 
     def history(self, key, include_contents=False):
         Logger.debug(f"Locating SSM template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix())
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
             raise DSOException(f"Template '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:

@@ -63,14 +63,14 @@ class LocalTemplateProvider(TemplateProvider):
         return result
 
 
-    def get(self, config, key, revision=None):
+    def get(self, config, key, uninherited=False, revision=None):
         self.config = config
         if revision:
             Logger.warn(f"Template provider 'local/v1' does not support versioning. Revision request ignored.")
         Logger.debug(f"Getting template '{key}': namespace={config.namespace}, application={config.application}, stage={config.stage}")
-        found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), include_contents=True)
+        found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited, include_contents=True)
         if not found:
-            raise DSOException(f"Template '{key}' not found nor inherited in the given context: stage={config.short_stage}")
+            raise DSOException(f"Template '{key}' not found in the given context: stage={config.short_stage}")
         result = {
                 'Key': key, 
             }
@@ -82,9 +82,9 @@ class LocalTemplateProvider(TemplateProvider):
         self.config = config
         Logger.warn(f"Template provider 'local/v1' does not support versioning.")
         Logger.debug(f"Getting template '{key}': namesape={config.namespace}, application={config.application}, stage={config.stage}")
-        found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), include_contents=True)
+        found = locate_template_in_context_hierachy(config=config, key=key, path_prefix=self.get_path_prefix(), uninherited=True, include_contents=include_contents)
         if not found:
-            raise DSOException(f"Template '{key}' not found nor inherited in the given context: stage={config.short_stage}")
+            raise DSOException(f"Template '{key}' not found in the given context: stage={config.short_stage}")
 
         result = { "Revisions":
             [{

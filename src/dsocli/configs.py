@@ -246,7 +246,8 @@ class ConfigService:
         self.local_config_file_path = os.path.join(self.local_config_dir_path, self.config_file)
 
         if not os.path.exists(self.local_config_file_path):
-            if not silent_warnings: Logger.warn(MESSAGES['NoDSOConfigFound'])
+            if not silent_warnings: 
+                Logger.warn(MESSAGES['NoDSOConfigFound'])
             return
 
         Logger.debug(f"Local configuration found: path={self.local_config_file_path}")
@@ -693,8 +694,8 @@ class ConfigService:
     def add(self, key, value, source=ConfigOrigin.Local):
         Logger.info(f"Adding configuration setting '{key}': namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
         if source == ConfigOrigin.Local:
-            if not os.path.exists(self.local_config_file_path):
-                raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
+            # if not os.path.exists(self.local_config_file_path):
+            #     raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
             key = set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=False, overwrite_children=False)
             self.save_local_config()
             return {
@@ -797,6 +798,43 @@ class ConfigService:
         else:
             raise NotImplementedError()
   
+
+    def history_local(self, key):
+        self.update_merged_config(use_remote=False)
+        response = get_dict_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
+        if response:
+            return {'Revisions': [{
+                'RevisionId': '0',
+                'Key' : key,
+                'Value' : response,
+                'Context': 'local',
+                'Path': os.path.join(self.config_dir, self.config_file),
+                'Date': get_file_modified_date(os.path.join(self.config_dir, self.config_file)),
+            }]}
+        else:
+            raise DSOException(f"Configuration setting '{key}' not found locally.")
+
+
+    def history_remote(self, key):
+        result = RemoteConfig.history(key)
+        if not result:
+            raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
+        return result
+
+
+    def history(self, key, source=ConfigOrigin.Remote):
+        Logger.info(f"Fetching history of configuration setting '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+        if source == ConfigOrigin.Local:
+            Logger.warn(f"Local configuration does not support history.")
+            result = self.history_local(key)
+        elif source == ConfigOrigin.Remote:
+            return self.history_remote(key)
+        else:
+            raise NotImplementedError()
+
+
+        return result
+
 
 Config = ConfigService()
 

@@ -76,10 +76,7 @@ class AwsSsmSecretProvider(SecretProvider):
         Logger.debug(f"Locating SSM secret '{key}': namespace={Config.namespace}, application={Config.application}, stage={Config.stage}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:
-            if uninherited:
-                raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-            else:
-                raise DSOException(f"Secret '{key}' not found nor inherited in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+            raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:
             if not found['Type'] == 'SecureString':
                 raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
@@ -121,7 +118,7 @@ class AwsSsmSecretProvider(SecretProvider):
 
     def history(self, key, decrypt=False):
         Logger.debug(f"Locating SSM secret '{key}': application={Config.application}, stage={Config.stage}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix())
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
             raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:

@@ -71,9 +71,9 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
 
     def get(self, key, revision=None, uninherited=False, rendered=True):
         Logger.debug(f"Locating configuration setting '{key}'...")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix())
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:
-            raise DSOException(f"Config '{key}' not found nor inherited in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+            raise DSOException(f"Config '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:
             if not found['Type'] == 'String':
                 raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
@@ -97,7 +97,7 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
             ### get specific revision
             configuration = [x for x in configuration if str(x['Version']) == revision]
             if not configuration:
-                raise DSOException(f"Revision '{revision}' not found for parameter '{key}' in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+                raise DSOException(f"Revision '{revision}' not found for configuration setting '{key}' in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
             result = {
                     'RevisionId':str(configuration[0]['Version']),
                     'Date': configuration[0]['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
@@ -112,10 +112,9 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
         return result
 
 
-    def history(self, key, service):
-        self.service = service
-        Logger.debug(f"Locating configuration setting '{key}' on SSM: service={service}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(service))
+    def history(self, key):
+        Logger.debug(f"Locating configuration setting '{key}'...")
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
             raise DSOException(f"Config '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:
@@ -123,18 +122,18 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
                 raise DSOException(f"Config '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         Logger.debug(f"Getting configuration from SSM: path={found['Name']}")
         response = get_ssm_parameter_history(found['Name'])
-        parameters = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)
+        configuration = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)
         result = { "Revisions":
             [{
-                'RevisionId': str(parameter['Version']),
-                'Date': parameter['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
+                'RevisionId': str(setting['Version']),
+                'Date': setting['LastModifiedDate'].strftime('%Y/%m/%d-%H:%M:%S'),
                 'Key': key,
-                'Value': parameter['Value'],
+                'Value': setting['Value'],
                 # 'Scope': found['Scope'],
                 # 'Context': found['Context'],
-                'User': parameter['LastModifiedUser'],
+                'User': setting['LastModifiedUser'],
                 # 'Path': found['Name'],
-            } for parameter in parameters]
+            } for setting in configuration]
         }
 
         return result
@@ -148,8 +147,6 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
         if not found:
             raise DSOException(f"Configuration '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:
-            # if len(found) > 1:
-            #     Logger.warn(f"More than one parameter found at '{found['Name']}'. The first one taken, and the rest were discarded.")
             if not found['Type'] == 'String':
                 raise DSOException(f"Configuraton '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         Logger.debug(f"Deleting configuration from SSM: path={found['Name']}")

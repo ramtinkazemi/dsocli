@@ -103,6 +103,11 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The setting must be owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
+        'history': """Return the revision history of configuration setting.\n
+                ** Tips: 1) The configuration setting may be inherited from the parent contexts or owned by the given context.\n
+                KEY: The identifier of the configuration setting. It may also be provided using the '--key' option.\n
+                """,
+
       },
     'package': {
         'build': """Build a distrubutabkle package, and adds it to artifact store.\n
@@ -188,6 +193,8 @@ CLI_COMMANDS_SHORT_HELP = {
         'delete': "Delete a DSO application configuration.",
         'init': "Initialize DSO application in the working directory.",
         'edit': "Edit the value of a configuration setting.",
+        'history': "Get the revision history of a configuration setting.",
+
     },
     'network': {
         'subnet': "Get subnet plan layout of the application.",

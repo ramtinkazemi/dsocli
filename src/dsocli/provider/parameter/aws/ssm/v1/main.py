@@ -127,7 +127,7 @@ class AwsSsmParameterProvider(ParameterProvider):
 
     def history(self, key):
         Logger.debug(f"Locating SSM parameter '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix())
+        found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)
         if not found:
             raise DSOException(f"Parameter '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         else:

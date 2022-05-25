@@ -81,12 +81,12 @@ class LocalConfigProvider(RemoteConfigProvider):
 
 
     def history(self, key):
-        Logger.warn(f"Config provider 'local/v1' does not support versioning.")
+        Logger.warn(f"Config provider 'local/v1' does not support history.")
 
         Logger.debug(f"Getting local configuration setting '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=False)
         if not found:
-            raise DSOException(f"Configuration setting '{key}' not found nor inherited in the given context: stage={Stages.shorten(Config.short_stage)}")
+            raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = { "Revisions":
             [{
                 'RevisionId': '0',

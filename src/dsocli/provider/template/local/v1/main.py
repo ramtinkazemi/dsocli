@@ -61,13 +61,13 @@ class LocalTemplateProvider(TemplateProvider):
         return result
 
 
-    def get(self, key, revision=None):
+    def get(self, key, uninherited=False, revision=None):
         if revision:
             Logger.warn(f"Template provider 'local/v1' does not support versioning. Revision request ignored.")
         Logger.debug(f"Getting template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), include_contents=True)
+        found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited, include_contents=True)
         if not found:
-            raise DSOException(f"Template '{key}' not found nor inherited in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+            raise DSOException(f"Template '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = {
                 'Key': key, 
             }
@@ -76,11 +76,11 @@ class LocalTemplateProvider(TemplateProvider):
 
 
     def history(self, key, include_contents=False):
-        Logger.warn(f"Template provider 'local/v1' does not support versioning.")
+        Logger.warn(f"Template provider 'local/v1' does not support history.")
         Logger.debug(f"Getting template '{key}': namesape={Config.namespace}, application={Config.application}, stage={Config.stage}")
-        found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), include_contents=True)
+        found = locate_template_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), include_contents=include_contents, uninherited=True)
         if not found:
-            raise DSOException(f"Template '{key}' not found nor inherited in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+            raise DSOException(f"Template '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
 
         result = { "Revisions":
             [{
