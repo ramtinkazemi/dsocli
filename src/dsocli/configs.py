@@ -696,7 +696,7 @@ class ConfigService:
         if source == ConfigOrigin.Local:
             # if not os.path.exists(self.local_config_file_path):
             #     raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
-            key = set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=False, overwrite_children=False)
+            key, value = set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=False, overwrite_children=False)
             self.save_local_config()
             return {
                 'Key' : key,
@@ -718,7 +718,7 @@ class ConfigService:
         if response:
             return {
                 'Key' : key,
-                'Value' : response,
+                'Value' : response.copy() if type(response) in [list,dict] else response,
                 'Context': 'local',
                 'Path': os.path.join(self.config_dir, self.config_file)
             }
@@ -726,7 +726,24 @@ class ConfigService:
             return {}
 
     def get_remote(self, key, revision, uninherited=False):
-        result = RemoteConfig.get(key=key, revision=revision, uninherited=uninherited)
+        ### are we dealing with a list?
+        if '.' in key:
+            lastKey = safe_str_to_number(key.split('.')[-1])
+            if type(lastKey) == int:
+                key = '.'.join(key.split('.')[:-1])    
+                result = RemoteConfig.get(key=key, revision=revision, uninherited=uninherited)
+                if type(result['Value']) == list:
+                    if lastKey > len(result['Value']):
+                        raise DSOException(f"Index '{lastKey}' exceeded list size: {key}.{len(result['Value'])-1}")
+                    
+                    result['Key'] += f'.{lastKey}'
+                    result['Value'] = result['Value'][lastKey]
+                else:
+                    raise DSOException(f"Index qualifiers can only be used with lists not with {type(result['Value'])}.")
+            else:
+                result = RemoteConfig.get(key=key, revision=revision, uninherited=uninherited)
+                
+
         if not result:
             raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
         return result
@@ -759,7 +776,7 @@ class ConfigService:
             self.load_local_config()
             self.update_merged_config()
             result['Value'] = render_dict_values(result['Value'], values=self.merged_config, silent=False)
-
+        
         return result
             
 
@@ -770,7 +787,7 @@ class ConfigService:
     def delete_local(self, key):
         parent = get_dict_item(self.local_config, key.split('.')[:-1])
         lastKey = key.split('.')[-1]
-        if parent and type(parent) in [dict, list, tuple] and lastKey:
+        if parent and type(parent) in [dict, list] and lastKey:
             value = get_dict_item(dic=self.local_config, keys=key.split('.'), create=False, leaf_only=True)
             if value is None:
                 raise DSOException(f"'{key}' not found in configuration settings locally.")

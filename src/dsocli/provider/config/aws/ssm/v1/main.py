@@ -153,6 +153,7 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
         delete_ssm_parameter(found['Name'])
         result = {
                 'Key': key,
+                'Value': found['Value'],
                 'Stage': found['Stage'],
                 'Scope': found['Scope'],
                 'Context': found['Context'],

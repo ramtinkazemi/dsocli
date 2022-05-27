@@ -107,6 +107,7 @@ class LocalConfigProvider(RemoteConfigProvider):
         delete_local_parameter(found[key]['Path'], key=key)
         result = {
                 'Key': key,
+                'Value': found[key]['Value'],
                 'Stage': Config.short_stage,
                 'Scope': found[key]['Scope'], 
                 'Context': found[key]['Context'], 

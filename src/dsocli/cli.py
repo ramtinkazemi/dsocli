@@ -263,7 +263,7 @@ def list_parameter(stage, uninherited, filter, global_scope, namespace_scope, qu
         if len(result['Parameters']) == 0:
             Logger.warn("No parameter found.")
 
-        output = format_data(result, query, format, mainkeys=['Key', 'Value'])
+        output = format_data(result, query, format, main_keys=['Key', 'Value'])
         Pager.page(output)
 
     except DSOException as e:
@@ -306,8 +306,8 @@ def get_parameter(key, stage, global_scope, namespace_scope, revision, query, qu
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        if format == 'text' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
+        # if format == 'text' and (query or query_all):
+        #     raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -664,7 +664,7 @@ def list_secret(stage, global_scope, namespace_scope, uninherited, decrypt, filt
         if len(result['Secrets']) == 0:
             Logger.warn("No secret found.")
 
-        output = format_data(result, query, format, mainkeys=['Key', 'Value'])
+        output = format_data(result, query, format, main_keys=['Key', 'Value'])
         Pager.page(output)
 
     except DSOException as e:
@@ -707,8 +707,8 @@ def get_secret(stage, global_scope, namespace_scope, key, revision, query, query
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        if format == 'text' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
+        # if format == 'text' and (query or query_all):
+        #     raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Value: Value}'
         query = validate_query_argument(query, query_all, defaultQuery)
@@ -1173,7 +1173,7 @@ def list_template(stage, uninherited, include_contents, filter, global_scope, na
         result = Templates.list(uninherited, include_contents, filter)
         if len(result['Templates']) == 0:
             Logger.warn("No template found.")
-        output = format_data(result, query, format, mainkeys=['Key', 'RenderPath'])
+        output = format_data(result, query, format, main_keys=['Key', 'RenderPath'])
         Pager.page(output)
 
     except DSOException as e:
@@ -1220,8 +1220,8 @@ def get_template(key, revision, raw, stage, global_scope, namespace_scope, query
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
-        if format == 'text' and (query or query_all):
-            raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
+        # if format == 'text' and (query or query_all):
+        #     raise DSOException("Query cannot be customised using '-q'/'--query' or '-a'/'--query-all', becasue output format is 'text'. Use '-f'/'--format' to change it.")
 
         defaultQuery = '{Contents: Contents}'
         query = validate_query_argument(query, query_all, defaultQuery)

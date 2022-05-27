@@ -10,7 +10,7 @@ from functools import reduce
 
 
 
-def format_data(data, query, format, compress=True, mainkeys=None):
+def format_data(data, query, format, compress=True, main_keys=None):
     def compress_single_element_lists(data):
         if not isinstance(data, list): return data
         if len(data) > 1: return data
@@ -112,33 +112,38 @@ def format_data(data, query, format, compress=True, mainkeys=None):
     elif format == 'text':
         outputStream = ''
         if isinstance(result, list):
-            for i in range(0, len(result)):
+            outputStream += '['
+            for i in range(len(result)):
                 item = result[i]
                 if isinstance(item, dict):
                     ### the map also treats None values
-                    valuesStr = '\t'.join(map(lambda x: str(x) if not x is None else '', list(item.values())))
+                    valuesStr = '\n'.join(map(lambda x: str(x) if not x is None else '', list(item.values())))
                 else:
                     valuesStr = str(item) if not item is None else ''
                 outputStream += f"{valuesStr}"
-                if i < len(result)-1: outputStream += '\n'
+                if i < len(result)-1: outputStream += ','
+            outputStream += ']\n'
         elif isinstance(result, dict):
             keys = list(result.keys())
             ### if data is dictionary with single key whose value is a list, process the child list instead
             if len(keys) == 1:
                 childList = result[keys[0]]
                 if isinstance(childList, list):
-                    for i in range(0, len(childList)):
+                    outputStream += '['
+                    for i in range(len(childList)):
                         item = childList[i]
                         if isinstance(item, dict):
-                            valuesStr = '\t'.join(map(lambda x: str(x) if not x is None else '', list(item.values())))
+                            valuesStr = '\n'.join(map(lambda x: str(x) if not x is None else '', list(item.values())))
                         else:
                             valuesStr = str(item) if not item is None else ''
                         outputStream += f"{valuesStr}"
-                        if i < len(childList)-1: outputStream += '\n'
+                        if i < len(childList)-1: outputStream += ','
+                    outputStream += ']\n'
+                
                 else:
-                    outputStream = '\t'.join(map(lambda x: str(x) if not x is None else '', list(result.values())))
+                    outputStream = '\n'.join(map(lambda x: str(x) if not x is None else '', list(result.values())))
             elif len(keys) > 1:
-                outputStream = '\t'.join(map(lambda x: str(x) if not x is None else '', list(result.values())))
+                outputStream = '\n'.join(map(lambda x: str(x) if not x is None else '', list(result.values())))
         else:
             outputStream += str(result) if not result is None else ''
         
@@ -146,7 +151,7 @@ def format_data(data, query, format, compress=True, mainkeys=None):
 
 
     ### expects list(dict), or a dict
-    ### take first key as name and second key as value, or use mainkeys and form name=value
+    ### take first key as name and second key as value, or use main_keys and form name=value
     elif format == 'compact':
 
         def quote(value):
@@ -154,7 +159,10 @@ def format_data(data, query, format, compress=True, mainkeys=None):
             import re
             value = str(value)
             ### no quoting numbers
-            if re.match(r"^[0-9]$", value) or re.match(r"^[1-9][0-9]*$", value) or re.match(r"^[0-9]*\.[0-9]+$", value):
+            if re.match(r"^\[.*\]$", value):
+                return value
+            ### no quoting numbers
+            elif re.match(r"^[0-9]$", value) or re.match(r"^[1-9][0-9]*$", value) or re.match(r"^[0-9]*\.[0-9]+$", value):
                 return value
             ### double quote if contains single quote
             elif re.match(r"^.*[']+.*$", value):
@@ -167,15 +175,15 @@ def format_data(data, query, format, compress=True, mainkeys=None):
         if isinstance(result, list) and len(result):
             if isinstance(result[0], dict):
                 if len(result[0].keys()) < 2:
-                    raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
+                    raise DSOException(f"Unable to format data as it is incompatible with 'compact' format.")
                 for item in result:
-                    if not mainkeys:
-                        mainkeys = list(item.keys())
-                    key = item[mainkeys[0]]
-                    value = quote(item[mainkeys[1]])
+                    if not main_keys:
+                        main_keys = list(item.keys())
+                    key = item[main_keys[0]]
+                    value = quote(item[main_keys[1]])
                     outputStream += f"{key}={value}\n"
             else:
-                raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
+                raise DSOException(f"Unable to format data as it is incompatible with 'compact' format.")
         elif isinstance(result, dict):
             keys = list(result.keys())
             ### if data is dictionary with single key whose value is a list, process the child list instead
@@ -184,19 +192,19 @@ def format_data(data, query, format, compress=True, mainkeys=None):
                 if isinstance(childList, list):
                     if childList:
                         if len(childList[0].keys()) < 2:
-                            raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
+                            raise DSOException(f"Unable to format data as it is incompatible with 'compact' format.")
                         for item in childList:
-                            if not mainkeys:
-                                mainkeys = list(item.keys())
-                            key = item[mainkeys[0]]
-                            value = quote(item[mainkeys[1]])
+                            if not main_keys:
+                                main_keys = list(item.keys())
+                            key = item[main_keys[0]]
+                            value = quote(item[main_keys[1]])
                             outputStream += f"{key}={value}\n"
                 else:
                     raise NotImplementedError()
             elif len(keys) > 1:
                 raise NotImplementedError()
         else:
-            raise DSOException(f"Unable to format data as it is incompatible with the 'compact' format.")
+            raise DSOException(f"Unable to format data as it is incompatible with 'compact' format.")
         return outputStream
 
     else:
@@ -274,14 +282,14 @@ def read_data(input, parent_key, keys, format):
             if len(header) < len(keys):
                 raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
 
-            for i in range(0, len(keys)):
+            for i in range(len(keys)):
                 key = keys[i]
                 if not key == header[i]:
                     raise DSOException(CLI_MESSAGES['MissingField'].format(key))
 
         for row in data[1:]:
             record = {}
-            for i in range(0, len(keys)):
+            for i in range(len(keys)):
                 record[keys[i]] = row[i]
             result.append(record)
 
@@ -303,14 +311,14 @@ def read_data(input, parent_key, keys, format):
             if len(header) < len(keys):
                 raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
 
-            for i in range(0, len(keys)):
+            for i in range(len(keys)):
                 key = keys[i]
                 if not key == header[i]:
                     raise DSOException(CLI_MESSAGES['MissingField'].format(key))
 
         for row in data[1:]:
             record = {}
-            for i in range(0, len(keys)):
+            for i in range(len(keys)):
                 record[keys[i]] = row[i]
             result.append(record)
 
@@ -325,7 +333,7 @@ def read_data(input, parent_key, keys, format):
         try:
             for row in data:
                 record = {}
-                for i in range(0, len(keys)):
+                for i in range(len(keys)):
                     record[keys[i]] = row.split('\t')[i].strip()
                 result.append(record)
         except:
@@ -339,7 +347,7 @@ def read_data(input, parent_key, keys, format):
         try:
             for row in data:
                 record = {}
-                for i in range(0, len(keys)):
+                for i in range(len(keys)):
                     if not '=' in row:
                         raise DSOException(CLI_MESSAGES['InvalidFileFormat'].format(format))
                     record[keys[i]] = row.split('=')[i].strip()

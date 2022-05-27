@@ -193,7 +193,7 @@ def add_local_parameter(key, value, store_name, path_prefix=''):
     Logger.debug(f"Local parameter store: path={path}")
     fullPath = os.path.join(Config.working_dir, path)
     params = load_file(file_path=fullPath)
-    set_dict_value(dic=params, keys=key.split('.'), value=value, overwrite_parent=False, overwrite_children=False)
+    key, value = set_dict_value(dic=params, keys=key.split('.'), value=value, overwrite_parent=False, overwrite_children=False)
     save_data(data=params, file_path=fullPath)
     ctx_path = path[len(path_prefix):].replace(os.sep, '/')
     ctx = Context(*Contexts.parse_path(ctx_path)[0:3])

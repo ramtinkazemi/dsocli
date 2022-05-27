@@ -125,7 +125,7 @@ def merge_dicts(source, destination, merge_key=None):
 
     if isinstance(source, dict):
         for key, value in source.items():
-            if isinstance(value, dict) or isinstance(value, list) or isinstance(value, tuple):
+            if isinstance(value, dict) or isinstance(value, list):
                 if not key in destination.keys(): destination[key] = type(value)()
                 node = destination[key]
                 merge_dicts(value, node, merge_key)
@@ -136,7 +136,7 @@ def merge_dicts(source, destination, merge_key=None):
         for item in source:
             node = find_item(item, destination, merge_key)
             if node:
-                if isinstance(node, dict) or isinstance(node, list) or isinstance(source, tuple):
+                if isinstance(node, dict) or isinstance(node, list):
                     merge_dicts(item, node, merge_key)
             else:
                 destination.append(item)
@@ -148,16 +148,19 @@ def merge_dicts(source, destination, merge_key=None):
 
 
 
-def flatten_dict(input, prefixed_key = '', delimiter = '.'):
+def flatten_dict(input, prefixed_key = '', delimiter = '.', atomic_list=True):
     def visit(input, prefixed_key, delimiter, output):
         if isinstance(input, dict):
             for key, value in input.items():
                 new_key = f'{prefixed_key}{delimiter}{key}' if prefixed_key else f'{key}'
                 visit(value, new_key, delimiter, output)
         elif isinstance(input, list):
-            for idx, item in enumerate(input):
-                new_key = f'{prefixed_key}{delimiter}{idx}' if prefixed_key else f'{idx}'
-                visit(item, new_key, delimiter, output)
+            if atomic_list:
+                output[prefixed_key] = input        
+            else:
+                for idx, item in enumerate(input):
+                    new_key = f'{prefixed_key}{delimiter}{idx}' if prefixed_key else f'{idx}'
+                    visit(item, new_key, delimiter, output)
         else:
             output[prefixed_key] = input
 
@@ -176,7 +179,7 @@ def deflatten_dict(input: dict, delimiter = '.'):
 
 
 def get_dict_item(dic, keys, create=True, default={}, leaf_only=False):
-    for i in range(0, len(keys)):
+    for i in range(len(keys)):
         key = keys[i]
         if isinstance(dic, dict):
             if not key in dic.keys() or dic[key] is None:
@@ -188,14 +191,15 @@ def get_dict_item(dic, keys, create=True, default={}, leaf_only=False):
         elif isinstance(dic, list):
             key = int(key)
             if key >= len(dic):
-                raise IndexError()
+                raise DSOException(f"Index '{key}' exceeded list size: {'.'.join(keys[:-1])}.{len(dic)-1}")
             dic = dic[key]
         else:
             raise NotImplementedError()
-    if leaf_only and type(dic) in [dict, tuple]:
+    if leaf_only and type(dic) in [dict]:
         return None
     return dic
     
+
 def safe_str_to_number(s):
     try:
         return int(s.strip())
@@ -212,9 +216,8 @@ def safe_str_to_number(s):
 def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=False):
     
     def set_list_value(alist, idx, value):
-        ### idx must be a number
         if idx < len(alist):
-            if isinstance(alist[idx], dict) or isinstance(alist[idx], list) or isinstance(alist[idx], set) or isinstance(alist[idx], tuple):
+            if type(alist[idx]) in [dict]:
                 if overwrite_children:
                     Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
                 else:
@@ -223,7 +226,7 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
         elif idx == len(alist):
             alist.append(value)
         else:
-            raise DSOException(f"Index '{idx}' exceeded list size: {'.'.join(keys[:-1])}.{len(alist)}")
+            raise DSOException(f"Index '{idx}' exceeded list size: {'.'.join(keys[:-1])}.{len(alist)-1}")
 
     lastKey = keys[-1]
     
@@ -232,6 +235,7 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
         parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])
         if not isinstance(parent_item, list):
             raise DSOException(f"Index qualifiers can only be used with lists not with {type(parent_item)}.")
+        ### append to the list
         lastKey = len(parent_item)
         keys[-1] = str(lastKey)
     else:
@@ -240,6 +244,8 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
             lastKey = int(lastKey)
         except:
             parent_item = get_dict_item(dic, keys[:-1], create=True, default={})
+            if not isinstance(parent_item, dict):
+                raise DSOException(f"Expected a dictionary but faced a {type(parent_item)}.")
         else:
             parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])     
             if not isinstance(parent_item, list):
@@ -249,9 +255,9 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
     if type(value) == str:
         if re.match(r'^\[(.*)\]$', value):
             value = re.sub(r"^\[", "", re.sub(r"\]$", "", value))
-            value = list(map(lambda x: safe_str_to_number(x), re.findall('([^,]+)', value)))
+            value = list(map(lambda x: safe_str_to_number(x.strip()), re.findall('([^,]+)', value)))
             ### alow overrwrite the entire list
-            if not lastKey in parent_item or parent_item[lastKey] is None or isinstance(parent_item[lastKey], list):
+            if not lastKey in parent_item or parent_item[lastKey] is None or not type(parent_item[lastKey]) in [dict]:
                 overwrite_children = True
             else:
                 raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
@@ -259,20 +265,25 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
             value = safe_str_to_number(value)
 
     if isinstance(parent_item, list):
+        if not type(lastKey) == int:
+            raise DSOException(f"List index qualifiers must be a number: '{'.'.join(keys)}'.")
+
         set_list_value(parent_item, lastKey, value)
 
     elif isinstance(parent_item, dict):
         if lastKey in parent_item.keys():
             ### item is expected to be a basic type (string, number, ...)
-            if isinstance(parent_item[lastKey], dict) or isinstance(parent_item[lastKey], list) or isinstance(parent_item[lastKey], set) or isinstance(parent_item[lastKey], tuple):
+            if type(parent_item[lastKey]) in [dict]:
                 if overwrite_children:
                     Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
                 else:
                     raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
         parent_item[lastKey] = value
     else:
+        overwrite_parent = True
         if overwrite_parent or parent_item is None:
             grand_parent_item = get_dict_item(dic, keys[:-2])
+            if type()
             ### are we dealing with a list or a dict?
             if type(lastKey) == int:
                 grand_parent_item[keys[-2]] = []
@@ -285,7 +296,7 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
         else:
             raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item '{'.'.join(keys[:-1])}' of type {type(parent_item)}.")
 
-    return '.'.join(keys)
+    return '.'.join(keys), value
 
 
 def del_dict_item(dic, keys, leaf_only=False, silent=False):
