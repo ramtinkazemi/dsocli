@@ -11,10 +11,10 @@ from functools import reduce
 
 
 def format_data(data, query, format, compress=True, main_keys=None):
-    def compress_single_element_lists(data):
-        if not isinstance(data, list): return data
-        if len(data) > 1: return data
-        return compress_single_element_lists(data[0])
+    # def compress_single_element_lists(data):
+    #     if not isinstance(data, list): return data
+    #     if len(data) > 1: return data
+    #     return compress_single_element_lists(data[0])
 
     if not data: return ''
 
@@ -24,7 +24,7 @@ def format_data(data, query, format, compress=True, main_keys=None):
     else:
         result = data
 
-    if compress: result = compress_single_element_lists(result)
+    # if compress: result = compress_single_element_lists(result)
 
     if not result: return ''
 

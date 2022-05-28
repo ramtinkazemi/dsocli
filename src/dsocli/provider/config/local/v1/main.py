@@ -7,6 +7,7 @@ from dsocli.constants import *
 from dsocli.exceptions import DSOException
 from dsocli.local_utils import *
 from dsocli.settings import *
+from jinja2.filters import K
 
 
 __default_spec = {

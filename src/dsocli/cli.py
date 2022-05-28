@@ -2351,6 +2351,7 @@ def edit_config(key, local, remote, stage, global_scope, namespace_scope, verbos
 
         ### always edit raw (not rendered) values, e.g. in compact/v1 providers
         result = Config.get(key, uninherited=True, rendered=False, source=source)
+        
         if result:
             value = format_data(result, 'Value', 'text')
             from tempfile import NamedTemporaryFile

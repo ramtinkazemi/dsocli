@@ -4,7 +4,7 @@ from dsocli.logger import Logger
 from dsocli.providers import Providers
 from dsocli.secrets import SecretProvider
 from dsocli.constants import *
-from dsocli.dict_utils import set_dict_value
+from dsocli.dict_utils import set_item
 from dsocli.aws_ssm_utils import *
 from dsocli.configs import Config, ContextMode
 

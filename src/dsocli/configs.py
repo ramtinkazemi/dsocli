@@ -6,6 +6,8 @@ import sys
 import imp
 from functools import reduce
 from urllib import response
+
+from jinja2.filters import K
 from .constants import *
 from .logger import Logger
 from .dict_utils import *
@@ -16,6 +18,11 @@ from .stages import Stages
 from .contexts import Context, ContextScope, ContextMode
 from .enum_utils import OrderedEnum
 from .remote_configs import RemoteConfig
+
+key_regex_pattern = {
+    "get": r"^[a-zA-Z]([.a-zA-Z0-9_-]*[a-zA-Z0-9])?$",
+    "add": r"^[a-zA-Z]([.a-zA-Z0-9_-]*[a-zA-Z0-9*])?$"
+}
 
 
 class ConfigOrigin(OrderedEnum):
@@ -159,6 +166,18 @@ class ConfigService:
     remote_config_rendered = {}
 
 
+    def validate_key(self, key, action):
+        Logger.info(f"Validating key '{key}'...")
+        if not key:
+            raise DSOException(MESSAGES['KeyNull'])
+        if key == 'dso' or key.startswith('dso.'):
+            raise DSOException(MESSAGES['DSOReserverdKey'].format(key))
+        if not re.match(key_regex_pattern[action], key):
+            raise DSOException(MESSAGES['InvalidKeyPattern'].format(key, key_regex_pattern[action]))
+        if '..' in key:
+            raise DSOException(MESSAGES['InvalidKeyStr'].format(key, '..'))
+
+
     def load(self, working_dir, config_overrides_string='', stage=None, scope=ContextScope.App, ignore_errors=False):
 
         if stage is None: stage = 'default'
@@ -209,7 +228,7 @@ class ConfigService:
                     Logger.warn(f"Ignored overriding configuration '{key}', the following DSO configuration settings cannot be overriden: {not_alllowed_configs}")
                 if key in check_default_configs: value = value or 'default'
                 Logger.debug(f"DSO configuration '{key}' was overriden to '{value}'.")
-                set_dict_value(self.overriden_config, key.split('.'), value)
+                set_item(self.overriden_config, key.split('.'), value)
 
         self.update_merged_config()
 
@@ -315,7 +334,7 @@ class ConfigService:
                 if not config: continue
                 key = config.split('=')[0].strip()
                 value = config.split('=')[1].strip()
-                set_dict_value(result, key.split('.'), value)
+                set_item(result, key.split('.'), value)
         except:
             raise DSOException(MESSAGES['InvalidDSOConfigOverrides'].format(config_string))
 
@@ -563,14 +582,14 @@ class ConfigService:
             return ''
 
     def get_template_render_paths(self, key=None):
-        result = get_dict_item(self.local_config, ['template', 'renderPath']) or {}
+        result = get_item(self.local_config, ['template', 'renderPath']) or {}
         if not key:
             return result
         else:
             return {x:result[x] for x in result if x==key}
 
     def register_template_custom_render_path(self, key, render_path):
-        result = get_dict_item(self.local_config, ['template', 'renderPath']) or {}
+        result = get_item(self.local_config, ['template', 'renderPath']) or {}
         # if os.path.isabs(render_path):
         #     raise DSOException(MESSAGES['AbsTemplateRenderPath'].format(render_path))
         # if os.path.isdir(render_path):
@@ -580,7 +599,7 @@ class ConfigService:
         self.save_local_config()
 
     def unregister_template_custom_render_path(self, key):
-        result = get_dict_item(self.local_config, ['template', 'renderPath'])
+        result = get_item(self.local_config, ['template', 'renderPath'])
         if key in result:
             self.local_config['template']['renderPath'].pop(key)
             self.save_local_config()
@@ -693,13 +712,14 @@ class ConfigService:
 
     def add(self, key, value, source=ConfigOrigin.Local):
         Logger.info(f"Adding configuration setting '{key}': namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
+        self.validate_key(key, "get")
         if source == ConfigOrigin.Local:
             # if not os.path.exists(self.local_config_file_path):
             #     raise DSOException("The working directory has not been intitialized yet. Run 'dso config init' to do so.")
-            key, value = set_dict_value(self.local_config, key.split('.'), value, overwrite_parent=False, overwrite_children=False)
+            value, key = set_item(self.local_config, key.split('.'), value, overwrite_parent=False, overwrite_children=False)
             self.save_local_config()
             return {
-                'Key' : key,
+                'Key' : '.'.join(key),
                 'Value' : value,
                 'Context': 'local',
                 'Path': os.path.join(self.config_dir, self.config_file)
@@ -714,27 +734,27 @@ class ConfigService:
 
     def get_local(self, key):
         self.update_merged_config(use_remote=False)
-        response = get_dict_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
-        if response:
-            return {
-                'Key' : key,
-                'Value' : response.copy() if type(response) in [list,dict] else response,
-                'Context': 'local',
-                'Path': os.path.join(self.config_dir, self.config_file)
-            }
-        else:
+        item, key = get_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
+        if item is None:
             return {}
+        return {
+            'Key' : '.'.join(key),
+            'Value' : item.copy() if type(item) in [list,dict] else item,
+            'Context': 'local',
+            'Path': os.path.join(self.config_dir, self.config_file)
+        }
 
     def get_remote(self, key, revision, uninherited=False):
         ### are we dealing with a list?
         if '.' in key:
-            lastKey = safe_str_to_number(key.split('.')[-1])
-            if type(lastKey) == int:
+            lastKey = key.split('.')[-1]
+            if is_int(lastKey):
+                lastKey = int(lastKey)
                 key = '.'.join(key.split('.')[:-1])    
                 result = RemoteConfig.get(key=key, revision=revision, uninherited=uninherited)
                 if type(result['Value']) == list:
                     if lastKey > len(result['Value']):
-                        raise DSOException(f"Index '{lastKey}' exceeded list size: {key}.{len(result['Value'])-1}")
+                        raise DSOException(f"Index '{lastKey}' exceeded the last index of list: {len(result['Value'])-1}")
                     
                     result['Key'] += f'.{lastKey}'
                     result['Value'] = result['Value'][lastKey]
@@ -743,14 +763,27 @@ class ConfigService:
             else:
                 result = RemoteConfig.get(key=key, revision=revision, uninherited=uninherited)
                 
-
         if not result:
             raise DSOException(f"Configuration setting '{key}' not found in the given context: namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
         return result
 
+    ### handle only sinple lists, not list of dicts
+    def is_parameterized(self, data):
+        if type(data) == str:
+            return re.match(r'.*{{.+}}.*', data)
+        try:
+            iterator = iter(data)
+            for item in iterator:
+                if re.match(r'.*{{.+}}.*', str(item)):
+                    return True
+        except TypeError:
+            return re.match(r'.*{{.+}}.*', str(data))
+        return False
+
 
     def get(self, key, revision=None, uninherited=False, rendered=True, source=ConfigOrigin.All):
         Logger.info(f"Getting configuration setting '{key}': namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
+        self.validate_key(key, "get")
         if source == ConfigOrigin.All:
             result = self.get_local(key)
             if not result:
@@ -769,7 +802,7 @@ class ConfigService:
         elif source == ConfigOrigin.Remote:
             result = self.get_remote(key=key, revision=revision, uninherited=uninherited)
 
-        if result and rendered:
+        if rendered and result and self.is_parameterized(result['Value']):
             ### load everything for rendering purpose only
             self.load_remote_config()
             self.load_root_config()
@@ -785,13 +818,13 @@ class ConfigService:
 
 
     def delete_local(self, key):
-        parent = get_dict_item(self.local_config, key.split('.')[:-1])
+        parent = get_item(self.local_config, key.split('.')[:-1])
         lastKey = key.split('.')[-1]
         if parent and type(parent) in [dict, list] and lastKey:
-            value = get_dict_item(dic=self.local_config, keys=key.split('.'), create=False, leaf_only=True)
+            value = get_item(dic=self.local_config, keys=key.split('.'), create=False, leaf_only=True)
             if value is None:
                 raise DSOException(f"'{key}' not found in configuration settings locally.")
-            del_dict_item(dic=self.local_config, keys=key.split('.'), leaf_only=True, silent=False)
+            del_item(dic=self.local_config, keys=key.split('.'), leaf_only=True, silent=False)
             del_dict_empty_item(dic=self.local_config, keys=key.split('.')[:-1])
             self.save_local_config()
             self.load_local_config(render=False)
@@ -808,6 +841,7 @@ class ConfigService:
 
     def delete(self, key, source=ConfigOrigin.Local):
         Logger.info(f"Deleting configuration setting '{key}': namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
+        self.validate_key(key, "get")
         if source == ConfigOrigin.Local:
             return self.delete_local(key)
         elif source == ConfigOrigin.Remote:
@@ -818,7 +852,7 @@ class ConfigService:
 
     def history_local(self, key):
         self.update_merged_config(use_remote=False)
-        response = get_dict_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
+        response = get_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
         if response:
             return {'Revisions': [{
                 'RevisionId': '0',
@@ -841,6 +875,7 @@ class ConfigService:
 
     def history(self, key, source=ConfigOrigin.Remote):
         Logger.info(f"Fetching history of configuration setting '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+        self.validate_key(key, "get")
         if source == ConfigOrigin.Local:
             Logger.warn(f"Local configuration does not support history.")
             result = self.history_local(key)

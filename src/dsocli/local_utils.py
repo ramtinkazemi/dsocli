@@ -115,7 +115,7 @@ def delete_local_template(path):
     ### remove possible starting / before joing path avoiding an absolute path
     path = re.sub(f'^/', '', path)
     fullPath = os.path.join(Config.working_dir, Config.config_dir, 'template', path)
-    print(fullPath)
+    # print(fullPath)
     if os.path.exists(fullPath):
         os.remove(fullPath)
 
@@ -193,12 +193,12 @@ def add_local_parameter(key, value, store_name, path_prefix=''):
     Logger.debug(f"Local parameter store: path={path}")
     fullPath = os.path.join(Config.working_dir, path)
     params = load_file(file_path=fullPath)
-    key, value = set_dict_value(dic=params, keys=key.split('.'), value=value, overwrite_parent=False, overwrite_children=False)
+    value, key = set_item(dic=params, keys=key.split('.'), value=value, overwrite_parent=False, overwrite_children=False)
     save_data(data=params, file_path=fullPath)
     ctx_path = path[len(path_prefix):].replace(os.sep, '/')
     ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
     result = {
-        'Key': key,
+        'Key': '.'.join(key),
         'Value': value,
         'Stage': Config.short_stage,
         'Scope': Config.context.scope_translation,
@@ -215,7 +215,7 @@ def add_local_parameter(key, value, store_name, path_prefix=''):
 
 def delete_local_parameter(path, key):
     params = load_file(file_path=path)
-    del_dict_item(dic=params, keys=key.split('.'))
+    del_item(dic=params, keys=key.split('.'))
     del_dict_empty_item(dic=params, keys=key.split('.')[:-1])
     save_data(data=params, file_path=path)
 

@@ -1,5 +1,6 @@
 import re
 from unittest import result
+from venv import create
 from .logger import Logger
 from .exceptions import DSOException
 
@@ -173,32 +174,36 @@ def flatten_dict(input, prefixed_key = '', delimiter = '.', atomic_list=True):
 def deflatten_dict(input: dict, delimiter = '.'):
     data = {}
     for key, value in input.items():
-        set_dict_value(data, key.split(delimiter), value, overwrite_parent=True, overwrite_children=True)
+        set_item(data, key.split(delimiter), value, overwrite_parent=True, overwrite_children=True)
     return data
 
 
 
-def get_dict_item(dic, keys, create=True, default={}, leaf_only=False):
-    for i in range(len(keys)):
-        key = keys[i]
-        if isinstance(dic, dict):
-            if not key in dic.keys() or dic[key] is None:
-                if create:
-                    dic[key] = default.copy() ### !Important
-                else:
-                    return None
-            dic = dic[key]
-        elif isinstance(dic, list):
-            key = int(key)
-            if key >= len(dic):
-                raise DSOException(f"Index '{key}' exceeded list size: {'.'.join(keys[:-1])}.{len(dic)-1}")
-            dic = dic[key]
-        else:
-            raise NotImplementedError()
-    if leaf_only and type(dic) in [dict]:
-        return None
-    return dic
+# def get_item(data, keys, create=True, default={}, leaf_only=False):
+#     for i in range(len(keys)):
+#         key = keys[i]
+#         if isinstance(data, dict):
+#             if not key in data.keys() or data[key] is None:
+#                 if create:
+#                     data[key] = default.copy() ### !Important
+#                 else:
+#                     return None
+#             data = data[key]
+#         elif isinstance(data, list):
+#             if key == '*':
+#                 key = len(data)
+
+#             key = int(key)
+#             if key >= len(data):
+#                 raise DSOException(f"Index '{key}' exceeded list size: {'.'.join(keys[:-1])}.{len(data)-1}")
+#             data = data[key]
+#         else:
+#             raise NotImplementedError()
+#     if leaf_only and type(data) in [dict]:
+#         return None
+#     return data
     
+
 
 def safe_str_to_number(s):
     try:
@@ -210,14 +215,83 @@ def safe_str_to_number(s):
             return s
             
 
+def is_number(s):
+    try:
+        return type(int(s.strip())) == int
+    except:
+        try:
+            return type(float(s.strip())) == float
+        except:
+            return False
+            
+
+def is_int(s):
+    try:
+        return type(int(s.strip())) == int
+    except:
+        return False
+            
+
+def get_item(data, keys, create=True, default={}, leaf_only=False):
+    def create_new_item(keys, default):
+        ### is this a leaf item?
+        if len(keys) == 1:
+            return default.copy() ### !Important
+        else:
+            ### decide type of the new item based on the next key
+            if keys[1] == '*' or is_int(keys[1]):
+                return [].copy() ### !Important
+            else:
+                return {}.copy() ### !Important
+
+    def get_next_item(parent, keys, create, default):
+        if type(parent) == dict:
+            if not keys[0] in parent.keys() or parent[keys[0]] is None:
+                if create:
+                    parent[keys[0]] = create_new_item(keys, default)
+                else:
+                    return None, keys
+            return parent[keys[0]], keys
+        elif type(parent) == list:
+            if keys[0] == '*':
+                ### '*' is allowed only when creating/appending is enabled
+                if not create:
+                    return None, keys
+                keys[0] = str(len(parent))
+                parent.append(create_new_item(keys, default))
+            else:
+                if not is_int(keys[0]):
+                    Logger.warn(f"Encountered a list but invalid index qualifier '{keys[0]}' provided: {parent}")
+                    return None, keys
+            
+            if int(keys[0]) >= len(parent):
+                raise DSOException(f"Index '{keys[0]}' exceeded the last index of list: {len(parent)-1}")
+
+            return parent[int(keys[0])], keys
+
+    if len(keys) == 0 or data is None:
+        return data, keys
+    if len(keys) == 1:
+        if not type(data) in [dict, list]:
+            return None, keys
+        item, keys = get_next_item(data, keys, create, default)
+    else:
+        parent, keys = get_next_item(data, keys, create, default)
+        item, keys2 = get_item(parent, keys[1:], create, default)
+    
+    if leaf_only and type(item) == dict:
+        return None, keys
+    else:
+        return item, keys
 
 
 
-def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=False):
+def set_item(dic, keys, value, overwrite_parent=False, overwrite_children=False):
     
     def set_list_value(alist, idx, value):
+        idx = int(idx)
         if idx < len(alist):
-            if type(alist[idx]) in [dict]:
+            if type(alist[idx]) == dict:
                 if overwrite_children:
                     Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
                 else:
@@ -226,30 +300,25 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
         elif idx == len(alist):
             alist.append(value)
         else:
-            raise DSOException(f"Index '{idx}' exceeded list size: {'.'.join(keys[:-1])}.{len(alist)-1}")
-
-    lastKey = keys[-1]
+            raise DSOException(f"Index '{idx}' exceeded the last index of list: {len(alist)-1}")
     
-    ### are we appending to a list?
+        return idx
+
+    if not keys:
+        return
+        
+    lastKey = keys[-1]
+    parent, keys = get_item(dic, keys[:-1], create=True, default={}, leaf_only=False)
     if lastKey == '*':
-        parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])
-        if not isinstance(parent_item, list):
-            raise DSOException(f"Index qualifiers can only be used with lists not with {type(parent_item)}.")
+        if not isinstance(parent, list):
+            raise DSOException(f"Index qualifiers can only be used with lists not {type(parent)}.")
         ### append to the list
-        lastKey = len(parent_item)
-        keys[-1] = str(lastKey)
-    else:
-        ### are we dealing with a list?
-        try:
-            lastKey = int(lastKey)
-        except:
-            parent_item = get_dict_item(dic, keys[:-1], create=True, default={})
-            if not isinstance(parent_item, dict):
-                raise DSOException(f"Expected a dictionary but faced a {type(parent_item)}.")
-        else:
-            parent_item = get_dict_item(dic, keys[:-1], create=True, default=[])     
-            if not isinstance(parent_item, list):
-                raise DSOException(f"Index qualifiers can only be used with lists not with {type(parent_item)}.")
+        lastKey = len(parent)
+    elif is_int(lastKey):
+        lastKey = int(lastKey)
+
+    keys.append(str(lastKey))
+
 
     ### is value a comma separated list enclosed in brackets?
     if type(value) == str:
@@ -257,69 +326,64 @@ def set_dict_value(dic, keys, value, overwrite_parent=False, overwrite_children=
             value = re.sub(r"^\[", "", re.sub(r"\]$", "", value))
             value = list(map(lambda x: safe_str_to_number(x.strip()), re.findall('([^,]+)', value)))
             ### alow overrwrite the entire list
-            if not lastKey in parent_item or parent_item[lastKey] is None or not type(parent_item[lastKey]) in [dict]:
+            if not lastKey in parent or parent[lastKey] is None or not type(parent[lastKey]) in [dict]:
                 overwrite_children = True
             else:
-                raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
+                raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent[lastKey])}`.")
         else:
             value = safe_str_to_number(value)
 
-    if isinstance(parent_item, list):
-        if not type(lastKey) == int:
-            raise DSOException(f"List index qualifiers must be a number: '{'.'.join(keys)}'.")
 
-        set_list_value(parent_item, lastKey, value)
-
-    elif isinstance(parent_item, dict):
-        if lastKey in parent_item.keys():
+    if isinstance(parent, list):
+        set_list_value(parent, lastKey, value)
+    elif isinstance(parent, dict):
+        if lastKey in parent.keys():
             ### item is expected to be a basic type (string, number, ...)
-            if type(parent_item[lastKey]) in [dict]:
+            if type(parent[lastKey]) == dict:
                 if overwrite_children:
                     Logger.warn("'{0}' was overwritten.".format('.'.join(keys)))
                 else:
-                    raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent_item[lastKey])}`.")
-        parent_item[lastKey] = value
+                    raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item of type {type(parent[lastKey])}`.")
+        parent[lastKey] = value
     else:
-        overwrite_parent = True
-        if overwrite_parent or parent_item is None:
-            grand_parent_item = get_dict_item(dic, keys[:-2])
-            if type()
+        if overwrite_parent or parent is None:
+            grand_parent = get_item(dic, keys[:-2])[0]
             ### are we dealing with a list or a dict?
             if type(lastKey) == int:
-                grand_parent_item[keys[-2]] = []
-                parent_item = grand_parent_item[keys[-2]]
-                set_dict_value(parent_item, lastKey, value)
+                grand_parent[keys[-2]] = []
+                parent = grand_parent[keys[-2]]
+                set_item(parent, lastKey, value)
             else:
-                grand_parent_item[keys[-2]] = {}
-                parent_item = grand_parent_item[keys[-2]]
-                parent_item[lastKey] = value
+                grand_parent[keys[-2]] = {}
+                parent = grand_parent[keys[-2]]
+                parent[lastKey] = value
         else:
-            raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item '{'.'.join(keys[:-1])}' of type {type(parent_item)}.")
+            raise DSOException(f"DSO did not set '{'.'.join(keys)}' becasue it would otherwise overwrite an existing item '{'.'.join(keys[:-1])}' of type {type(parent)}.")
 
-    return '.'.join(keys), value
+    return value, keys
 
 
-def del_dict_item(dic, keys, leaf_only=False, silent=False):
-    parent_item = get_dict_item(dic, keys[:-1], create=False)
-    if not parent_item:
+def del_item(dic, keys, leaf_only=False, silent=False):
+    parent = get_item(dic, keys[:-1], create=False)[0]
+    if not parent:
         return False
-    if type(parent_item) == dict:
-        if not keys[-1] in parent_item:
+    if type(parent) == dict:
+        if not keys[-1] in parent:
             return False
-        item = parent_item[keys[-1]]
+        item = parent[keys[-1]]
         if isinstance(item, dict):
             if leaf_only:
                 if not silent:
                     raise DSOException("'{0}' is a dictionary and cannot be deleted.".format('.'.join(keys)))
                 return False
 
-        parent_item.pop(keys[-1])
+        parent.pop(keys[-1])
         return True
 
-    elif type(parent_item) == list:
-        if int(keys[-1]) >= len(parent_item):
+    elif type(parent) == list:
+        if int(keys[-1]) >= len(parent):
             return False
-        item =  parent_item[int(keys[-1])]
+        item =  parent[int(keys[-1])]
 
         if isinstance(item, dict):
             if leaf_only:
@@ -327,7 +391,7 @@ def del_dict_item(dic, keys, leaf_only=False, silent=False):
                     raise DSOException("'{0}' is a dictionary and cannot be deleted.".format('.'.join(keys)))
                 return False
 
-        parent_item.pop(int(keys[-1]))
+        parent.pop(int(keys[-1]))
         return True
     else:
         raise NotImplementedError()
@@ -335,9 +399,9 @@ def del_dict_item(dic, keys, leaf_only=False, silent=False):
 
 
 def del_dict_empty_item(dic, keys):
-    item = get_dict_item(dic, keys)
+    item = get_item(dic, keys)[0]
     if not item:
-        del_dict_item(dic, keys, leaf_only=False)
+        del_item(dic, keys, leaf_only=False)
         if len(keys) > 1:
             del_dict_empty_item(dic, keys[:-1])
 
