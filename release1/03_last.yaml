@@ -1,0 +1,7 @@
+Type: AWS::Logs::LogGroup
+Properties: 
+  LogGroupName: LastLogGroup-{{ dso.stage }}
+  RetentionInDays: 1
+  Tags: 
+    - managed: cloudformation
+

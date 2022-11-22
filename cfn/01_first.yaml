@@ -1,0 +1,6 @@
+Type: AWS::Logs::LogGroup
+Properties: 
+  LogGroupName: FirstLogGroup-dev
+  RetentionInDays: 1
+  Tags: 
+    - managed: cloudformation

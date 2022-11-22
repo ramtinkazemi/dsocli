@@ -1,12 +1,10 @@
 
 from .constants import *
 from .providers import ProviderBase, Providers
-from .artifacts import ArtifactStore
+from .artifacts import Artifactory
 from .logger import Logger
 from .exceptions import DSOException
-from .stages import Stages
-from .appconfig import AppConfig, ContextSource
-from .configs import Configs
+from .configs import Config
 
 
 key_regex_pattern = r"^[a-zA-Z]([./a-zA-Z0-9_-]*[a-zA-Z0-9])?$"
@@ -49,7 +47,7 @@ class PackageService():
     @property
     def version_major(self):
         try:
-            return int(Configs.get(key='version.major', service=self.service_name)['Value'])
+            return int(Config.get(key='version.major', service=self.service_name)['Value'])
         except DSOException:
             init_version_major = 0
             self.version_major = init_version_major
@@ -57,13 +55,13 @@ class PackageService():
 
     @version_major.setter
     def version_major(self, value):
-        Configs.set(key='version.major', value=str(value), service=self.service_name)
+        Config.set(key='version.major', value=str(value), service=self.service_name)
 
 
     @property
     def version_minor(self):
         try:
-            return int(Configs.get(key='version.minor', service=self.service_name)['Value'])
+            return int(Config.get(key='version.minor', service=self.service_name)['Value'])
         except DSOException:
             init_version_minor = 0
             self.version_minor = init_version_minor
@@ -71,13 +69,13 @@ class PackageService():
 
     @version_minor.setter
     def version_minor(self, value):
-        Configs.set(key='version.minor', value=str(value), service=self.service_name)
+        Config.add(key='version.minor', value=str(value), service=self.service_name)
 
 
     @property
     def version_patch(self):
         try:
-            return int(Configs.get(key='version.patch', service=self.service_name)['Value'])
+            return int(Config.get(key='version.patch', service=self.service_name)['Value'])
         except DSOException:
             init_version_patch = 0
             self.version_patch = init_version_patch
@@ -85,13 +83,13 @@ class PackageService():
 
     @version_patch.setter
     def version_patch(self, value):
-        Configs.set(key='version.patch', value=str(value), service=self.service_name)
+        Config.add(key='version.patch', value=str(value), service=self.service_name)
 
 
     @property
     def version_build(self):
         try:
-            return int(Configs.get(key='version.build', service=self.service_name)['Value'])
+            return int(Config.get(key='version.build', service=self.service_name)['Value'])
         except DSOException:
             init_version_build = 0
             self.version_build = init_version_build
@@ -100,20 +98,20 @@ class PackageService():
 
     @version_build.setter
     def version_build(self, value):
-        Configs.set(key='version.build', value=str(value), service=self.service_name)
+        Config.set(key='version.build', value=str(value), service=self.service_name)
 
 
     def list(self, filter=None):
         provider = Providers.PackageProvider()
-        Logger.info(f"Listing packages: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        response = ArtifactStore.list(service=self.service_name, filter=filter)
+        Logger.info(f"Listing packages: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+        response = Artifactory.list(service=self.service_name, filter=filter)
         result = {'Packages': response['Artifacts']}
         return result
 
 
     def build(self):
         provider = Providers.PackageProvider()
-        Logger.info(f"Building package: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Building package: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         artifact = provider.build()
         major = self.version_major
         minor = self.version_minor
@@ -124,29 +122,29 @@ class PackageService():
         Logger.info(f"Adding package '{artifactKey}' to artifact store...")
         # changed = Logger.decrease_verbosity()
         # try:
-        #     response = ArtifactStore.add(filepath=artifact, key=artifactKey ,service=self.service_name)
+        #     response = Artifactory.add(filepath=artifact, key=artifactKey ,service=self.service_name)
         # finally:
         #     if changed: Logger.increase_verbosity()
-        response = ArtifactStore.add(filepath=artifact, key=artifactKey ,service=self.service_name)
+        response = Artifactory.add(filepath=artifact, key=artifactKey ,service=self.service_name)
         return response
 
 
     def get(self, key):
-        Logger.info(f"Getting package '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        response = ArtifactStore.get(key=key, service=self.service_name)
+        Logger.info(f"Getting package '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+        response = Artifactory.get(key=key, service=self.service_name)
         return response
 
 
     # def history(self, key):
     #     self.config = config
     #     provider = Providers.PackageProvider()
-    #     Logger.info(f"Getting the history of package '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+    #     Logger.info(f"Fetching history of package '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
     #     return provider.history(key)
 
 
     def delete(self, key):
-        Logger.info(f"Deleting package '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        response = ArtifactStore.delete(key=key, service=self.service_name)
+        Logger.info(f"Deleting package '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
+        response = Artifactory.delete(key=key, service=self.service_name)
         return response
 
 

@@ -11,7 +11,7 @@ from .logger import Logger
 from .dict_utils import merge_dicts, deflatten_dict
 from .exceptions import DSOException
 from .stages import Stages
-from .appconfig import AppConfig, ContextSource
+from .configs import Config, ContextMode
 
 
 key_regex_pattern = r"^[a-zA-Z]([./a-zA-Z0-9_-]*[a-zA-Z0-9])?$"
@@ -33,7 +33,7 @@ class TemplateService():
     
     @property
     def default_render_path(self):
-        return AppConfig.working_dir
+        return Config.working_dir
 
     def validate_key(self, key):
         Logger.info(f"Validating template key '{key}'...")
@@ -51,73 +51,83 @@ class TemplateService():
             raise DSOException(MESSAGES['InvalidKeyStr'].format(key, '//'))
 
     def get_template_render_path(self, key):
-        result = AppConfig.get_template_render_paths(key)
+        result = Config.get_template_render_paths(key)
         if result:
             return result[key]
 
-        return f'.{os.sep}' + os.path.relpath(os.path.join(self.default_render_path, key), AppConfig.working_dir) 
+        return f'.{os.sep}' + os.path.relpath(os.path.join(self.default_render_path, key), Config.working_dir) 
+
+    def get_all_params(self, silent=False):
+        if not silent:
+            Logger.info("Loading secrets...")
+        secrets = Secrets.list(uninherited=False, decrypt=True)
+        if not silent:
+            Logger.info("Loading parameters...")
+        parameters = Parameters.list(uninherited=False)
+        merged = deflatten_dict({x['Key']: x['Value'] for x in secrets['Secrets']})
+        merge_dicts(deflatten_dict({x['Key']: x['Value'] for x in parameters['Parameters']}), merged)
+        merge_dicts(Config.meta_vars, merged)
+        return merged
+
 
     def list(self, uninherited=False, include_contents=False, filter=None):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Listing templates: namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Listing templates: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         response = provider.list(uninherited, include_contents, filter)
-        for template in response['Templates']:
+        for template in response:
             key = template['Key']
             template['RenderPath'] = self.get_template_render_path(key)
+        from operator import itemgetter
+        return {'Templates': sorted(response, key=itemgetter('Key'))}        
         
         return response
 
     def add(self, key, contents, render_path):
         self.validate_key(key)
         provider = Providers.TemplateProvider()
-        Logger.info(f"Adding template '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Adding template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         Logger.debug(f"Template: key={key}, render_path={render_path}")
         result = provider.add(key, contents)
         result['RenderPath'] = render_path
         if os.path.abspath(render_path) == os.path.abspath(os.path.join(self.default_render_path, key)):
-            AppConfig.unregister_template_custom_render_path(key)
+            Config.unregister_template_custom_render_path(key)
         else:
-            AppConfig.register_template_custom_render_path(key, render_path)
+            Config.register_template_custom_render_path(key, render_path)
         return result
 
-    def get(self, key, revision=None):
+    def get(self, key, revision=None, rendred=True):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Getting template '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Getting template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = provider.get(key, revision)
+        if rendred:
+            Logger.info("Rendering...")
+            template = jinja2.Environment(loader=jinja2.BaseLoader).from_string(result['Contents'])
+            result['Contents'] = template.render(self.get_all_params())
         result['RenderPath'] = self.get_template_render_path(key)
         return result
 
     def history(self, key, include_contents=False):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Getting the history of template '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Fetching history of template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         return provider.history(key, include_contents)
 
     def delete(self, key):
         provider = Providers.TemplateProvider()
-        Logger.info(f"Deleting template '{key}': namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Deleting template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = provider.delete(key)
-        AppConfig.unregister_template_custom_render_path(key)
+        Config.unregister_template_custom_render_path(key)
         return result
 
     def render(self, filter=None):
 
-        Logger.info(f"Rendering templates: namespace={AppConfig.get_namespace(ContextSource.Target)}, application={AppConfig.get_application(ContextSource.Target)}, stage={AppConfig.get_stage(ContextSource.Target, short=True)}, scope={AppConfig.scope}")
+        Logger.info(f"Rendering templates: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
 
-        Logger.info("Loading secrets...")
-        secrets = Secrets.list(uninherited=False, decrypt=True)
-
-        Logger.info("Loading parameters...")
-        parameters = Parameters.list(uninherited=False)
-
-        Logger.info("Merging all parameters...")
-        merged = deflatten_dict({x['Key']: x['Value'] for x in secrets['Secrets']})
-        merge_dicts(deflatten_dict({x['Key']: x['Value'] for x in parameters['Parameters']}), merged)
-        merge_dicts(AppConfig.meta_vars, merged)
-
+        merged = self.get_all_params()
+        
         Logger.info("Loading templates...")
         templates = self.list(filter=filter)['Templates']
 
-        loader = jinja2.FileSystemLoader(AppConfig.working_dir)
+        loader = jinja2.FileSystemLoader(Config.working_dir)
         jinja_env = jinja2.Environment(loader=loader, undefined=jinja2.StrictUndefined)
 
         rendered = []
@@ -136,7 +146,7 @@ class TemplateService():
                 os.makedirs(os.path.dirname(renderPath), exist_ok=True)
 
             try:
-                jinjaTemplate = jinja_env.from_string(self.get(key)['Contents'])
+                jinjaTemplate = jinja_env.from_string(self.get(key, rendred=False)['Contents'])
             except:
                 Logger.error(f"Failed to load template: {key}")
                 raise
@@ -146,7 +156,7 @@ class TemplateService():
             try:
                 Logger.debug(f"Rendering template: key={key}, render_path={renderPath}")
                 if len(loader.searchpath) > 1: loader.searchpath.pop(-1)
-                loader.searchpath.append(os.path.dirname(os.path.join(AppConfig.working_dir, renderPath)))
+                loader.searchpath.append(os.path.dirname(os.path.join(Config.working_dir, renderPath)))
                 renderedContent = jinjaTemplate.render(merged)
             
             except Exception as e:
@@ -160,7 +170,7 @@ class TemplateService():
             rendered.append({
                         'Key':key, 
                         'Scope': template['Scope'],
-                        # 'Origin': template['Origin'],
+                        # 'Context': template['Context'],
                         'RenderPath': renderPath,
                         })
 

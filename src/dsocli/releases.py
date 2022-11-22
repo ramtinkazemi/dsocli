@@ -1,12 +1,12 @@
 
 from .constants import *
 from .providers import ProviderBase, Providers
-from .artifacts import ArtifactStore
+from .artifacts import Artifactory
 from .logger import Logger
 from .exceptions import DSOException
 from .stages import Stages
-from .appconfig import AppConfig, ContextSource
-from .configs import Configs
+from .configs import Config
+
 
 key_regex_pattern = r"^[a-zA-Z]([./a-zA-Z0-9_-]*[a-zA-Z0-9])?$"
 
@@ -48,7 +48,7 @@ class ReleaseService():
     @property
     def version_major(self):
         try:
-            return int(Configs.get(key='version.major', service=self.service_name)['Value'])
+            return int(Config.get(key='version.major', service=self.service_name)['Value'])
         except DSOException:
             init_version_major = 0
             self.version_major = init_version_major
@@ -56,13 +56,13 @@ class ReleaseService():
 
     @version_major.setter
     def version_major(self, value):
-        Configs.set(key='version.major', value=str(value), service=self.service_name)
+        Config.set(key='version.major', value=str(value), service=self.service_name)
 
 
     @property
     def version_minor(self):
         try:
-            return int(Configs.get(key='version.minor', service=self.service_name)['Value'])
+            return int(Config.get(key='version.minor', service=self.service_name)['Value'])
         except DSOException:
             init_version_minor = 0
             self.version_minor = init_version_minor
@@ -70,13 +70,13 @@ class ReleaseService():
 
     @version_minor.setter
     def version_minor(self, value):
-        Configs.set(key='version.minor', value=str(value), service=self.service_name)
+        Config.set(key='version.minor', value=str(value), service=self.service_name)
 
 
     @property
     def version_patch(self):
         try:
-            return int(Configs.get(key='version.patch', service=self.service_name)['Value'])
+            return int(Config.get(key='version.patch', service=self.service_name)['Value'])
         except DSOException:
             init_version_patch = 0
             self.version_patch = init_version_patch
@@ -84,13 +84,13 @@ class ReleaseService():
 
     @version_patch.setter
     def version_patch(self, value):
-        Configs.set(key='version.patch', value=str(value), service=self.service_name)
+        Config.set(key='version.patch', value=str(value), service=self.service_name)
 
 
     @property
     def version_release(self):
         try:
-            return int(Configs.get(key='version.release', service=self.service_name)['Value'])
+            return int(Config.get(key='version.release', service=self.service_name)['Value'])
         except DSOException:
             init_version_release = 0
             self.version_release = init_version_release
@@ -99,20 +99,20 @@ class ReleaseService():
 
     @version_release.setter
     def version_release(self, value):
-        Configs.set(key='version.release', value=str(value), service=self.service_name)
+        Config.set(key='version.release', value=str(value), service=self.service_name)
 
 
     def list(self, filter=None):
         provider = Providers.ReleaseProvider()
-        Logger.info(f"Listing releases: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        response = ArtifactStore.list(service=self.service_name, filter=filter)
+        Logger.info(f"Listing releases: namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
+        response = Artifactory.list(service=self.service_name, filter=filter)
         result = {'Releases': response['Artifacts']}
         return result
 
 
     def create(self):
         provider = Providers.ReleaseProvider()
-        Logger.info(f"Creating release: namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+        Logger.info(f"Creating release: namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
         artifact = provider.create()
         major = self.version_major
         minor = self.version_minor
@@ -123,29 +123,29 @@ class ReleaseService():
         Logger.info(f"Adding release '{artifactKey}' to artifact store...")
         # changed = Logger.decrease_verbosity()
         # try:
-        #     response = ArtifactStore.add(filepath=artifact, key=artifactKey ,service=self.service_name)
+        #     response = Artifactory.add(filepath=artifact, key=artifactKey ,service=self.service_name)
         # finally:
         #     if changed: Logger.increase_verbosity()
-        response = ArtifactStore.add(filepath=artifact, key=artifactKey ,service=self.service_name)
+        response = Artifactory.add(filepath=artifact, key=artifactKey ,service=self.service_name)
         return response
 
 
     def get(self, key):
-        Logger.info(f"Getting release '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        response = ArtifactStore.get(key=key, service=self.service_name)
+        Logger.info(f"Getting release '{key}': namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
+        response = Artifactory.get(key=key, service=self.service_name)
         return response
 
 
     # def history(self, key):
     #     self.config = config
     #     provider = Providers.ReleaseProvider()
-    #     Logger.info(f"Getting the history of release '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
+    #     Logger.info(f"Fetching history of release '{key}': namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
     #     return provider.history(key)
 
 
     def delete(self, key):
-        Logger.info(f"Deleting release '{key}': namespace={AppConfig.namespace}, application={AppConfig.application}, stage={AppConfig.short_stage}")
-        response = ArtifactStore.delete(key=key, service=self.service_name)
+        Logger.info(f"Deleting release '{key}': namespace={AppAppConfigs.namespace}, application={AppAppConfigs.application}, stage={AppAppConfigs.short_stage}")
+        response = Artifactory.delete(key=key, service=self.service_name)
         return response
 
 

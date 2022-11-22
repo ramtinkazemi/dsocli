@@ -3,8 +3,8 @@ import boto3
 import logging
 from .contexts import Contexts, Context
 from .logger import Logger
-from .stages import Stages
-from dsocli.appconfig import AppConfig
+from dsocli.configs import Config
+from dsocli.exceptions import *
 
 logging.getLogger('botocore').setLevel(Logger.mapped_level)
 logging.getLogger('boto').setLevel(Logger.mapped_level)
@@ -67,12 +67,13 @@ def load_ssm_path(result, path, parameter_type, used_path_prefix='', decrypt=Fal
         ctx_path = path[len(used_path_prefix):]
         ctx = Context(*Contexts.parse_path(ctx_path)[0:3])
         details = {
-                    'Value': unescape_curly_brackets(parameter['Value']) if parameter_type == 'StringList' else decode_nulls(parameter['Value']), 
+                    # 'Value': unescape_curly_brackets(parameter['Value']) if parameter_type == 'StringList' else decode_nulls(parameter['Value']), 
+                    'Value': decode_nulls(unescape_curly_brackets(parameter['Value'])),
                     'Path': parameter['Name'],
                     'Version': parameter['Version'],
                     'Stage': ctx.short_stage,
                     'Scope': ctx.scope_translation,
-                    'Origin': {
+                    'Context': {
                         'Namespace': ctx.namespace,
                         'Application': ctx.application,
                         'Stage': ctx.stage,
@@ -87,7 +88,7 @@ def load_ssm_path(result, path, parameter_type, used_path_prefix='', decrypt=Fal
 
 def load_context_ssm_parameters(parameter_type, path_prefix='', decrypt=False, uninherited=False, filter=None):
     ### construct search path in hierachy with no key specified
-    paths = Contexts.get_hierachy_paths(context=AppConfig.context, key=None, path_prefix=path_prefix, ignore_stage=AppConfig.stage is None, uninherited=uninherited)
+    paths = Contexts.get_hierachy_paths(context=Config.context, key=None, path_prefix=path_prefix, ignore_stage=Config.stage is None, uninherited=uninherited)
     parameters = {}
     for path in paths:
         Logger.debug(f"Loading SSM parameters: path={path}")
@@ -98,10 +99,10 @@ def load_context_ssm_parameters(parameter_type, path_prefix='', decrypt=False, u
 
 def locate_ssm_parameter_in_context_hierachy(key, path_prefix='', uninherited=False):
     result = {}
-    paths = Contexts.get_hierachy_paths(context=AppConfig.context, key=key, path_prefix=path_prefix, ignore_stage=AppConfig.stage is None, uninherited=uninherited, reverse=True)
+    paths = Contexts.get_hierachy_paths(context=Config.context, key=key, path_prefix=path_prefix, ignore_stage=Config.stage is None, uninherited=uninherited, reverse=True)
     ssm = boto3.session.Session().client(service_name='ssm')
     for path in paths:
-        Logger.debug(f"Describing SSM parameters: path={path}")
+        Logger.debug(f"Describing SSM parameter: path={path}")
         response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Values':[path]}])
         if len(response['Parameters']) > 0:
             ctx_path = path[len(path_prefix):]
@@ -109,7 +110,7 @@ def locate_ssm_parameter_in_context_hierachy(key, path_prefix='', uninherited=Fa
             result = response['Parameters'][0]
             result['Stage'] = ctx.short_stage
             result['Scope'] = ctx.scope_translation
-            result['Origin']= {
+            result['Context']= {
                 'Namespace': ctx.namespace,
                 'Application': ctx.application,
                 'Stage': ctx.stage,
@@ -129,27 +130,27 @@ def assert_ssm_parameter_no_namespace_overwrites(key, path_prefix=''):
     ssm = boto3.session.Session().client(service_name='ssm')
     
     ### check children parameters
-    path = path_prefix + AppConfig.context.get_path(key)
+    path = path_prefix + Config.context.get_path(key)
     response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Option': 'BeginsWith', 'Values':[f"{path}."]}])
     if len(response['Parameters']) > 0:
-        raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would overwrite '{0}.{1}' and all other parameters in '{0}.*' namespace if any.".format(key,response['Parameters'][0]['Name'][len(path)+1:]))
+        raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would otherwise overwrite '{0}.{1}' and all other parameters in '{0}.*' namespace if any.".format(key,response['Parameters'][0]['Name'][len(path)+1:]))
 
     ### check parent parameters
     namespaces = key.split('.')
     for n in range(len(namespaces)-1):
         subKey = '.'.join(namespaces[0:n+1])
-        path = get_ssm_path(AppConfig.context, subKey, path_prefix)
-        Logger.debug(f"Describing SSM parameters: path={path}")
+        path = get_ssm_path(Config.context, subKey, path_prefix)
+        Logger.debug(f"Describing SSM parameter: path={path}")
         # parameters = ssm.describe_parameters(ParameterFilters=[{'Key':'Type', 'Values':['String']},{'Key':'Name', 'Values':[path]}])
         response = ssm.describe_parameters(ParameterFilters=[{'Key':'Name', 'Values':[path]}])
         if len(response['Parameters']) > 0:
-            raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would overwrite parameter '{1}'.".format(key, subKey))
+            raise DSOException("Parameter key '{0}' is not allowed in the given context becasue it would otherwise overwrite parameter '{1}'.".format(key, subKey))
 
 
 
 def add_ssm_paramater(path, value):
     ssm = boto3.session.Session().client(service_name='ssm')
-    return ssm.put_parameter(Name=path, Value=encode_nulls(value), Type='String', Overwrite=True)
+    return ssm.put_parameter(Name=path, Value=escape_curly_brackets(encode_nulls(value)), Type='String', Overwrite=True)
 
 
 
@@ -164,22 +165,22 @@ def add_ssm_template(path, contents):
     return ssm.put_parameter(Name=path, Value=escape_curly_brackets(contents), Type='StringList', Overwrite=True)
 
 
-def __get_ssm_parameter_history(name, decrypt=False):
+def do_get_ssm_parameter_history(name, decrypt=False):
     ssm = boto3.session.Session().client(service_name='ssm')
     return ssm.get_parameter_history(Name=name, WithDecryption=decrypt)
 
 
 
 def get_ssm_parameter_history(name):
-    response = __get_ssm_parameter_history(name)
+    response = do_get_ssm_parameter_history(name)
     for i in range(0, len(response['Parameters'])):
-        response['Parameters'][i]['Value'] = decode_nulls(response['Parameters'][i]['Value'])
+        response['Parameters'][i]['Value'] = decode_nulls(unescape_curly_brackets(response['Parameters'][i]['Value']))
     return response
 
 
 
 def get_ssm_secret_history(name, decrypt=False):
-    response = __get_ssm_parameter_history(name, decrypt)
+    response = do_get_ssm_parameter_history(name, decrypt)
     if decrypt:
         for i in range(0, len(response['Parameters'])):
             response['Parameters'][i]['Value'] = decode_nulls(response['Parameters'][i]['Value'])
@@ -188,7 +189,7 @@ def get_ssm_secret_history(name, decrypt=False):
 
 
 def get_ssm_template_history(name):
-    response = __get_ssm_parameter_history(name)
+    response = do_get_ssm_parameter_history(name)
     for i in range(0, len(response['Parameters'])):
         response['Parameters'][i]['Value'] = unescape_curly_brackets(response['Parameters'][i]['Value'])
     return response

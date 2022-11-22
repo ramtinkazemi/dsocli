@@ -4,6 +4,8 @@ import click
 from .logger import Logger
 from .cli_constants import *
 import tempfile
+from .configs import ConfigOrigin
+
 
 class MuOption(click.Option):
     def __init__(self, *args, **kwargs):
@@ -109,13 +111,17 @@ def command_doc(value):
     return _doc
 
 
-def check_file_path(ctx, self, value):
+def ConfigOrigin_from_string(ctx, param, value, has_wildcards=False):
     if not value: return
     if value == '-':
         with tempfile.NamedTemporaryFile("w", delete=False) as f:
             f.write(sys.stdin.read())
             value = f.name
     else:
-        if not os.path.exists(value):
-            raise click.BadParameter(f"'{value}' does not exist.")
+        if not has_wildcards:
+            if not os.path.exists(value):
+                raise click.BadParameter(f"'{value}' does not exist.")
     return value
+
+def config_source_from_string(ctx, param, value):
+    return ConfigOrigin.from_str(value)

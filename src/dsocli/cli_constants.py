@@ -13,7 +13,7 @@ CLI_COMMANDS_HELP = {
                 KEY: The identifier of the parameter. It may also be provided using the '--key' option.\n
                 """,
         'edit': """Edit the current value of a parameter.\n
-                ** Tips: 1) The parameter may be inherited from the parent contexts or owned by the given context.\n
+                ** Tips: 1) The parameter must be owned by the given context.\n
                 KEY: The identifier of the parameter. It may also be provided using the '--key' option.\n
                 """,
         'delete': """Delete a parameter from a context.\n
@@ -39,7 +39,7 @@ CLI_COMMANDS_HELP = {
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'edit': """Edit the current value of a secret.\n
-                ** Tips: 1) The secret may be inherited from the parent contexts or owned by the given context.\n
+                ** Tips: 1) The secret must be owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'delete': """Delete a secret from a context.\n
@@ -50,7 +50,6 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The secret may be inherited from the parent contexts or owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
-
     },
     'template': {
         'add': """Add a template to a context, or update the contents if it is already existing in the context.\n
@@ -65,7 +64,7 @@ CLI_COMMANDS_HELP = {
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'edit': """Edit the contents of a template.\n
-                ** Tips: 1) The template may be inherited from the parent contexts or owned by the given context.\n
+                ** Tips: 1) The template must be owned by the given context.\n
                 KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
                 """,
         'delete': """Delete a template from a context.\n
@@ -78,18 +77,21 @@ CLI_COMMANDS_HELP = {
                 """,
         'render': """Render templates in a context.\n
                     """,
-        },
+    },
     'config': {
+        'list': """Return the list of configuration settings in a context.\n
+                ** Tips: 1) To limit the list to the owned/overriden configuration settings only, use the '--uninherited' option. This will return only the context specific configuration settings.
+                """,
         'get': """Get DSO application configuration.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration
                 """,
-        'set': """Set DSO application configuration.\n
+        'add': """Add DSO application configuration.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration. It may also be provided using the '--key' option.\n
                 VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
                 """,
-        'unset': """Unset DSO application configuration.\n
+        'delete': """Delete DSO application configuration.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration
                 """,
@@ -97,12 +99,16 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) Use --input to load connfiguration from a file.\n
                 The option '--working-dir' can be used to specify a different working directory than the current directory where dso is running in.\n
                 """,
-    },
-    'network': {
-        'subnet': """Get subnet plan layout of the applcation.\n
+        'edit': """Edit the current value of a configuration setting.\n
+                ** Tips: 1) The setting must be owned by the given context.\n
+                KEY: The identifier of the secret. It may also be provided using the '--key' option.\n
+                """,
+        'history': """Return the revision history of configuration setting.\n
+                ** Tips: 1) The configuration setting may be inherited from the parent contexts or owned by the given context.\n
+                KEY: The identifier of the configuration setting. It may also be provided using the '--key' option.\n
                 """,
 
-    },
+      },
     'package': {
         'build': """Build a distrubutabkle package, and adds it to artifact store.\n
                 ** Tips: 1) ... 2) ...\n
@@ -118,7 +124,7 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The inherited package cannot be deleted. The context must be the owner of the secret or a not found error will be returned. 2) Multiple packages may be deleted at once using the '--input' option.\n
                 KEY: The identifier of the package to be deleted. It may also be provided using the '--key' option.\n
                 """,
-        },
+    },
     'release': {
         'create': """Create a deployment release, and adds it to artifact store.\n
                 ** Tips: 1) ... 2) ...\n
@@ -134,7 +140,11 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) The inherited release cannot be deleted. The context must be the owner of the secret or a not found error will be returned. 2) Multiple releases may be deleted at once using the '--input' option.\n
                 KEY: The identifier of the release to be deleted. It may also be provided using the '--key' option.\n
                 """,
-        },
+    },
+    'network': {
+        'subnet': """Get subnet plan layout of the applcation.\n
+                """,
+    },
 }
 
 CLI_COMMANDS_SHORT_HELP = {
@@ -162,7 +172,7 @@ CLI_COMMANDS_SHORT_HELP = {
         'edit': "Edit the contents of a template.",
         'delete': "Delete one or multiple templates from the application.",
         'history': "Get the revision history of a template.",
-        'render': "Render templates using parameters in a context.",
+        'render': "Render templates using parameters and secrets in a context.",
     },
     'package': {
         'list': "List packages built for the application available on arctifact store.",
@@ -177,35 +187,33 @@ CLI_COMMANDS_SHORT_HELP = {
         'delete': "Delete a deployment release from the application.",
     },
     'config': {
-        'get': "Get DSO application configuration(s).",
-        'set': "Set the DSO application configuration(s).",
-        'unset': "Delete a DSO application configuration.",
-        'init': "Initialize DSO configuration for the working directory.",
+        'list': "List configuration settings available to the application.",
+        'get': "Get DSO application configuration.",
+        'add': "Add DSO application configuration.",
+        'delete': "Delete a DSO application configuration.",
+        'init': "Initialize DSO application in the working directory.",
+        'edit': "Edit the value of a configuration setting.",
+        'history': "Get the revision history of a configuration setting.",
+
     },
     'network': {
         'subnet': "Get subnet plan layout of the application.",
-
     }
-
 }
 CLI_PARAMETERS_HELP = {
     'common': {
         'working_dir': "Path to a (local) directory where the DSO application configuration resides. By default, the current working directory will be used if the option is not provided.",
-        'verbosity' : "Specify the logging verbosity, where 0 is for logging critical fatal errors only, 1 also logs error messages, 2 also logs warnings, 3 also logs information messages, 4 also logs debug messages, and finally 5 logs everything.",
+        'verbosity' : "Specifies the logging verbosity, where 0 is for logging critical fatal errors only, 1 also logs error messages, 2 also logs warnings, 3 also logs information messages, 4 also logs debug messages, and finally 5 logs everything.",
         'stage' : "Target a specific stage using the stage identifier, which is combination of a name and an optional number, where name must conform to ^([a-zA-Z][a-zA-Z0-9]+)$ regex expression. If no /<number> is specified, the default environment (/0) in the given context will be target.",
         'input' : "Path to a (local) file defining the input data. Use '-' to read from the shell pipe or stdin. Use '--format' to specify the format if needed.",
-        'format': "Specify the format of the output or the input if mixed with the '--input' option.",
-        'config': "Comma separated list of key/value pairs to temporarily override the current DSO application configurations. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.",
+        'format': "Specifies the format of the output or the input if mixed with the '--input' option.",
+        'config': "Comma separated list of key/value pairs to temporarily override the current DSO application configuration. It takes effect only while executing the command and does not have any lasting effect on the DSO application configuration or subsequent command executions.",
         'query': "Customize output using JMESPath query language.",
         'query_all': "Include all the available fields in the ouput.",
         'global_scope': "Use the global scope.",
         'namespace_scope': "Use the namespace scope.",
-        'scope': "Select the context scope.",
         'filter': "Use a regex pattern to filter result by the provider.",
-        'context': "Specify the context to be used.",
-        'namespace': "Override the namespace in the context.",
-        'application': "Override the application in the context.",
-
+        'context': "Specifies the context to be used.",
     },
     'parameter': {
         'key': "The key of the parameter. See KEY argument for more details.",
@@ -213,8 +221,6 @@ CLI_PARAMETERS_HELP = {
         'query_values': "Include parameter values in the output.",
         'uninherited': "Select only parameters which are specific to the gievn context, i.e. not inherited from the parent contexts.",
         'revision': "The revision ID whose value to be fetched.",
-        'history': "Get the revision history of the parameter.",
-
     },
     'secret': {
         'key': "The key of the secret",
@@ -223,7 +229,6 @@ CLI_PARAMETERS_HELP = {
         'query_values': "Include secret values in the output.",
         'uninherited': "Select only secrets which are specific to the gievn context, i.e. not inherited from the parent contexts.",
         'revision': "The revision ID whose value to be fetched.",
-        'history': "Get the revision history of the secret.",
         'ask_password': "Inputing password from stdin.",
     },
     'template': {
@@ -235,34 +240,31 @@ CLI_PARAMETERS_HELP = {
         'contents_path' : "Path to a local file or directory containing the template contents.",
         'recursive' : "Add files recursively.",
         'uninherited': "Select only templates which are specific to the gievn context, i.e. not inherited from the parent contexts.",
-        'include_contents': "Include template contenets in the output. ",
-        'history': "Get the revision history of the template.",
-
+        'include_contents': "Include template contenets in the output.",
+        'rendered': "Specifies whether render or raw contents.",
     },
     'config': {
-        'key': "The key of the configuration",
-        'value': 'Value for the configuration key',
+        'key': "The key of the configuration setting",
+        'value': 'Value for the configuration setting',
         'input' : "Path to a local (yaml) file inputing the configuration. Use '-' to read from the shell pipe or stdin.",
-        'local': "Select the local DSO configurations, i.e. existing in the working directory.",
-        'global': "Select the global DSO configurations, i.e. user-wide configuration.",
-        'override_inherited': "Explicitly override inherited configurations locally.",
+        'rendered': "Whether or not render configuration settings.",
+        'override_inherited': "Explicitly override inherited configuration locally.",
         'setup': "Run a setup wizard to assist configuring the DSO application.",
+        'uninherited': "Select only condifuration settings which are specific to the gievn context, i.e. not inherited from the parent contexts.",
+        'local': "Use local configuration only.",
+        'remote': "Use remote configuration only via config service.",
+        'revision': "The revision ID whose value to be fetched.",
 
-    },
-    'network': {
-        'subnet_layout_mode': "Select the subnet plan layout mode.",
-    
     },
     'package': {
         'key': "The key of the package. See KEY argument for more details.",
-
     },
     'release': {
         'key': "The key of the release. See KEY argument for more details.",
-
     },
-
-
+    'network': {
+        'subnet_layout_mode': "Select the subnet plan layout mode.",
+    },
 
 }
 
@@ -270,7 +272,7 @@ CLI_PARAMETERS_HELP = {
 CLI_MESSAGES = {
     'MissingOption': "Missing option {0}.",
     'MissingArgument': "Missing argument {0}.",
-    'ArgumentsProvided': "The following argument/option must be provided: {1}",
+    'ArgumentProvided': "The following argument/option must be provided: {0}",
     'ArgumentsOnlyOneProvided': "Only one of the following arguments/options may be provided: {0}",
     'ArgumentsAtLeastOneProvided': "At least one of the following arguments/options must be provided: {0}",
     'ArgumentsAllProvided': "All of the following arguments/options must be provided: {0}",
@@ -288,7 +290,7 @@ CLI_MESSAGES = {
     'EnteredSecretValuesNotMatched': "Entered values for the secret did not macth.",
     'RenderPathNotReleative': "Render path '{0}' is not releative to the application root directory.",
     # 'InvalidRenderPath': "'{0}' is not a valid render path.",
-    'InvalidRenderPathExistingDir': "'{0}' is not a valid render path because it is an existing directory.",
+#     'InvalidRenderPathExistingDir': "'{0}' is not a valid render path because it is an existing directory.",
     'InvalidFilter': "Invalid regex pattern for filter: {0}",
     'NoChanegeDetectedAfterEditing': "Edit canceled, no change detected after editing.",
     'ParameterNotFound': "Parameter '{0}' not found in the given context: namespace={1}, application={2}, stage={3}, scope={4}",

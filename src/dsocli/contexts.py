@@ -1,13 +1,10 @@
-from .enum_utils import OrderedEnum
 from .constants import *
 from .logger import Logger
 from .dict_utils import *
-from pathlib import Path
 from .file_utils import *
-from .exceptions import DSOException
 from .stages import Stages
 from .constants import *
-from .exceptions import DSOException
+from .enum_utils import OrderedEnum
 
 
 class ContextScope(OrderedEnum):
@@ -15,19 +12,9 @@ class ContextScope(OrderedEnum):
     Namespace = 20
     Global = 30
 
-    @classmethod
-    def from_str(cls, text, case_sensitive=False):
-        if case_sensitive:
-            items = [item.lower() for item in dir(cls) if not item.startswith('_')]
-            if text.lower() in items:
-                return getattr(cls, text)
-            return None
-        else:
-            items = [item for item in dir(cls) if not item.startswith('_')]
-            if text in items:
-                return getattr(cls, text)
-            return None
-
+class ContextMode(OrderedEnum):
+    Target = 10
+    Effective = 30
 
 context_translation_matrix = {
     'default': {
@@ -195,7 +182,6 @@ class Context():
         return Stages.parse_env(self.stage)
 
 
-
     @property
     def scope(self):
         return self._scope
@@ -234,7 +220,7 @@ class Context():
         return self.get_namespace(), self.get_application(), self.get_stage(), str(self.scope)
 
     @property
-    def target(self):
+    def target(self):  ### ns/app/stage/
         return self.get_namespace(ignore_scope=True), self.get_application(ignore_scope=True), self.get_stage(ignore_scope=True), str(self.scope)
 
 
