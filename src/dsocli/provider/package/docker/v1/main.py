@@ -1,7 +1,7 @@
 from dsocli.exceptions import DSOException
 from dsocli.logger import Logger
 from dsocli.providers import Providers
-from dsocli.releases import ReleaseProvider
+from dsocli.packages import PackageProvider
 from dsocli.constants import *
 from dsocli.contexts import ContextMode
 from dsocli.aws_s3_utils import *
@@ -18,10 +18,10 @@ def get_default_spec():
     return __default_spec.copy()
 
 
-class AwsCfnReleaseProvider(ReleaseProvider):
+class DockerPackageProvider(PackageProvider):
 
     def __init__(self):
-        super().__init__('release/aws/cfn/v1')
+        super().__init__('package/docker/v1')
 
     def create(self):
         Logger.debug(f"Building CFN release: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
@@ -29,4 +29,4 @@ class AwsCfnReleaseProvider(ReleaseProvider):
 
 
 def register():
-    Providers.register(AwsCfnReleaseProvider())
+    Providers.register(DockerPackageProvider())

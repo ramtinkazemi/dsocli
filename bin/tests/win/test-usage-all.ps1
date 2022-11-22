@@ -24,24 +24,24 @@ if (!(Test-Path tests\output)) {
 ##################################
 
 
-.\tests\scripts\win\test-config.ps1 -namespace $namespace -project $project -application $application  -working_dir "$working_dir"
+.\bin\tests\win\test-usage-config.ps1 -namespace $namespace -project $project -application $application  -working_dir "$working_dir"
 if(!$?) { exit $? }
 
 
 $provider = "aws/ssm/v1"
-.\tests\scripts\win\test-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
+.\bin\tests\win\test-usage-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
 if(!$?) { exit $? }
 
-.\tests\scripts\win\test-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
+.\bin\tests\win\test-usage-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
 if(!$?) { exit $? }
 
-.\tests\scripts\win\test-templates.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
+.\bin\tests\win\test-usage-templates.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
 if(!$?) { exit $? }
 
 
 
 $provider = "local/v1"
-.\tests\scripts\win\test-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
+.\bin\tests\win\test-usage-parameters.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
 if(!$?) { exit $? }
 
 $provider = "shell/v1"
@@ -60,9 +60,9 @@ $Env:app_overriden_secret='app.overriden_secret'
 $Env:app_stage_overriden_secret='app.stage_overriden_secret'
 $Env:app_stage2_overriden_secret='app.stage2_overriden_secret'
 
-.\tests\scripts\win\test-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
+.\bin\tests\win\test-usage-secrets.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
 if(!$?) { exit $? }
 
 $provider = "local/v1"
-.\tests\scripts\win\test-templates.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
+.\bin\tests\win\test-usage-templates.ps1 -namespace $namespace -project $project -application $application -stage $stage -provider $provider
 if(!$?) { exit $? }
