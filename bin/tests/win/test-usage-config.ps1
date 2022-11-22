@@ -33,7 +33,7 @@ Write-Output "`ndso config get -v5 --global`n"
 Invoke-Call -ScriptBlock {dso config get -v5 --global} -ErrorAction Stop > $null
 
 Write-Output "`ndso config set -v5  test.global-config some-value --global`n"
-Invoke-Call -ScriptBlock {dso config set -v5 test.global-config some-value --global} -ErrorAction Stop > $null
+Invoke-Call -ScriptBlock {dso config add -v5 test.global-config some-value --global} -ErrorAction Stop > $null
 
 Write-Output "`ndso config get -v5  test.global-config some-value --global`n"
 Invoke-Call -ScriptBlock {dso config get -v5  test.global-config --global} -ErrorAction Stop > $null
@@ -45,7 +45,7 @@ Write-Output "`ndso config get -v5 -w `"${working_dir}`"`n"
 Invoke-Call -ScriptBlock {dso config get -v5 -w "${working_dir}"} -ErrorAction Stop > $null
 
 Write-Output "`ndso config set -v5 -w `"${working_dir}`" test.local-config some-value`n"
-Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" test.local-config some-value} -ErrorAction Stop > $null
+Invoke-Call -ScriptBlock {dso config add -v5 -w "${working_dir}" test.local-config some-value} -ErrorAction Stop > $null
 
 Write-Output "`ndso config get -v5 -w `"${working_dir}`" test.local-config`n"
 Invoke-Call -ScriptBlock {dso config get -v5 -w "${working_dir}" test.local-config} -ErrorAction Stop > $null
@@ -57,9 +57,9 @@ Write-Output "`ndso config unset -v5 -w `"${working_dir}`" test.local-config`n"
 Invoke-Call -ScriptBlock {dso config unset -v5 -w "${working_dir}" test.local-config} -ErrorAction Stop > $null
 
 Write-Output "`ndso config set -v5 -w `"${working_dir}`" namespace ${namespace}`n"
-Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop > $null
+Invoke-Call -ScriptBlock {dso config add -v5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop > $null
 
 Write-Output "`ndso config set -v5 -w `"${working_dir}`" application ${application}`n"
-Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" application ${application}} -ErrorAction Stop > $null
+Invoke-Call -ScriptBlock {dso config add -v5 -w "${working_dir}" application ${application}} -ErrorAction Stop > $null
 
 

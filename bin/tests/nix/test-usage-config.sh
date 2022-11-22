@@ -1,11 +1,15 @@
-set -e
+#!/bin/bash
+set -e -o pipefail
+
+bin_path=$(realpath $(dirname $0))
+root_path=$(realpath ${bin_path}/../../..)
 
 default_provider=local/v1
 default_namespace=test-ns
 default_project=test-project
 default_application=test-app
 default_stage=test-stage
-default_working_dir=.
+default_working_dir=${root_path}
 
 printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]>\n\n"
 
@@ -43,21 +47,22 @@ fi
 
 printf "\n\ndso config init -v5 -w \"${working_dir}\"\n\n"
 dso config init -v5 -w "${working_dir}" 
-printf "\n\ndso config get -v5 -w \"${working_dir}\"\n\n"
-dso config get -v5 -w "${working_dir}" > /dev/null
 
-printf "\n\ndso config set -v5 -w \"${working_dir}\" test.config some-value\n\n"
-dso config set -v5 -w "${working_dir}" test.config some-value
+printf "\n\ndso config get -v5 -w \"${working_dir}\"\n\n"
+dso config list -v5 -w "${working_dir}" > /dev/null
+
+printf "\n\ndso config add -v5 -w \"${working_dir}\" test.config some-value\n\n"
+dso config add -v5 -w "${working_dir}" test.config some-value > /dev/null
 
 printf "\n\ndso config get -v5 -w \"${working_dir}\" test.config\n\n"
 dso config get -v5 -w "${working_dir}" test.config > /dev/null
 
-printf "\n\ndso config unset -v5 -w \"${working_dir}\" test.config\n\n"
-dso config unset -v5 -w "${working_dir}" test.config
+printf "\n\ndso config delete -v5 -w \"${working_dir}\" test.config\n\n"
+dso config delete -v5 -w "${working_dir}" test.config > /dev/null
 
-printf "\n\ndso config set -v5 -w \"${working_dir}\" namespace ${namespace}\n\n"
-dso config set -v5 -w "${working_dir}" namespace ${namespace}
+printf "\n\ndso config add -v5 -w \"${working_dir}\" namespace ${namespace}\n\n"
+dso config add -v5 -w "${working_dir}" namespace ${namespace} > /dev/null
 
-printf "\n\ndso config set -v5 -w \"${working_dir}\" application ${application}\n\n"
-dso config set -v5 -w "${working_dir}" application ${application}
+printf "\n\ndso config add -v5 -w \"${working_dir}\" application ${application}\n\n"
+dso config add -v5 -w "${working_dir}" application ${application} > /dev/null
 

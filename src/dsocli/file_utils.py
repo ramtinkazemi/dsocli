@@ -154,4 +154,6 @@ def no_enclosing_quotes(value):
         return re.sub(r'^"|"$', '', value)
     elif re.match(r"^'.*'$", value):
         return re.sub(r"^'|'$", '', value)
+    else:
+        return value
 

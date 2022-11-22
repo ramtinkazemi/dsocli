@@ -761,7 +761,7 @@ that has been set for the parameters:</p>
 <div class=3D"codeContent panelContent pdl">=20
 <pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
 : java; gutter: false; theme: Confluence" data-theme=3D"Confluence">ds=
-o config get parameter.provider.id | dso config set secret.provider.id --in=
+o config get parameter.provider.id | dso config add secret.provider.id --in=
 put - </pre>=20
 </div>
 </div>

@@ -237,6 +237,7 @@ def get_item(data, keys, create=True, default={}, leaf_only=False):
         ### is this a leaf item?
         if len(keys) == 1:
             return default.copy() ### !Important
+            # return {}.copy() ### !Important
         else:
             ### decide type of the new item based on the next key
             if keys[1] == '*' or is_int(keys[1]):

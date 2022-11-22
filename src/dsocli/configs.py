@@ -582,14 +582,14 @@ class ConfigService:
             return ''
 
     def get_template_render_paths(self, key=None):
-        result = get_item(self.local_config, ['template', 'renderPath']) or {}
+        result = get_item(self.local_config, ['template', 'renderPath'])[0] or {}
         if not key:
             return result
         else:
             return {x:result[x] for x in result if x==key}
 
     def register_template_custom_render_path(self, key, render_path):
-        result = get_item(self.local_config, ['template', 'renderPath']) or {}
+        result = get_item(self.local_config, ['template', 'renderPath'])[0] or {}
         # if os.path.isabs(render_path):
         #     raise DSOException(MESSAGES['AbsTemplateRenderPath'].format(render_path))
         # if os.path.isdir(render_path):
@@ -599,7 +599,7 @@ class ConfigService:
         self.save_local_config()
 
     def unregister_template_custom_render_path(self, key):
-        result = get_item(self.local_config, ['template', 'renderPath'])
+        result = get_item(self.local_config, ['template', 'renderPath'])[0]
         if key in result:
             self.local_config['template']['renderPath'].pop(key)
             self.save_local_config()
@@ -818,10 +818,10 @@ class ConfigService:
 
 
     def delete_local(self, key):
-        parent = get_item(self.local_config, key.split('.')[:-1])
+        parent, key = get_item(self.local_config, key.split('.')[:-1])
         lastKey = key.split('.')[-1]
         if parent and type(parent) in [dict, list] and lastKey:
-            value = get_item(dic=self.local_config, keys=key.split('.'), create=False, leaf_only=True)
+            value = get_item(data=self.local_config, keys=key.split('.'), create=False, leaf_only=True)[0]
             if value is None:
                 raise DSOException(f"'{key}' not found in configuration settings locally.")
             del_item(dic=self.local_config, keys=key.split('.'), leaf_only=True, silent=False)
@@ -852,7 +852,7 @@ class ConfigService:
 
     def history_local(self, key):
         self.update_merged_config(use_remote=False)
-        response = get_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
+        response, key = get_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
         if response:
             return {'Revisions': [{
                 'RevisionId': '0',

@@ -11,7 +11,7 @@ ENV AWS_DEFAULT_REGION=$aws_default_region
 ENV DSO_PROJECT=$project
 ENV DSO_APPLICATION=$application
 RUN dso config init && \
-    dso config set parameter.provider.id $parameter_provider && \
-    dso config set secret.provider.id $secret_provider && \
-    dso config set template.provider.id $template_provider
+    dso config add parameter.provider.id $parameter_provider && \
+    dso config add secret.provider.id $secret_provider && \
+    dso config add template.provider.id $template_provider
 

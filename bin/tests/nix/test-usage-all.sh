@@ -1,9 +1,14 @@
-set -e
+#!/bin/bash
+set -e -o pipefail
 
-default_namespace=test-ns
-default_application=test-app
-default_stage=test-stage
-default_working_dir=.
+bin_path=$(realpath $(dirname $0))
+root_path=$(realpath ${bin_path}/../../..)
+
+default_namespace=test-usage-ns
+default_application=test-usage-app
+default_stage=test-usage-stage
+# default_working_dir=.
+default_working_dir=${root_path}
 
 printf "\n\nUSAGE: $0 <namespace [${default_namespace}]> <application [${default_application}]> <stage [${default_stage}]> <working_dir [${default_working_dir}]>\n\n"
 
@@ -32,17 +37,17 @@ else
 fi
 
 
-./tests/scripts/nix/test-config.sh $namespace $application $stage "$working_dir" 
+${bin_path}/test-usage-config.sh $namespace $application $stage "$working_dir" 
 
 provider=aws/ssm/v1
-./tests/scripts/nix/test-parameters.sh $namespace $application $stage "$working_dir" $provider 
-./tests/scripts/nix/test-secrets.sh $namespace $application $stage "$working_dir" $provider 
-./tests/scripts/nix/test-templates.sh $namespace $application $stage "$working_dir" $provider 
+${bin_path}/test-usage-parameters.sh $namespace $application $stage $provider
+${bin_path}/test-usage-secrets.sh $namespace $application $stage $provider
+${bin_path}/test-usage-templates.sh $namespace $application $stage $provider
 
 provider=local/v1
-./tests/scripts/nix/test-parameters.sh $namespace $application $stage "$working_dir" $provider
-./tests/scripts/nix/test-secrets.sh $namespace $application $stage "$working_dir" $provider 
-./tests/scripts/nix/test-templates.sh $namespace $application $stage "$working_dir" $provider 
+${bin_path}/test-usage-parameters.sh $namespace $application $stage $provider
+${bin_path}/test-usage-secrets.sh $namespace $application $stage $provider
+${bin_path}/test-usage-templates.sh $namespace $application $stage $provider
 
 provider=shell/v1
 
@@ -60,7 +65,7 @@ export app_overriden_parameter='app overriden parameter'
 export app_stage_overriden_parameter='app stage overriden parameter'
 export app_stage2_overriden_parameter='app stage2 overriden parameter'
 
-./tests/scripts/nix/test-parameters.sh $namespace $application $stage "$working_dir" $provider
+${bin_path}/test-usage-parameters.sh $namespace $application $stage $provider
 
 export global_secret='global secret'
 export global_stage_secret='global stage secret'
@@ -76,7 +81,7 @@ export app_overriden_secret='app overriden secret'
 export app_stage_overriden_secret='app stage overriden secret'
 export app_stage2_overriden_secret='app stage2 overriden secret'
 
-./tests/scripts/nix/test-secrets.sh $namespace $application $stage "$working_dir" $provider 
+${bin_path}/test-usage-secrets.sh $namespace $application $stage $provider
 
 provider=local/v1
-./tests/scripts/nix/test-templates.sh $namespace $application $stage "$working_dir" $provider
+${bin_path}/test-usage-templates.sh $namespace $application $stage $provider
