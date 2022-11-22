@@ -818,7 +818,7 @@ class ConfigService:
 
 
     def delete_local(self, key):
-        parent, key = get_item(self.local_config, key.split('.')[:-1])
+        parent = get_item(self.local_config, key.split('.')[:-1])[0]
         lastKey = key.split('.')[-1]
         if parent and type(parent) in [dict, list] and lastKey:
             value = get_item(data=self.local_config, keys=key.split('.'), create=False, leaf_only=True)[0]
@@ -852,7 +852,7 @@ class ConfigService:
 
     def history_local(self, key):
         self.update_merged_config(use_remote=False)
-        response, key = get_item(self.merged_config, key.split('.'), create=False, leaf_only=True)
+        response = get_item(self.merged_config, key.split('.'), create=False, leaf_only=True)[0]
         if response:
             return {'Revisions': [{
                 'RevisionId': '0',
