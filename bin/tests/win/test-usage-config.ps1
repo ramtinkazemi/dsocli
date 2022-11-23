@@ -19,6 +19,10 @@ function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction=$ErrorActio
 
 ##################################
 
+$Env:DSO_USE_PAGER = "no"
+
+##################################
+
 if(!(Test-Path tests\output\))
 {
     New-Item -ItemType Directory -Force -Path tests\output\ > $null

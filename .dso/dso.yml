@@ -45,5 +45,3 @@ release:
   version:
     major: 20
     minor: 1
-test:
-  global-config: some-value
