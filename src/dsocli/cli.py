@@ -975,7 +975,7 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
         ### fix possiblly created // to /
         result = result.replace(f'{os.sep}{os.sep}', os.sep)
         ### fix possibe trailing /
-        result = re.sub(r'{os_sep}$'.format(os_sep=os.sep), '', result)
+        result = re.sub(f'\{os.sep}$', '', result)
 
         return result
 
@@ -997,7 +997,7 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
         ### fix possiblly created // to /
         result = result.replace(f'{os.sep}{os.sep}', os.sep)
         ### fix possible trailing /
-        result = re.sub(r'{os_sep}$'.format(os_sep=os.sep), '', result)
+        result = re.sub(f'\{os.sep}$', '', result)
 
         # if os.path.isabs(result):
         #     Logger.warn(CLI_MESSAGES['RenderPathNotReleative'].format(result))
@@ -1041,7 +1041,7 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
         
             if os.path.isdir(contents_path):
                 ### remove possible trailing /
-                contents_path = re.sub(r'{os_sep}$'.format(os_sep=os.sep), '', contents_path)
+                contents_path = re.sub(f'\{os.sep}$', '', contents_path)
                 if recursive:
                     globe =  f'{os.sep}**'
                 else:
@@ -1061,7 +1061,7 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
                     render_path = f'{render_path}{os.sep}**{os.sep}*'
 
             ### remove starting / if any
-            render_path = re.sub(r'^{os_sep}'.format(os_sep=os.sep), '', render_path)
+            render_path = re.sub(f'^\{os.sep}', '', render_path)
             if not render_path.startswith(f'.{os.sep}'):
                 render_path = f'.{os.sep}' + render_path
 

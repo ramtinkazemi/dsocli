@@ -7,4 +7,6 @@ pypi-token.txt
 .tox
 .eggs
 .python-version
-.dso/output
+.dso/
+^.dso/dso.yml
+
