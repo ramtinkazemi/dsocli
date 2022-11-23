@@ -69,17 +69,17 @@ Invoke-Call -ScriptBlock {dso config add -v6 parameter.provider.id ${provider}} 
 ##################################
 ### add context-specific parameters
 
-Write-Output "`ndso parameter add -v6 global.parameter global_parameter --global-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -v6 global.parameter global_parameter --global-scope} -ErrorAction Stop
+Write-Output "`ndso parameter add -v6 global_parameter global_parameter --global-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -v6 global_parameter global_parameter --global-scope} -ErrorAction Stop
 
-Write-Output "`ndso parameter add -v6 global.stage_parameter global_stage_parameter -s ${stage} --global-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -v6 global.stage_parameter global_stage_parameter -s ${stage} --global-scope} -ErrorAction Stop
+Write-Output "`ndso parameter add -v6 global_stage_parameter global_stage_parameter -s ${stage} --global-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -v6 global_stage_parameter global_stage_parameter -s ${stage} --global-scope} -ErrorAction Stop
 
-Write-Output "`ndso parameter add -v6 namespace.parameter namespace_parameter --namespace-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -v6 namespace.parameter namespace_parameter --namespace-scope} -ErrorAction Stop
+Write-Output "`ndso parameter add -v6 namespace_parameter namespace_parameter --namespace-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -v6 namespace_parameter namespace_parameter --namespace-scope} -ErrorAction Stop
 
-Write-Output "`ndso parameter add -v6 namespace.stage_parameter namespace_stage_parameter -s ${stage} --namespace-scope`n"
-Invoke-Call -ScriptBlock {dso parameter add -v6 namespace.stage_parameter namespace_stage_parameter -s ${stage} --namespace-scope} -ErrorAction Stop
+Write-Output "`ndso parameter add -v6 namespace_stage_parameter namespace_stage_parameter -s ${stage} --namespace-scope`n"
+Invoke-Call -ScriptBlock {dso parameter add -v6 namespace_stage_parameter namespace_stage_parameter -s ${stage} --namespace-scope} -ErrorAction Stop
 
 
 Write-Output "`ndso parameter add -v6 app_parameter app_parameter`n"

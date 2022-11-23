@@ -119,11 +119,11 @@ Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage2-template-
 ##################################
 ### get some templates
 
-Write-Output "`ndso template get -v6 overriden_template --scope Global -f text`n"
-Invoke-Call -ScriptBlock {dso template get -v6 overriden_template --scope Global -f text} -ErrorAction Stop
+Write-Output "`ndso template get -v6 overriden_template --global-scope -f text`n"
+Invoke-Call -ScriptBlock {dso template get -v6 overriden_template --global-scope -f text} -ErrorAction Stop
 
-Write-Output "`ndso template get -v6 overriden_template --scope Namespace -f text`n"
-Invoke-Call -ScriptBlock {dso template get -v6 overriden_template --scope Namespace -f text} -ErrorAction Stop
+Write-Output "`ndso template get -v6 overriden_template --namespace-scope -f text`n"
+Invoke-Call -ScriptBlock {dso template get -v6 overriden_template --namespace-scope -f text} -ErrorAction Stop
 
 Write-Output "`ndso template get -v6 overriden_template -s $stage -f text`n"
 Invoke-Call -ScriptBlock {dso template get -v6 overriden_template -s $stage -f text} -ErrorAction Stop
@@ -167,8 +167,8 @@ Invoke-Call -ScriptBlock {dso template history -v6 overriden_template -n -f json
 Write-Output "`ndso template history -v6 overriden_template -s $stage -f yaml`n"
 Invoke-Call -ScriptBlock {dso template history -v6 overriden_template -s $stage -f json} -ErrorAction Stop
 
-Write-Output "`ndso template history -v6 app_template -s $stage --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso template history -v6 app_template -s $stage --query-all -f json} -ErrorAction Stop
+Write-Output "`ndso template history -v6 app_template --query-all -f json`n"
+Invoke-Call -ScriptBlock {dso template history -v6 app_template --query-all -f json} -ErrorAction Stop
 
 Write-Output "`ndso template history -v6 app_stage_template -s $stage --query-all -f yaml`n"
 Invoke-Call -ScriptBlock {dso template history -v6 app_stage_template -s $stage --query-all -f json} -ErrorAction Stop
@@ -181,8 +181,8 @@ Invoke-Call -ScriptBlock {dso template history -v6 app_stage2_template -s "$stag
 
 $filename = ("$provider" -split '/')[0]
 
-Write-Output "`ndso template list -v6 -s $stage --uninherited --query-all --filter overriden_template`n"
-Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all --filter overriden_template} -ErrorAction Stop
+Write-Output "`ndso template list -v6 -s $stage --uninherited --query-all overriden_template`n"
+Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all overriden_template} -ErrorAction Stop
 
 Write-Output "`ndso template list -v6 -s $stage --uninherited --query-all --include-contents -f json`n"
 Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all --include-contents -f json} -ErrorAction Stop > ".dso\output\template\app-uninherited-${filename}.json"
