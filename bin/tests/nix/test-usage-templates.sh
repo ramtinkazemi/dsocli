@@ -15,43 +15,43 @@ provider=${4:-"template/local/v1"}
 
 ###################################
 
-export DSO_ALLOW_STAGE_TEMPLATES=yes
+export DSO_USE_PAGER=no
 
 
 ###################################
 ### delete existing templates, in order to also test overriding configurartions, they will be set later
 
 printf "\n\ndso template list -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" --global-scope --uninherited -f json | dso template delete -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" --global-scope -i -\n\n"
-dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --global-scope --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --global-scope -i - > /dev/null
+dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --global-scope --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --global-scope -i -
 
 printf "\n\ndso template list -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage --global-scope --uninherited -f json | dso template delete  -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage -global-scope -i - -f json\n\n"
-dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --global-scope --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --global-scope -i - -f json > /dev/null
+dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --global-scope --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --global-scope -i - -f json
 
 printf "\n\ndso template list -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" --namespace-scope --uninherited -f json | dso template delete -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" --namespace-scope -i -\n\n"
-dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --namespace-scope --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --namespace-scope -i - -v6 > /dev/null
+dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --namespace-scope --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --namespace-scope -i - -v6
 
 printf "\n\ndso template list -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage --namespace-scope --uninherited -f json | dso template delete -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage --namespace-scope -i - -f json\n\n"
-dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --namespace-scope --uninherited -f json | dso template delete -v6  --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --namespace-scope -i - -f json> /dev/null
+dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --namespace-scope --uninherited -f json | dso template delete -v6  --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --namespace-scope -i - -f json
 
 printf "\n\ndso template list -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" --uninherited -f yaml | dso template delete -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -i - -f yaml\n\n"
-dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --uninherited -f yaml | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -i - -f yaml> /dev/null
+dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" --uninherited -f yaml | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -i - -f yaml
 
 printf "\n\ndso template list -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage --uninherited -f json | dso template delete -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage -i - -f json\n\n"
-dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage -i - -f json > /dev/null
+dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage -i - -f json
 
 printf "\n\ndso template list -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage/2 --uninherited -f json | dso template delete -v6 --config \"namespace=$namespace, application=$application, template.provider.id=$provider\" -s $stage/2 -i - -f json\n\n"
-dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage/2 --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage/2 -i - -f json > /dev/null
+dso template list -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage/2 --uninherited -f json | dso template delete -v6 --config "namespace=$namespace, application=$application, template.provider.id=$provider" -s $stage/2 -i - -f json
 
 ###################################
 ### Setting configurations
 printf "\n\ndso config add -v6 namespace $namespace\n\n"
-dso config add -v6 namespace $namespace > /dev/null
+dso config add -v6 namespace $namespace
 
 printf "\n\ndso config add -v6 application $application\n\n"
-dso config add -v6 application $application > /dev/null
+dso config add -v6 application $application
 
 printf "\n\ndso config add -v6 template.provider.id \"$provider\"\n\n"
-dso config add -v6 template.provider.id "$provider" > /dev/null
+dso config add -v6 template.provider.id "$provider"
 
 
 ###################################
@@ -60,70 +60,70 @@ dso config add -v6 template.provider.id "$provider" > /dev/null
 pwd 
 
 printf "\n\ndso template add sample-templates/global-template global_template -r '.dso/output/template/*' --global-scope -v6\n\n"
-dso template add sample-templates/global-template global_template -r '.dso/output/template/*' --global-scope -v6 > /dev/null
+dso template add sample-templates/global-template global_template -r '.dso/output/template/*' --global-scope -v6
 
 printf "\n\ndso template add sample-templates/global-stage-template global_stage_template -r '.dso/output/template/*' -s $stage --global-scope -v6\n\n"
-dso template add sample-templates/global-stage-template global_stage_template -r '.dso/output/template/*' -s $stage --global-scope -v6 > /dev/null
+dso template add sample-templates/global-stage-template global_stage_template -r '.dso/output/template/*' -s $stage --global-scope -v6
 
 printf "\n\ndso template add sample-templates/namespace-template namespace_template -r '.dso/output/template/*' --namespace-scope -v6\n\n"
-dso template add sample-templates/namespace-template namespace_template -r '.dso/output/template/*' --namespace-scope -v6 > /dev/null
+dso template add sample-templates/namespace-template namespace_template -r '.dso/output/template/*' --namespace-scope -v6
 
 printf "\n\ndso template add sample-templates/namespace-stage-template namespace_stage_template -r '.dso/output/template/*' -s $stage --namespace-scope -v6\n\n"
-dso template add sample-templates/namespace-stage-template namespace_stage_template -r '.dso/output/template/*' -s $stage --namespace-scope -v6 > /dev/null
+dso template add sample-templates/namespace-stage-template namespace_stage_template -r '.dso/output/template/*' -s $stage --namespace-scope -v6
 
 printf "\n\ndso template add sample-templates/app-template app_template -r '.dso/output/template/*' -v6\n\n"
-dso template add sample-templates/app-template app_template -r '.dso/output/template/*' -v6 > /dev/null
+dso template add sample-templates/app-template app_template -r '.dso/output/template/*' -v6
 
 printf "\n\ndso template add sample-templates/app-stage-template app_stage_template -r '.dso/output/template/*' -s $stage -v6\n\n"
-dso template add sample-templates/app-stage-template app_stage_template -r '.dso/output/template/*' -s $stage -v6 > /dev/null
+dso template add sample-templates/app-stage-template app_stage_template -r '.dso/output/template/*' -s $stage -v6
 
 printf "\n\ndso template add sample-templates/app-stage2-template app_stage2_template -r '.dso/output/template/*' -s $stage/2 -v6\n\n"
-dso template add sample-templates/app-stage2-template app_stage2_template -r '.dso/output/template/*' -s $stage/2 -v6 > /dev/null
+dso template add sample-templates/app-stage2-template app_stage2_template -r '.dso/output/template/*' -s $stage/2 -v6
 
 ###################################
 ### add overriden templates
 
 printf "\n\ndso template add sample-templates/global-template-overriden overriden_template -r '.dso/output/template/*' --global-scope -v6\n\n"
-dso template add sample-templates/global-template-overriden overriden_template -r '.dso/output/template/*' --global-scope > /dev/null
+dso template add sample-templates/global-template-overriden overriden_template -r '.dso/output/template/*' --global-scope
 
 printf "\n\ndso template add sample-templates/global-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage --global-scope -v6\n\n"
-dso template add sample-templates/global-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage --global-scope > /dev/null
+dso template add sample-templates/global-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage --global-scope
 
 printf "\n\ndso template add sample-templates/namespace-template-overriden overriden_template -r '.dso/output/template/*' --namespace-scope -v6\n\n"
-dso template add sample-templates/namespace-template-overriden overriden_template -r '.dso/output/template/*' --namespace-scope > /dev/null
+dso template add sample-templates/namespace-template-overriden overriden_template -r '.dso/output/template/*' --namespace-scope
 
 printf "\n\ndso template add sample-templates/namespace-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage --namespace-scope -v6\n\n"
-dso template add sample-templates/namespace-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage --namespace-scope > /dev/null
+dso template add sample-templates/namespace-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage --namespace-scope
 
 printf "\n\ndso template add sample-templates/app-template-overriden overriden_template -r '.dso/output/template/*' -v6\n\n"
-dso template add sample-templates/app-template-overriden overriden_template -r '.dso/output/template/*' > /dev/null
+dso template add sample-templates/app-template-overriden overriden_template -r '.dso/output/template/*'
 
 printf "\n\ndso template add sample-templates/app-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage -v6\n\n"
-dso template add sample-templates/app-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage > /dev/null
+dso template add sample-templates/app-stage-template-overriden overriden_template -r '.dso/output/template/*' -s $stage
 
 printf "\n\ndso template add sample-templates/app-stage2-template-overriden overriden_template -r '.dso/output/template/*' -s $stage/2 -v6\n\n"
-dso template add -v6 sample-templates/app-stage2-template-overriden overriden_template -r '.dso/output/template/*' -s $stage/2 > /dev/null
+dso template add -v6 sample-templates/app-stage2-template-overriden overriden_template -r '.dso/output/template/*' -s $stage/2
 
 ###################################
 ### get some templates
 
 printf "\n\ndso template get -v6 overriden_template --global-scope -f text\n\n"
-dso template get overriden_template -v6 --global-scope -f text > /dev/null
+dso template get overriden_template -v6 --global-scope -f text
 
 printf "\n\ndso template get -v6 overriden_template -s $stage -f text\n\n"
-dso template get overriden_template -v6 -s $stage -f text > /dev/null
+dso template get overriden_template -v6 -s $stage -f text
 
 printf "\n\ndso template get -v6 overriden_template -s $stage/2 -f text\n\n"
-dso template get overriden_template -v6 -s $stage/2 -f text > /dev/null
+dso template get overriden_template -v6 -s $stage/2 -f text
 
 printf "\n\ndso template get -v6 app_template -s $stage -f text\n\n"
-dso template get -v6 app_template -s $stage -f text > /dev/null
+dso template get -v6 app_template -s $stage -f text
 
 printf "\n\ndso template get -v6 app_stage_template -s $stage -f text\n\n"
-dso template get -v6 app_stage_template -s $stage -f text > /dev/null
+dso template get -v6 app_stage_template -s $stage -f text
 
 printf "\n\ndso template get -v6 app_stage2_template -s $stage/2 -f text\n\n"
-dso template get -v6 app_stage2_template -s $stage/2 -f text > /dev/null
+dso template get -v6 app_stage2_template -s $stage/2 -f text
 
 
 ###################################
@@ -149,25 +149,25 @@ dso template get -v6 app_stage2_template -s $stage/2 -f text > /dev/null
 ### getting history of some templates
 
 printf "\n\ndso template history -v6 overriden_template -f json\n\n"
-dso template history -v6 overriden_template -f json -v6 > /dev/null
+dso template history -v6 overriden_template -f json -v6
 
 printf "\n\ndso template history -v6 overriden_template -s $stage -f json\n\n"
-dso template history -v6 overriden_template -s $stage -f json -v6 > /dev/null
+dso template history -v6 overriden_template -s $stage -f json -v6
 
 printf "\n\ndso template history -v6 app_template --query-all -f json\n\n"
-dso template history -v6 app_template --query-all -f json -v6 > /dev/null
+dso template history -v6 app_template --query-all -f json -v6
 
 printf "\n\ndso template history -v6 app_stage_template -s $stage --query-all -f json\n\n"
-dso template history -v6 app_stage_template -s $stage --query-all -f json -v6 > /dev/null
+dso template history -v6 app_stage_template -s $stage --query-all -f json -v6
 
 printf "\n\ndso template history -v6 app_stage2_template -s $stage/2 --query-all -f json\n\n"
-dso template history -v6 app_stage2_template -s $stage/2 --query-all -f json -v6 > /dev/null
+dso template history -v6 app_stage2_template -s $stage/2 --query-all -f json -v6
 
 ###################################
 ### listing some templates
 
 printf "\n\ndso template list -v6 -s $stage --uninherited --query-all overriden_template\n\n"
-dso template list -v6 -s $stage --uninherited --query-all overriden_template > /dev/null
+dso template list -v6 -s $stage --uninherited --query-all overriden_template
 
 printf "\n\ndso template list -v6 -s $stage --uninherited --query-all -f json\n\n"
 dso template list -v6 -s $stage --uninherited --include-contents --query-all -f json > .dso/output/template/app-uninherited-${provider%%/*}.json
@@ -182,12 +182,12 @@ dso template list -v6 -s $stage/2 --include-contents --query-all -f yaml > .dso/
 ### rendering templates
 
 printf "\n\ndso template render -v6 -s $stage overriden_template\n\n"
-dso template render -v6 -s $stage overriden_template > /dev/null 
+dso template render -v6 -s $stage overriden_template 
 
 printf "\n\ndso template render -v6 -s $stage\n\n"
-dso template render -v6 -s $stage > /dev/null
+dso template render -v6 -s $stage
 
 printf "\n\ndso template render -v6 -s $stage/2\n\n"
-dso template render -v6 -s $stage/2 > /dev/null
+dso template render -v6 -s $stage/2
 
 

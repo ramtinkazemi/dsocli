@@ -346,6 +346,7 @@ def read_data(input, parent_key, keys, format):
         data = input.readlines()
         try:
             for row in data:
+                if not row.strip(): continue
                 record = {}
                 for i in range(len(keys)):
                     if not '=' in row:

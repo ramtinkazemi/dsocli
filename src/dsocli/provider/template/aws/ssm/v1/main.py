@@ -47,8 +47,6 @@ class AwsSsmTemplateProvider(TemplateProvider):
     def add(self, key, contents, render_path=None):
         if len(contents) > 4096:
             raise DSOException(f"This template provider does not support templates larger than 4KB.")
-        # if not Stages.is_default(Config.stage) and not ALLOW_STAGE_TEMPLATES:
-        #     raise DSOException(f"Templates may not be added to stage scopes, as the feature is currently disabled. It may be enabled by adding 'ALLOW_STAGE_TEMPLATES=yes' to the DSO global settings, or adding environment variable 'DSO_ALLOW_STAGE_TEMPLATES=yes'.")
         Logger.debug(f"Checking SSM template '{key}' overwrites: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         assert_ssm_parameter_no_namespace_overwrites(key=key, path_prefix=self.get_path_prefix())
         Logger.debug(f"Locating SSM template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")

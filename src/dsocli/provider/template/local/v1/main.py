@@ -48,8 +48,6 @@ class LocalTemplateProvider(TemplateProvider):
 
 
     def add(self, key, contents, render_path=None):
-        # if not Stages.is_default(Config.stage) and not ALLOW_STAGE_TEMPLATES:
-        #     raise DSOException(f"Templates may not be added to stage scopes, as the feature is currently disabled. It may be enabled by adding 'ALLOW_STAGE_TEMPLATES=yes' to the DSO global settings, or adding environment variable 'DSO_ALLOW_STAGE_TEMPLATES=yes'.")
         Logger.debug(f"Adding local template '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         response = add_local_template(key=key, path_prefix=self.get_path_prefix(), contents=contents)
         result = {

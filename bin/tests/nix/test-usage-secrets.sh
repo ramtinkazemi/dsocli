@@ -13,6 +13,8 @@ provider=${4:-"secret/local/v1"}
 
 [ -d .dso/output/secret ] || mkdir -p .dso/output/secret && rm -rf .dso/output/secret/*
 
+export DSO_USE_PAGER=no
+
 ###################################
 export global_secret='global secret'
 export global_stage_secret='global stage secret'
@@ -33,37 +35,37 @@ export app_stage2_overriden_secret='app stage2 overriden secret'
 ### delete existing secrets, in order to also test overriding configurartions, they will be set later
 
 printf "\n\ndso secret list -v6 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --global-scope --uninherited -f json | dso secret delete -v6 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --global-scope -i -\n\n"
-dso secret list -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope --uninherited -f json | dso secret delete -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope -i - > /dev/null
+dso secret list -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope --uninherited -f json | dso secret delete -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope -i -
 
 printf "\n\ndso secret list -v6 -s $stage --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --global-scope --uninherited -f yaml | dso secret delete -v6 -s $stage --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --global-scope -i - -f yaml\n\n"
-dso secret list -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope --uninherited -f yaml | dso secret delete -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope -i - -f yaml > /dev/null
+dso secret list -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope --uninherited -f yaml | dso secret delete -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --global-scope -i - -f yaml
 
 printf "\n\ndso secret list -v6 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --namespace-scope --uninherited -f compact | dso secret delete -v6 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --namespace-scope -i - -f compact\n\n"
-dso secret list -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope --uninherited -f compact | dso secret delete -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope -i - -f compact > /dev/null
+dso secret list -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope --uninherited -f compact | dso secret delete -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope -i - -f compact
 
 printf "\n\ndso secret list -v6 -s $stage --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --namespace-scope --uninherited -f json | dso secret delete -v6 -s $stage --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --namespace-scope -i - -f json\n\n"
-dso secret list -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope --uninherited -f json | dso secret delete -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope -i - -f json > /dev/null
+dso secret list -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope --uninherited -f json | dso secret delete -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --namespace-scope -i - -f json
 
 printf "\n\ndso secret list -v6 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --uninherited -f yaml | dso secret delete -v6 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" -i - -f yaml\n\n"
-dso secret list -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --uninherited -f yaml | dso secret delete -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" -i - -f yaml > /dev/null
+dso secret list -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --uninherited -f yaml | dso secret delete -v6 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" -i - -f yaml
 
 printf "\n\ndso secret list -v6 -s $stage --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --uninherited -f json | dso secret delete -v6 -s $stage --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" -i - -f json\n\n"
-dso secret list -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --uninherited -f json | dso secret delete -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" -i - -f json > /dev/null
+dso secret list -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --uninherited -f json | dso secret delete -v6 -s $stage --config "namespace=$namespace, application=$application, secret.provider.id=$provider" -i - -f json
 
 printf "\n\ndso secret list -v6 -s $stage/2 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" --uninherited -f json | dso secret delete -v6 -s $stage/2 --config \"namespace=$namespace, application=$application, secret.provider.id=$provider\" -i - -f json\n\n"
-dso secret list -v6 -s $stage/2 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --uninherited -f json | dso secret delete -v6 -s $stage/2 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" -i - -f json > /dev/null
+dso secret list -v6 -s $stage/2 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" --uninherited -f json | dso secret delete -v6 -s $stage/2 --config "namespace=$namespace, application=$application, secret.provider.id=$provider" -i - -f json
 
 
 ###################################
 ### Setting configurations
 printf "\n\ndso config add -v6 namespace $namespace\n\n"
-dso config add -v6 namespace $namespace > /dev/null
+dso config add -v6 namespace $namespace
 
 printf "\n\ndso config add -v6 application $application\n\n"
-dso config add -v6 application $application > /dev/null
+dso config add -v6 application $application
 
 printf "\n\ndso config add -v6 parameter.provider.id \"$provider\"\n\n"
-dso config add -v6 parameter.provider.id "$provider" > /dev/null
+dso config add -v6 parameter.provider.id "$provider"
 
 
 ###################################
@@ -72,47 +74,47 @@ dso config add -v6 parameter.provider.id "$provider" > /dev/null
 printf "\n\ncat <<EOF | dso secret add -v6 --global-scope -f compact -i -
 global_secret=global_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 --global-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 --global-scope -f compact -i -
 global_secret=global_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -s $stage --global-scope -f compact -i -
 global_stage_secret=global_stage_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -s $stage --global-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -s $stage --global-scope -f compact -i -
 global_stage_secret=global_stage_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 --namespace-scope -f compact -i -
 namespace_secret=namespace_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 --namespace-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 --namespace-scope -f compact -i -
 namespace_secret=namespace_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -s $stage --namespace-scope -f compact -i -
 namespace_stage_secret=namespace_stage_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -s $stage --namespace-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -s $stage --namespace-scope -f compact -i -
 namespace_stage_secret=namespace_stage_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -f compact -i -
 app_secret=app_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -f compact -i -
 app_secret=app_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -s $stage -f compact -i - 
 app_stage_secret=app_stage_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -s $stage -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -s $stage -f compact -i -
 app_stage_secret=app_stage_secret
 EOF
 
 printf "\n\ndso secret add app_stage2_secret app_stage2_secret -v6 -s $stage/2\n\n"
-dso secret add app_stage2_secret app_stage2_secret -v6 -s $stage/2 > /dev/null
+dso secret add app_stage2_secret app_stage2_secret -v6 -s $stage/2
 
 ###################################
 ### add overriden secrets
@@ -120,66 +122,66 @@ dso secret add app_stage2_secret app_stage2_secret -v6 -s $stage/2 > /dev/null
 printf "\n\ncat <<EOF | dso secret add -v6 --global-scope -f compact -i -
 overriden_secret=global_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 --global-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 --global-scope -f compact -i -
 overriden_secret=global_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -s $stage --global-scope -f compact -i -
 overriden_secret=global_stage_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -s $stage --global-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -s $stage --global-scope -f compact -i -
 overriden_secret=global_stage_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 --namespace-scope -f compact -i - 
 overriden_secret=namespace_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 --namespace-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 --namespace-scope -f compact -i -
 overriden_secret=namespace_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -s $stage --namespace-scope -f compact -i - 
 overriden_secret=namespace_stage_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -s $stage --namespace-scope -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -s $stage --namespace-scope -f compact -i -
 overriden_secret=namespace_stage_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -f compact -i -
 overriden_secret=app_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -f compact -i -
 overriden_secret=app_overriden_secret
 EOF
 
 printf "\n\ncat <<EOF | dso secret add -v6 -s $stage -f compact -i - 
 overriden_secret=app_stage_overriden_secret
 EOF\n\n"
-cat <<EOF | dso secret add -v6 -s $stage -f compact -i - > /dev/null
+cat <<EOF | dso secret add -v6 -s $stage -f compact -i -
 overriden_secret=app_stage_overriden_secret
 EOF
 
 printf "\n\ndso secret add overriden_secret app_stage2_overriden_secret -v6 -s $stage/2\n\n"
-dso secret add overriden_secret app_stage2_overriden_secret -v6 -s $stage/2 > /dev/null
+dso secret add overriden_secret app_stage2_overriden_secret -v6 -s $stage/2
 
 
 ###################################
 ### get some secrets
 
 printf "\n\ndso secret get -v6 overriden_secret -f text\n\n"
-dso secret get -v6 overriden_secret -f text > /dev/null
+dso secret get -v6 overriden_secret -f text
 
 printf "\n\ndso secret get -v6  overriden_secret -s $stage -f text\n\n"
-dso secret get -v6 overriden_secret -s $stage -f text > /dev/null
+dso secret get -v6 overriden_secret -s $stage -f text
 
 printf "\n\ndso secret get -v6 app_secret -f text\n\n"
-dso secret get -v6 app_secret -f text > /dev/null
+dso secret get -v6 app_secret -f text
 
 printf "\n\ndso secret get -v6 app_stage_secret -s $stage -f text\n\n"
-dso secret get -v6 app_stage_secret -s $stage -f text > /dev/null
+dso secret get -v6 app_stage_secret -s $stage -f text
 
 printf "\n\ndso secret get -v6 app_stage2_secret -s $stage/2 -f text\n\n"
-dso secret get -v6 app_stage2_secret -s $stage/2 -f text > /dev/null
+dso secret get -v6 app_stage2_secret -s $stage/2 -f text
 
 
 ###################################
@@ -205,26 +207,26 @@ dso secret get -v6 app_stage2_secret -s $stage/2 -f text > /dev/null
 ### getting history of some secrets
 
 printf "\n\ndso secret history -v6 overriden_secret -f json\n\n"
-dso secret history -v6 overriden_secret -f json > /dev/null
+dso secret history -v6 overriden_secret -f json
 
 printf "\n\ndso secret history -v6 overriden_secret -s $stage -f json\n\n"
-dso secret history -v6 overriden_secret -s $stage -f json > /dev/null
+dso secret history -v6 overriden_secret -s $stage -f json
 
 printf "\n\ndso secret history -v6 app_secret  --query-all -f json\n\n"
-dso secret history -v6 app_secret --query-all -f json > /dev/null
+dso secret history -v6 app_secret --query-all -f json
 
 printf "\n\ndso secret history -v6 app_stage_secret -s $stage --query-all -f json\n\n"
-dso secret history -v6 app_stage_secret -s $stage --query-all -f json > /dev/null
+dso secret history -v6 app_stage_secret -s $stage --query-all -f json
 
 printf "\n\ndso secret history -v6 app_stage2_secret -s $stage/2 --query-all -f json\n\n"
-dso secret history -v6 app_stage2_secret -s $stage/2 --query-all -f json > /dev/null
+dso secret history -v6 app_stage2_secret -s $stage/2 --query-all -f json
 
 
 ###################################
 ### listing some secrets
 
 printf "\n\ndso secret list -v6 -s $stage --uninherited --query-all overriden_secret\n\n"
-dso secret list -v6 -s $stage --uninherited --query-all overriden_secret > /dev/null
+dso secret list -v6 -s $stage --uninherited --query-all overriden_secret
 
 printf "\n\ndso secret list -v6 -s $stage --uninherited -d --query-all -f json\n\n"
 dso secret list -v6 -s $stage --uninherited -d --query-all -f json > .dso/output/secret/app-stage-uninherited-${provider%%/*}.json
