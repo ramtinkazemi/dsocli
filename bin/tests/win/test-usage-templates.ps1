@@ -186,13 +186,13 @@ Write-Output "`ndso template list -v6 -s $stage --uninherited --query-all --filt
 Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all --filter overriden_template} -ErrorAction Stop > $null
 
 Write-Output "`ndso template list -v6 -s $stage --uninherited --query-all --include-contents -f json`n"
-Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all --include-contents -f json} -ErrorAction Stop > ".dso/output/template/app-uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all --include-contents -f json} -ErrorAction Stop > ".dso\output\template\app-uninherited-${filename}.json"
 
 Write-Output "`ndso template list -v6 -s $stage --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --query-all -f yaml} -ErrorAction Stop > ".dso/output/template/app-stage-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --query-all -f yaml} -ErrorAction Stop > ".dso\output\template\app-stage-all-${filename}.yaml"
 
 Write-Output "`ndso template list -v6 -s `"$stage/2`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso template list -v6 -s "$stage/2" --query-all -f yaml} -ErrorAction Stop > ".dso/output/template/app-stage2-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso template list -v6 -s "$stage/2" --query-all -f yaml} -ErrorAction Stop > ".dso\output\template\app-stage2-all-${filename}.yaml"
 
 ##################################
 ### render templates
@@ -202,7 +202,6 @@ Invoke-Call -ScriptBlock {dso template render overriden_template -v6} -ErrorActi
 
 # Write-Output "`ndso template render -v6 -s $stage`n"
 # Invoke-Call -ScriptBlock {dso template render -v6 -s $stage} -ErrorAction Stop > $null
-
 
 Write-Output "`ndso template render -v6 -s `"$stage/2`"`n"
 Invoke-Call -ScriptBlock {dso template render -v6 -s "$stage/2"} -ErrorAction Stop > $null

@@ -1,22 +1,21 @@
 param(
-    [string]$provider = "shell/v1",
+    [string]$provider = "local/v1",
     [string]$namespace = "test-ns",
-    [string]$project = "test-project",
     [string]$application = "test-app",
     [string]$stage = "test-stage"
 )
 
 
-$Env:global_secret='global.secret'
-$Env:global_stage_secret='global.stage_secret'
-$Env:project_secret='project.secret'
-$Env:project_stage_secret='project.stage_secret'
+$Env:global_secret='global_secret'
+$Env:global_stage_secret='global_stage_secret'
+$Env:namespace_secret='namespace_secret'
+$Env:namespace_stage_secret='namespace_stage_secret'
 $Env:app_secret='app_secret'
 $Env:app_stage_secret='app_stage_secret'
-$Env:global_overriden_secret='global.overriden_secret'
-$Env:global_stage_overriden_secret='global.stage_overriden_secret'
-$Env:project_overriden_secret='project.overriden_secret'
-$Env:project_stage_overriden_secret='project.stage_overriden_secret'
+$Env:global_overriden_secret='global_overriden_secret'
+$Env:global_stage_overriden_secret='global_stage_overriden_secret'
+$Env:namespace_overriden_secret='namespace_overriden_secret'
+$Env:namespace_stage_overriden_secret='namespace_stage_overriden_secret'
 $Env:app_overriden_secret='app_overriden_secret'
 $Env:app_stage_overriden_secret='app_stage_overriden_secret'
 $Env:app_stage2_overriden_secret='app_stage2_overriden_secret'
@@ -33,11 +32,11 @@ function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorAct
 
 ##################################
 
-if (!(Test-Path tests\output/secret)) {
-    New-Item -ItemType Directory -Force -Path tests\output/secret > $null
+if (!(Test-Path .dso\output\secret)) {
+    New-Item -ItemType Directory -Force -Path .dso\output\secret > $null
 }
 else {
-    Get-ChildItem tests\output/secret -Recurse | Remove-Item > $null
+    Get-ChildItem .dso\output\secret -Recurse | Remove-Item > $null
 }
 
 ##################################
@@ -67,17 +66,17 @@ Invoke-Call -ScriptBlock {dso secret list -v6 --config "namespace=${namespace}, 
 ##################################
 ### add context-specific secrets
 
-Write-Output "`nWrite-Output `"global.secret=global_secret`" | dso secret add -v6 --global-scope -f compact -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "global.secret=global_secret" | dso secret add -v6 --global-scope -f compact -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"global_secret=global_secret`" | dso secret add -v6 --global-scope -f compact -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "global_secret=global_secret" | dso secret add -v6 --global-scope -f compact -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"global.stage_secret=global_stage_secret`" | dso secret add -v6 -s ${stage} --global-scope -f compact -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "global.stage_secret=global_stage_secret" | dso secret add -v6 -s ${stage} --global-scope -f compact -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"global_stage_secret=global_stage_secret`" | dso secret add -v6 -s ${stage} --global-scope -f compact -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "global_stage_secret=global_stage_secret" | dso secret add -v6 -s ${stage} --global-scope -f compact -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"project.secret=project_secret`" | dso secret add -v6 --namespace-scope -f compact -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "project.secret=project_secret" | dso secret add -v6 --namespace-scope -f compact -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"namespace_secret=namespace_secret`" | dso secret add -v6 --namespace-scope -f compact -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "namespace_secret=namespace_secret" | dso secret add -v6 --namespace-scope -f compact -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"project.stage_secret=project_stage_secret`" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "project.stage_secret=project_stage_secret" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"namespace_stage_secret=namespace_stage_secret`" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "namespace_stage_secret=namespace_stage_secret" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -} -ErrorAction Stop > $null
 
 Write-Output "`nWrite-Output `"app_secret=app_secret`" | dso secret add -v6 -f compact -i -`n"
 Invoke-Call -ScriptBlock {Write-Output "app_secret=app_secret" | dso secret add -v6 -f compact -i -} -ErrorAction Stop > $null
@@ -110,11 +109,11 @@ Invoke-Call -ScriptBlock {Write-Output "overriden_secret=global_overriden_secret
 Write-Output "`nWrite-Output `"overriden_secret=global_stage_overriden_secret`" | dso secret add -v6 -s ${stage} --global-scope -f compact -i -`n"
 Invoke-Call -ScriptBlock {Write-Output "overriden_secret=global_stage_overriden_secret" | dso secret add -v6 -s ${stage} --global-scope -f compact -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=project_overriden_secret`" | dso secret add -v6 --namespace-scope -f compact -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project_overriden_secret" | dso secret add -v6 --namespace-scope -f compact -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=namespace_overriden_secret`" | dso secret add -v6 --namespace-scope -f compact -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=namespace_overriden_secret" | dso secret add -v6 --namespace-scope -f compact -i -} -ErrorAction Stop > $null
 
-Write-Output "`nWrite-Output `"overriden_secret=project_stage_overriden_secret`" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -`n"
-Invoke-Call -ScriptBlock {Write-Output "overriden_secret=project_stage_overriden_secret" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -} -ErrorAction Stop > $null
+Write-Output "`nWrite-Output `"overriden_secret=namespace_stage_overriden_secret`" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -`n"
+Invoke-Call -ScriptBlock {Write-Output "overriden_secret=namespace_stage_overriden_secret" | dso secret add -v6 -s ${stage} --namespace-scope -f compact -i -} -ErrorAction Stop > $null
 
 Write-Output "`nWrite-Output `"overriden_secret=app_overriden_secret`" | dso secret add -v6 -f compact -i -`n"
 Invoke-Call -ScriptBlock {Write-Output "overriden_secret=app_overriden_secret" | dso secret add -v6 -f compact -i -} -ErrorAction Stop > $null
@@ -196,10 +195,10 @@ Write-Output "`ndso secret list -v6 -s ${stage} --uninherited --query-all overri
 Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all overriden_secret} -ErrorAction Stop > $null
 
 Write-Output "`ndso secret list -v6 -s ${stage} --uninherited --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > "tests/output/secret/app_stage_uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\secret\app_stage_uninherited-${filename}.json"
 
 Write-Output "`ndso secret list -v6 -s ${stage} --config `"namespace=${namespace}, application=${application}, secret.provider.id=${provider}`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > "tests/output/secret/app_stage_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\secret\app_stage_all-${filename}.yaml"
 
 Write-Output "`ndso secret list -v6 -s `"${stage}/2`" --config `"namespace=${namespace}, application=${application}, secret.provider.id=${provider}`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s "${stage}/2" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > "tests/output/secret/app_stage2_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s "${stage}/2" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\secret\app_stage2_all-${filename}.yaml"
