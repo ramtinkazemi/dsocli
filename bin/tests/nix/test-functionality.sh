@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e -o pipefail
 
+## printf "\n\nUSAGE: $0 <stage [test-stage]>\n\n"
+
 bin_path=$(realpath $(dirname $0))
-root_path=$(realpath ${bin_path}/../../..)
+root_path=$(realpath $bin_path/../../..)
 
 stage=${1:-"test-stage"}
 
@@ -138,7 +140,7 @@ END
 ${bin_path}/assert.sh "${expected}" "${response}"
 
 ### validating some rendred template
-response="$(<./.dso/output/as2t)"
+response="$(<.dso/output/as2t)"
 expected="$(cat <<-END
 Application Stage 2 Template
 Params:
@@ -163,7 +165,7 @@ END
 )"
 ${bin_path}/assert.sh "${expected}" "${response}"
 
-response="$(<./.dso/output/ot)"
+response="$(<.dso/output/ot)"
 expected="$(cat <<-END
 Overriden Application Stage 2 Template
 Params:

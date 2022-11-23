@@ -57,7 +57,7 @@ class TemplateService():
 
         return f'.{os.sep}' + os.path.relpath(os.path.join(self.default_render_path, key), Config.working_dir) 
 
-    def get_all_params(self, silent=False):
+    def get_all_params_secrets(self, silent=False):
         if not silent:
             Logger.info("Loading secrets...")
         secrets = Secrets.list(uninherited=False, decrypt=True)
@@ -101,8 +101,8 @@ class TemplateService():
         result = provider.get(key, revision)
         if rendred:
             Logger.info("Rendering...")
-            template = jinja2.Environment(loader=jinja2.BaseLoader).from_string(result['Contents'])
-            result['Contents'] = template.render(self.get_all_params())
+            template = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=Config.working_dir)).from_string(result['Contents'])
+            result['Contents'] = template.render(self.get_all_params_secrets())
         result['RenderPath'] = self.get_template_render_path(key)
         return result
 
@@ -122,7 +122,7 @@ class TemplateService():
 
         Logger.info(f"Rendering templates: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
 
-        merged = self.get_all_params()
+        merged = self.get_all_params_secrets()
         
         Logger.info("Loading templates...")
         templates = self.list(filter=filter)['Templates']

@@ -1,5 +1,0 @@
-include *.md
-include src/dsocli/package.json
-recursive-include src/dsocli *.py
-prune archive
-
