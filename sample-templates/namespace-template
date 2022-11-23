@@ -2,14 +2,14 @@ Namespace Template
 
 Parameter:
 ----------
-global.parameter = {{global.parameter}}
-namespace.parameter = {{namespace.parameter}}
+global_parameter = {{global_parameter}}
+namespace_parameter = {{namespace_parameter}}
 overriden_parameter = {{overriden_parameter}}
 
 Secrets:
 --------
-global.secret = {{global.secret}}
-namespace.secret = {{namespace.secret}}
+global_secret = {{global_secret}}
+namespace_secret = {{namespace_secret}}
 overriden_secret = {{overriden_secret}}
 
 DSO Meta:
@@ -19,29 +19,29 @@ namespace is {{dso.namespace}}
 Application is {{dso.application}}
 Stage is {{dso.stage}}
 Parameter provider is {{dso.parameter.provider.id}}
-Secret  provider is {{dso.secret.provider.id}}
+Secret provider is {{dso.secret.provider.id}}
 Template provider is {{dso.template.provider.id}}
 
 Template Logics:
 ------------------
 {% if dso.stage == "dev" %}
 Hey, I am running in development environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% elif dso.stage == "stg" %}
 Hey, I am running in staging environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% elif dso.stage == "prd" %}
 Hey, I am running in production environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% elif dso.stage == "test-stage" %}
 Hey, I am running in test-stage environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% else %}
 Hey, I am running in default environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% endif %}

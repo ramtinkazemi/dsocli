@@ -2,24 +2,24 @@ Application Stage 2 Template
 
 Parameter:
 ----------
-global.parameter = {{global.parameter}}
-global.stage_parameter = {{global.stage_parameter}}
-namespace.parameter = {{namespace.parameter}}
-namespace.stage_parameter = {{namespace.stage_parameter}}
-app.parameter = {{app.parameter}}
-app.stage_parameter = {{app.stage_parameter}}
-app.stage2_parameter = {{app.stage2_parameter}}
+global_parameter = {{global_parameter}}
+global_stage_parameter = {{global_stage_parameter}}
+namespace_parameter = {{namespace_parameter}}
+namespace_stage_parameter = {{namespace_stage_parameter}}
+app_parameter = {{app_parameter}}
+app_stage_parameter = {{app_stage_parameter}}
+app_stage2_parameter = {{app_stage2_parameter}}
 overriden_parameter = {{overriden_parameter}}
 
 Secrets:
 --------
-global.secret = {{global.secret}}
-global.stage_secret = {{global.stage_secret}}
-namespace.secret = {{namespace.secret}}
-namespace.stage_secret = {{namespace.stage_secret}}
-app.secret = {{app.secret}}
-app.stage_secret = {{app.stage_secret}}
-app.stage2_secret = {{app.stage2_secret}}
+global_secret = {{global_secret}}
+global_stage_secret = {{global_stage_secret}}
+namespace_secret = {{namespace_secret}}
+namespace_stage_secret = {{namespace_stage_secret}}
+app_secret = {{app_secret}}
+app_stage_secret = {{app_stage_secret}}
+app_stage2_secret = {{app_stage2_secret}}
 overriden_secret = {{overriden_secret}}
 
 DSO Meta:
@@ -28,29 +28,29 @@ Namespace is {{dso.namespace}}
 Application is {{dso.application}}
 Stage is {{dso.stage}}
 Parameter provider is {{dso.parameter.provider.id}}
-Secret  provider is {{dso.secret.provider.id}}
+Secret provider is {{dso.secret.provider.id}}
 Template provider is {{dso.template.provider.id}}
 
 Template Logics:
 ------------------
 {% if dso.stage == "dev" %}
 Hey, I am running in development environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% elif dso.stage == "stg" %}
 Hey, I am running in staging environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% elif dso.stage == "prd" %}
 Hey, I am running in production environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% elif dso.stage == "test-stage" %}
 Hey, I am running in test-stage environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% else %}
 Hey, I am running in default environment!
-{% include 'tests/sample-templates/include-me' %}
+{% include 'sample-templates/include-me' %}
 
 {% endif %}

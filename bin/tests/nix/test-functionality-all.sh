@@ -1,27 +1,29 @@
 #!/bin/bash
 set -e -o pipefail
 
+## printf "\n\nUSAGE: $0 <namespace [test-ns]> <application [test-app]> <stage [test-stage]>\n\n"
+
 bin_path=$(realpath $(dirname $0))
-root_path=$(realpath ${bin_path}/../../..)
+root_path=$(realpath $bin_path/../../..)
 
-namespace=test-ns
-application=test-app
-stage=test-stage
+namespace=${1:-"test-ns"}
+application=${2:-"test-app"}
+stage=${3:-"test-stage"}
 
-dso config add namespace $namespace > /dev/null
-dso config add application $application > /dev/null
+dso config add namespace $namespace -v6 > /dev/null
+dso config add application $application -v6 > /dev/null
 
-dso config add config.provider.id local/v1 > /dev/null
-dso config add parameter.provider.id local/v1 > /dev/null
-dso config add secret.provider.id local/v1 > /dev/null
-dso config add template.provider.id local/v1 > /dev/null
-${bin_path}/test-functionality.sh $stage
+dso config add config.provider.id local/v1 -v6 > /dev/null
+dso config add parameter.provider.id local/v1 -v6 > /dev/null
+dso config add secret.provider.id local/v1 -v6 > /dev/null
+dso config add template.provider.id local/v1 -v6 > /dev/null
+$bin_path/test-functionality.sh $stage
 
-dso config add config.provider.id aws/ssm/v1 > /dev/null
-dso config add parameter.provider.id aws/ssm/v1 > /dev/null
-dso config add secret.provider.id aws/ssm/v1 > /dev/null
-dso config add template.provider.id aws/ssm/v1 > /dev/null
-${bin_path}/test-functionality.sh $stage
+dso config add config.provider.id aws/ssm/v1 -v6 > /dev/null
+dso config add parameter.provider.id aws/ssm/v1 -v6 > /dev/null
+dso config add secret.provider.id aws/ssm/v1 -v6 > /dev/null
+dso config add template.provider.id aws/ssm/v1 -v6 > /dev/null
+$bin_path/test-functionality.sh $stage
 
 
 export ap_value=ap_value
@@ -44,8 +46,8 @@ export nss_value=nss_value
 export asos_value=asos_value
 export as2os_value=as2os_value
 
-dso config add config.provider.id local/v1 > /dev/null
-dso config add parameter.provider.id shell/v1 > /dev/null
-dso config add secret.provider.id shell/v1 > /dev/null
-dso config add template.provider.id local/v1 > /dev/null
-${bin_path}/test-functionality.sh $stage
+dso config add config.provider.id local/v1 -v6 > /dev/null
+dso config add parameter.provider.id shell/v1 -v6 > /dev/null
+dso config add secret.provider.id shell/v1 -v6 > /dev/null
+dso config add template.provider.id local/v1 -v6 > /dev/null
+$bin_path/test-functionality.sh $stage

@@ -1452,7 +1452,8 @@ def delete_template(key, input, format, stage, global_scope, namespace_scope, ve
 
 @command_doc(CLI_COMMANDS_HELP['template']['render'])
 @template.command('render', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['template']['render'])
-@click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+# @click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+@click.argument('filter', required=False, metavar='<regex>')
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
 @click.option('-g', '--global-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['global_scope'])
 @click.option('-n', '--namespace-scope', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['common']['namespace_scope'])
@@ -1464,7 +1465,8 @@ def render_template(stage, filter, global_scope, namespace_scope, verbosity, con
     scope = ContextScope.App
 
     def validate_command_usage():
-        nonlocal working_dir
+        nonlocal working_dir, scope
+        
         if not working_dir: working_dir = os.getcwd()
 
         validate_not_all_provided([global_scope, namespace_scope], ["-g' / '--global-scope'", "'-n' / '--namespace-scope'"])
@@ -1611,7 +1613,8 @@ def get_package(stage, verbosity, config_override, working_dir, key, query, quer
 
 @command_doc(CLI_COMMANDS_HELP['package']['build'])
 @package.command('build', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['package']['build'])
-@click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+# @click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+@click.argument('filter', required=False, metavar='<regex>')
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'text']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -1841,7 +1844,8 @@ def get_release(stage, verbosity, config_override, working_dir, key, query, quer
 
 @command_doc(CLI_COMMANDS_HELP['release']['create'])
 @release.command('create', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['release']['create'])
-@click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+# @click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+@click.argument('filter', required=False, metavar='<regex>')
 @click.option('-a', '--query-all', required=False, is_flag=True, default=False, show_default=True, help=CLI_PARAMETERS_HELP['common']['query_all'])
 @click.option('-q', '--query', metavar='<jmespath>', required=False, help=CLI_PARAMETERS_HELP['common']['query'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'text']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
@@ -2017,8 +2021,8 @@ def init_config(setup, override_inherited, input, global_scope, namespace_scope,
 
 @command_doc(CLI_COMMANDS_HELP['config']['list'])
 @config.command('list', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['list'])
-@click.argument('filter', required=False, metavar='<regex>')
 # @click.option('--filter', required=False, metavar='<regex>', help=CLI_PARAMETERS_HELP['common']['filter'])
+@click.argument('filter', required=False, metavar='<regex>')
 @click.option('-u','--uninherited', 'uninherited', is_flag=True, default=False, help=CLI_PARAMETERS_HELP['config']['uninherited'])
 @click.option('--rendered', is_flag=True, default=False, help=CLI_PARAMETERS_HELP['config']['rendered'])
 @click.option('--local', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['local'])
