@@ -8,11 +8,11 @@ config:
     spec: {}
 parameter:
   provider:
-    id: aws/ssm/v1
+    id: shell/v1
     spec: {}
 secret:
   provider:
-    id: aws/ssm/v1
+    id: shell/v1
     spec: {}
 template:
   provider:

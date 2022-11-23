@@ -68,6 +68,19 @@ Write-Output "`ndso secret list -v6 --config `"namespace=${namespace}, applicati
 Invoke-Call -ScriptBlock {dso secret list -v6 --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" -s "${stage}/2" --uninherited -f json | dso secret delete -v6 --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" -s "${stage}/2" -i -} -ErrorAction Stop
 
 ##################################
+### Setting configurations
+
+Write-Output "`ndso config add -v6 namespace ${namespace}`n"
+Invoke-Call -ScriptBlock {dso config add -v6 namespace ${namespace}} -ErrorAction Stop
+
+Write-Output "`ndso config add -v6 application ${application}`n"
+Invoke-Call -ScriptBlock {dso config add -v6 application ${application}} -ErrorAction Stop
+
+Write-Output "`ndso config add -v6 secret.provider.id ${provider}`n"
+Invoke-Call -ScriptBlock {dso config add -v6 secret.provider.id "${provider}"} -ErrorAction Stop
+
+
+##################################
 ### add context-specific secrets
 
 Write-Output "`nWrite-Output `"global_secret=global_secret`" | dso secret add -v6 --global-scope -f compact -i -`n"
@@ -90,18 +103,6 @@ Invoke-Call -ScriptBlock {Write-Output "app_stage_secret=app_stage_secret" | dso
 
 Write-Output "`ndso secret add app_stage2_secret app_stage2_secret -v6 -s `"${stage}/2`"`n"
 Invoke-Call -ScriptBlock {dso secret add app_stage2_secret app_stage2_secret -v6 -s "${stage}/2"} -ErrorAction Stop
-
-##################################
-### Setting configurations
-
-Write-Output "`ndso config add -v6 namespace ${namespace}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 namespace ${namespace}} -ErrorAction Stop
-
-Write-Output "`ndso config add -v6 application ${application}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 application ${application}} -ErrorAction Stop
-
-Write-Output "`ndso config add -v6 secret.provider.id ${provider}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 secret.provider.id "${provider}"} -ErrorAction Stop
 
 
 ##################################

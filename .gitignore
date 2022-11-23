@@ -9,4 +9,5 @@ pypi-token.txt
 .python-version
 .dso/
 ^.dso/dso.yml
-
+*.doc
+*.docx
