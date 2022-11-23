@@ -1,0 +1,4 @@
+provider: aws/cfn/v1
+stage: dev/0
+version: 1.0.0.7
+time: 2022-5-6-18:37

@@ -7,5 +7,4 @@ pypi-token.txt
 .tox
 .eggs
 .python-version
-tests/output/
-.dso/
+.dso/output

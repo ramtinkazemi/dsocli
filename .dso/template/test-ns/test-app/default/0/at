@@ -1,0 +1,11 @@
+Application Template
+Params:
+op = {{op}}
+gp = {{gp}}
+np = {{np}}
+ap = {{ap}}
+Secrets:
+os = {{os}}
+gs = {{gs}}
+ns = {{ns}}
+as = {{as}}
