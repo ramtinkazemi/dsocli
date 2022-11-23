@@ -1,0 +1,39 @@
+kind: dso/application
+version: 1
+namespace: test-ns
+application: test-app
+config:
+  provider:
+    id: local/v1
+    spec: {}
+parameter:
+  provider:
+    id: aws/ssm/v1
+    spec: {}
+secret:
+  provider:
+    id: aws/ssm/v1
+    spec: {}
+template:
+  provider:
+    id: aws/ssm/v1
+    spec: {}
+  renderPath: {}
+artifactory:
+  provider:
+    id: aws/s3/v1
+    spec:
+      bucket: dso-storage
+      pathPrefix: dso/v1/
+package:
+  provider:
+    id: docker/v1
+    spec: {}
+release:
+  versions:
+  - '{{ A }}'
+  - B
+  - C
+  version:
+    major: 20
+    minor: 1

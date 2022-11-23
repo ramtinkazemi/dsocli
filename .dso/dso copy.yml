@@ -1,0 +1,54 @@
+kind: dso/application
+test: '{{dso.kind}}'
+version: 1
+namespace: test-ns
+application: test-app
+config:
+  provider:
+    id: aws/ssm/v1
+parameter:
+  provider:
+    id: aws/ssm/v1
+secret:
+  provider:
+    id: aws/ssm/v1
+template:
+  provider:
+    id: aws/ssm/v1
+  renderPath: {}
+artifactStore:
+  provider:
+    id: aws/s3/v1
+    spec:
+      bucket: dso-storage
+      pathPrefix: dso/v1/
+package:
+  provider:
+    id: docker/v1
+    spec:
+      images:
+        main:
+          dockerFile: Dockerfile
+          context: .
+          tags:
+            '0': '{{dso.stage}}-{{dso.release.version.major}}.{{dso.release.version.minor}}.{{dso.release.version.patch}}.{{dso.release.version.counter}}'
+            '1': '{{dso.stage}}-latest'
+          repo: '{{dso.release.aws_account_id}}.dkr.ecr.{{dso.release.aws_region}}.amazonaws.com/{{dso.release.aws_ecr_repo}}'
+          extraArgs: null
+release:
+  provider:
+    id: terraform/v1
+    spec:
+      provider:
+        aws:
+          regions:
+            '0': ap-southeast-2
+      foo: bar
+    essential:
+      '0': cfn/*
+    optional: []
+  version:
+    major: null
+tests:
+  one: '1'
+  two: '2'

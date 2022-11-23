@@ -1,0 +1,12 @@
+{
+  "release": {
+    "tag": "{{release.version.major}}-{{release.version.minor}}",
+    "versions": [
+      "a",
+      "b",
+      "c",
+      "z",
+      "z"
+    ]
+  }
+}

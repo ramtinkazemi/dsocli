@@ -1,0 +1,7 @@
+Global Template
+Params:
+gp = {{gp}}
+op = {{op}}
+Secrets:
+gs = {{gs}}
+os = {{os}}
