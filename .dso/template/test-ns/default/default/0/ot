@@ -1,9 +1,0 @@
-Overriden Namespace Template
-Params:
-op = {{op}}
-gp = {{gp}}
-np = {{np}}
-Secrets:
-os = {{os}}
-gs = {{gs}}
-ns = {{ns}}

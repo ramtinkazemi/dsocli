@@ -8,17 +8,25 @@ config:
     spec: {}
 parameter:
   provider:
-    id: aws/ssm/v1
+    id: shell/v1
     spec: {}
 secret:
   provider:
-    id: aws/ssm/v1
+    id: shell/v1
     spec: {}
 template:
   provider:
-    id: aws/ssm/v1
+    id: local/v1
     spec: {}
-  renderPath: {}
+  renderPath:
+    gt: ./.dso/output/gt
+    gst: ./.dso/output/gst
+    nt: ./.dso/output/nt
+    nst: ./.dso/output/nst
+    at: ./.dso/output/at
+    ast: ./.dso/output/ast
+    as2t: ./.dso/output/as2t
+    ot: ./.dso/output/ot
 artifactory:
   provider:
     id: aws/s3/v1

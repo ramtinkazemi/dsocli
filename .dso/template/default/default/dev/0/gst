@@ -1,9 +1,0 @@
-Global Stage Template
-Params:
-op = {{op}}
-gp = {{gp}}
-gsp = {{gsp}}
-Secrets:
-os = {{os}}
-gs = {{gs}}
-gss = {{gss}}
