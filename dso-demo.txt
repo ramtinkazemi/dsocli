@@ -1,7 +1,7 @@
 
 Organization:
     |- Defaults: (defaults for all projects/stages)
-    |   |- Organization.Name: Mable
+    |   |- Organization.Name: MyOrg
     |   |- AWS.Region: ap-southeast-2
     |   |- ...
     | 

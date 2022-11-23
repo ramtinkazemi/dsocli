@@ -18,15 +18,7 @@ template:
   provider:
     id: aws/ssm/v1
     spec: {}
-  renderPath:
-    gt: ./.dso/output/gt
-    gst: ./.dso/output/gst
-    nt: ./.dso/output/nt
-    nst: ./.dso/output/nst
-    at: ./.dso/output/at
-    ast: ./.dso/output/ast
-    as2t: ./.dso/output/as2t
-    ot: ./.dso/output/ot
+  renderPath: {}
 artifactory:
   provider:
     id: aws/s3/v1
