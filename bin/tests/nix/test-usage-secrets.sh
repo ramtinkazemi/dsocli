@@ -58,14 +58,14 @@ dso secret list -v6 -s $stage/2 --config "namespace=$namespace, application=$app
 
 ###################################
 ### Setting configurations
-printf "\n\ndso config add -v6 namespace $namespace\n\n"
-dso config add -v6 namespace $namespace
+printf "\n\ndso config set -v6 namespace $namespace\n\n"
+dso config set -v6 namespace $namespace
 
-printf "\n\ndso config add -v6 application $application\n\n"
-dso config add -v6 application $application
+printf "\n\ndso config set -v6 application $application\n\n"
+dso config set -v6 application $application
 
-printf "\n\ndso config add -v6 parameter.provider.id \"$provider\"\n\n"
-dso config add -v6 parameter.provider.id "$provider"
+printf "\n\ndso config set -v6 parameter.provider.id \"$provider\"\n\n"
+dso config set -v6 parameter.provider.id "$provider"
 
 
 ###################################

@@ -69,7 +69,7 @@ class PackageService():
 
     @version_minor.setter
     def version_minor(self, value):
-        Config.add(key='version.minor', value=str(value), service=self.service_name)
+        Config.set(key='version.minor', value=str(value), service=self.service_name)
 
 
     @property
@@ -83,7 +83,7 @@ class PackageService():
 
     @version_patch.setter
     def version_patch(self, value):
-        Config.add(key='version.patch', value=str(value), service=self.service_name)
+        Config.set(key='version.patch', value=str(value), service=self.service_name)
 
 
     @property

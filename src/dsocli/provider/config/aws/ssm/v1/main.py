@@ -41,7 +41,7 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
         return result
 
 
-    def add(self, key, value):
+    def set(self, key, value):
         Logger.debug(f"Checking configuration overwrites '{key}'...")
         assert_ssm_parameter_no_namespace_overwrites(key=key, path_prefix=self.get_path_prefix())
         Logger.debug(f"Locating configuration setting '{key}'...")
@@ -140,7 +140,7 @@ class AwsSsmConfigProvider(RemoteConfigProvider):
 
 
 
-    def delete(self, key):
+    def unset(self, key):
         Logger.debug(f"Locating configuration setting '{key}'...")
         ### only configuration owned by the context can be deleted, hence uninherited=True
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=True)

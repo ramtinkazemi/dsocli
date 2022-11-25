@@ -533,7 +533,7 @@ def delete_parameter(key, stage, global_scope, namespace_scope, input, format, v
 @secret.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['secret']['add'])
 @click.argument('key', required=False)
 @click.argument('value', required=False)
-@click.option('--ask-password', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['secret']['ask_password'])
+@click.option('--ask-value', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['secret']['ask_value'])
 @click.option('-i', '--input', metavar='<path>', required=False, type=click.File(encoding='utf-8', mode='r'), help=CLI_PARAMETERS_HELP['common']['input'])
 @click.option('-f', '--format', required=False, type=click.Choice(['json', 'yaml', 'csv', 'tsv', 'compact']), default='json', show_default=True, help=CLI_PARAMETERS_HELP['common']['format'])
 @click.option('-s', '--stage', metavar='<name>[/<number>]', help=CLI_PARAMETERS_HELP['common']['stage'])
@@ -542,7 +542,7 @@ def delete_parameter(key, stage, global_scope, namespace_scope, input, format, v
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def add_secret(key, value, stage, global_scope, namespace_scope, ask_password, input, format, verbosity, config_override, working_dir):
+def add_secret(key, value, stage, global_scope, namespace_scope, ask_value, input, format, verbosity, config_override, working_dir):
 
     secrets = []
     scope = ContextScope.App
@@ -567,7 +567,7 @@ def add_secret(key, value, stage, global_scope, namespace_scope, ask_password, i
         ### no input file
         else:
             ### should I ask password from stdin?
-            if ask_password:
+            if ask_value:
                 validate_none_provided([value], ["VALUE"], ["'--ask-password'"])
                 value = getpass(" Enter secret value: ")
                 if not value == getpass("Verify secret value: "):
@@ -1038,7 +1038,13 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
             # validate_provided(key, "'KEY")
             if not key:
                 key = '**/*'
-        
+            else:
+                ### remove possibe trailing /
+                key = re.sub(f'\{os.sep}$', '', key)
+                if os.path.isdir(contents_path):
+                    if not '*' in key:
+                        key += '/**/*'
+
             if os.path.isdir(contents_path):
                 ### remove possible trailing /
                 contents_path = re.sub(f'\{os.sep}$', '', contents_path)
@@ -2154,8 +2160,8 @@ def get_config(key, revision, raw, local, remote, stage, global_scope, namespace
 
 
 
-@command_doc(CLI_COMMANDS_HELP['config']['add'])
-@config.command('add', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['add'])
+@command_doc(CLI_COMMANDS_HELP['config']['set'])
+@config.command('set', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['set'])
 @click.argument('key', required=False)
 @click.argument('value', required=False)
 @click.option('--local', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['local'])
@@ -2168,7 +2174,7 @@ def get_config(key, revision, raw, local, remote, stage, global_scope, namespace
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def add_config(key, value, local, remote, stage, input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def set_config(key, value, local, remote, stage, input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
     source = ConfigOrigin.Local
@@ -2215,7 +2221,7 @@ def add_config(key, value, local, remote, stage, input, format, global_scope, na
             Logger.warn("No configuration setting provided to add.")
         else:
             for setting in configurations:
-                success.append(Config.add(setting['Key'], setting['Value'], source=source))
+                success.append(Config.set(setting['Key'], setting['Value'], source=source))
                 pending.remove(setting['Key'])
 
     except DSOException as e:
@@ -2243,8 +2249,8 @@ def add_config(key, value, local, remote, stage, input, format, global_scope, na
 
 
 
-@command_doc(CLI_COMMANDS_HELP['config']['delete'])
-@config.command('delete', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['delete'])
+@command_doc(CLI_COMMANDS_HELP['config']['unset'])
+@config.command('unset', context_settings=default_ctx, short_help=CLI_COMMANDS_SHORT_HELP['config']['unset'])
 @click.argument('key', required=False)
 @click.option('--local', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['local'])
 @click.option('--remote', required=False, is_flag=True, help=CLI_PARAMETERS_HELP['config']['remote'])
@@ -2257,7 +2263,7 @@ def add_config(key, value, local, remote, stage, input, format, global_scope, na
 @click.option('--config', 'config_override', metavar='<key>=<value>,...', required=False, default='', show_default=False, help=CLI_PARAMETERS_HELP['common']['config'])
 @click.option('-v', '--verbosity', metavar='<number>', required=False, type=RangeParamType(click.INT, minimum=0, maximum=8), default='5', show_default=True, help=CLI_PARAMETERS_HELP['common']['verbosity'])
 @click.option('-w','--working-dir', metavar='<path>', type=click.Path(exists=True, file_okay=False), required=False, help=CLI_PARAMETERS_HELP['common']['working_dir'])
-def delete_config(key, local, remote, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
+def unset_config(key, local, remote, stage,  input, format, global_scope, namespace_scope, verbosity, config_override, working_dir):
 
     scope = ContextScope.App
     source = ConfigOrigin.Local
@@ -2294,7 +2300,7 @@ def delete_config(key, local, remote, stage,  input, format, global_scope, names
             Logger.warn("No configuration setting provided to delete.")
         else:            
             for setting in configurations:
-                success.append(Config.delete(setting['Key'], source=source))
+                success.append(Config.unset(setting['Key'], source=source))
                 pending.remove(setting['Key'])
 
     except DSOException as e:
@@ -2373,7 +2379,7 @@ def edit_config(key, local, remote, stage, global_scope, namespace_scope, verbos
                 tf.close()
                 os.unlink(tf.name)
             if changed:
-                Config.add(key, value, source=source)
+                Config.set(key, value, source=source)
             else:
                 Logger.warn(CLI_MESSAGES['NoChanegeDetectedAfterEditing'])
         else:

@@ -710,7 +710,7 @@ class ConfigService:
         return {'Configuration': sorted(response, key=itemgetter('Key'))}
 
 
-    def add(self, key, value, source=ConfigOrigin.Local):
+    def set(self, key, value, source=ConfigOrigin.Local):
         Logger.info(f"Adding configuration setting '{key}': namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
         self.validate_key(key, "get")
         if source == ConfigOrigin.Local:
@@ -726,7 +726,7 @@ class ConfigService:
             }            
             # self.load_local_config(render=False)
         elif source == ConfigOrigin.Remote:
-            return RemoteConfig.add(key=key, value=value)
+            return RemoteConfig.set(key=key, value=value)
         else:
             raise NotImplementedError()
 
@@ -839,7 +839,7 @@ class ConfigService:
         }   
         
 
-    def delete(self, key, source=ConfigOrigin.Local):
+    def unset(self, key, source=ConfigOrigin.Local):
         Logger.info(f"Deleting configuration setting '{key}': namespace={self.get_namespace(ContextMode.Target)}, application={self.get_application(ContextMode.Target)}, stage={self.get_stage(ContextMode.Target)}, scope={self.scope}")
         self.validate_key(key, "get")
         if source == ConfigOrigin.Local:

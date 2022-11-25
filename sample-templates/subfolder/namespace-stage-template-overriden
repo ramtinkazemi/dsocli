@@ -1,0 +1,45 @@
+Namespace Stage Overriden Template
+
+Parameter:
+----------
+overriden_parameter = {{overriden_parameter}}
+namespace_stage_parameter = {{namespace_stage_parameter}}
+
+Secrets:
+--------
+overriden_secret = {{overriden_secret}}
+namespace_stage_secret = {{namespace_stage_secret}}
+
+DSO Meta:
+---------
+Namespace is {{dso.namespace}}
+namespace is {{dso.namespace}}
+Application is {{dso.application}}
+Stage is {{dso.stage}}
+Parameter provider is {{dso.parameter.provider.id}}
+Secret  provider is {{dso.secret.provider.id}}
+Template provider is {{dso.template.provider.id}}
+
+Template Logics:
+------------------
+{% if dso.stage == "dev" %}
+Hey, I am running in development environment!
+{% include 'sample-templates/include-me' %}
+
+{% elif dso.stage == "stg" %}
+Hey, I am running in staging environment!
+{% include 'sample-templates/include-me' %}
+
+{% elif dso.stage == "prd" %}
+Hey, I am running in production environment!
+{% include 'sample-templates/include-me' %}
+
+{% elif dso.stage == "test-stage" %}
+Hey, I am running in test-stage environment!
+{% include 'sample-templates/include-me' %}
+
+{% else %}
+Hey, I am running in default environment!
+{% include 'sample-templates/include-me' %}
+
+{% endif %}

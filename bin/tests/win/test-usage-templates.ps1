@@ -57,14 +57,14 @@ Invoke-Call -ScriptBlock {dso template list -v6 --config "namespace=$namespace, 
 ##################################
 ### set configurations
 
-Write-Output "`ndso config add -v6 namespace $namespace`n"
-Invoke-Call -ScriptBlock {dso config add -v6 namespace $namespace} -ErrorAction Stop
+Write-Output "`ndso config set -v6 namespace $namespace`n"
+Invoke-Call -ScriptBlock {dso config set -v6 namespace $namespace} -ErrorAction Stop
 
-Write-Output "`ndso config add -v6 application $application`n"
-Invoke-Call -ScriptBlock {dso config add -v6 application $application} -ErrorAction Stop
+Write-Output "`ndso config set -v6 application $application`n"
+Invoke-Call -ScriptBlock {dso config set -v6 application $application} -ErrorAction Stop
 
-Write-Output "`ndso config add -v6 template.provider.id $provider`n"
-Invoke-Call -ScriptBlock {dso config add -v6 template.provider.id "$provider"} -ErrorAction Stop
+Write-Output "`ndso config set -v6 template.provider.id $provider`n"
+Invoke-Call -ScriptBlock {dso config set -v6 template.provider.id "$provider"} -ErrorAction Stop
 
 
 ##################################

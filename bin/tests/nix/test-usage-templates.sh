@@ -44,14 +44,14 @@ dso template list -v6 --config "namespace=$namespace, application=$application, 
 
 ###################################
 ### Setting configurations
-printf "\n\ndso config add -v6 namespace $namespace\n\n"
-dso config add -v6 namespace $namespace
+printf "\n\ndso config set -v6 namespace $namespace\n\n"
+dso config set -v6 namespace $namespace
 
-printf "\n\ndso config add -v6 application $application\n\n"
-dso config add -v6 application $application
+printf "\n\ndso config set -v6 application $application\n\n"
+dso config set -v6 application $application
 
-printf "\n\ndso config add -v6 template.provider.id \"$provider\"\n\n"
-dso config add -v6 template.provider.id "$provider"
+printf "\n\ndso config set -v6 template.provider.id \"$provider\"\n\n"
+dso config set -v6 template.provider.id "$provider"
 
 
 ###################################

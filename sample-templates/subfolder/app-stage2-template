@@ -1,0 +1,56 @@
+Application Stage 2 Template
+
+Parameter:
+----------
+global_parameter = {{global_parameter}}
+global_stage_parameter = {{global_stage_parameter}}
+namespace_parameter = {{namespace_parameter}}
+namespace_stage_parameter = {{namespace_stage_parameter}}
+app_parameter = {{app_parameter}}
+app_stage_parameter = {{app_stage_parameter}}
+app_stage2_parameter = {{app_stage2_parameter}}
+overriden_parameter = {{overriden_parameter}}
+
+Secrets:
+--------
+global_secret = {{global_secret}}
+global_stage_secret = {{global_stage_secret}}
+namespace_secret = {{namespace_secret}}
+namespace_stage_secret = {{namespace_stage_secret}}
+app_secret = {{app_secret}}
+app_stage_secret = {{app_stage_secret}}
+app_stage2_secret = {{app_stage2_secret}}
+overriden_secret = {{overriden_secret}}
+
+DSO Meta:
+---------
+Namespace is {{dso.namespace}}
+Application is {{dso.application}}
+Stage is {{dso.stage}}
+Parameter provider is {{dso.parameter.provider.id}}
+Secret provider is {{dso.secret.provider.id}}
+Template provider is {{dso.template.provider.id}}
+
+Template Logics:
+------------------
+{% if dso.stage == "dev" %}
+Hey, I am running in development environment!
+{% include 'sample-templates/include-me' %}
+
+{% elif dso.stage == "stg" %}
+Hey, I am running in staging environment!
+{% include 'sample-templates/include-me' %}
+
+{% elif dso.stage == "prd" %}
+Hey, I am running in production environment!
+{% include 'sample-templates/include-me' %}
+
+{% elif dso.stage == "test-stage" %}
+Hey, I am running in test-stage environment!
+{% include 'sample-templates/include-me' %}
+
+{% else %}
+Hey, I am running in default environment!
+{% include 'sample-templates/include-me' %}
+
+{% endif %}
