@@ -317,7 +317,7 @@ def get_parameter(key, stage, global_scope, namespace_scope, revision, query, qu
         validate_command_usage()
         Config.load(working_dir, config_override, stage=stage, scope=scope)
 
-        result = Parameters.get(key, revision)
+        result = Parameters.get(key, revision, uninherited=False, rendered=True)
         output = format_data(result, query, format)
         Pager.page(output)
 
@@ -363,7 +363,7 @@ def edit_parameter(key, stage, global_scope, namespace_scope, verbosity, config_
         validate_command_usage()
         Config.load(working_dir, config_override, stage=stage, scope=scope)
 
-        ### always edit raw (not rendered) values, e.g. in compact/v1 providers
+        ### always edit raw (not rendered) values, e.g. in shell/v1 providers
         result = Parameters.get(key, uninherited=True, rendered=False)
         if result:
             value = format_data(result, 'Value', 'text')
@@ -719,7 +719,7 @@ def get_secret(stage, global_scope, namespace_scope, key, revision, query, query
         validate_command_usage()
         Config.load(working_dir, config_override, stage=stage, scope=scope)
 
-        result = Secrets.get(key, revision, decrypt=True)
+        result = Secrets.get(key, revision, uninherited=False, rendered=True)
 
         output = format_data(result, query, format)
         Pager.page(output)
@@ -766,8 +766,8 @@ def edit_secret(key, stage, global_scope, namespace_scope, verbosity, config_ove
         validate_command_usage()
         Config.load(working_dir, config_override, stage=stage, scope=scope)
 
-        ### always edit raw values (rendered/decrypted), e.g. in compact/v1 providers
-        result = Secrets.get(key, uninherited=True, decrypt=False)
+        ### always edit raw values (rendered/decrypted), e.g. in shell/v1 providers
+        result = Secrets.get(key, revision=None, uninherited=True, rendered=False)
         if result:
             value = format_data(result, 'Value', 'text')
             from tempfile import NamedTemporaryFile

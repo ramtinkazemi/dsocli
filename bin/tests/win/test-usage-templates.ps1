@@ -66,14 +66,14 @@ Invoke-Call -ScriptBlock {dso config set -v6 template.provider.id "$provider"} -
 ##################################
 ### add context-specific templates
 
-Write-Output "`ndso template add sample-templates\global-template global_template -r '.dso\output\template\*' --global-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\global-template global_template -r '.dso\output\template\*' --global-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\global-template --global-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\global-template --global-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\global-stage-template global_stage_template -r '.dso\output\template\*' -s $stage --global-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\global-stage-template global_stage_template -r '.dso\output\template\*' -s $stage --global-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\global-stage-template global_stage_template -s $stage --global-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\global-stage-template global_stage_template -s $stage --global-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\namespace-template namespace_template -r '.dso\output\template\*' --namespace-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-template namespace_template -r '.dso\output\template\*' --namespace-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\namespace-template namespace_template -r '**\*' --namespace-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-template namespace_template -r '**\*' --namespace-scope -v6} -ErrorAction Stop
 
 Write-Output "`ndso template add sample-templates\namespace-stage-template namespace_stage_template -r '.dso\output\template\*' -s $stage --namespace-scope -v6`n"
 Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-stage-template namespace_stage_template -r '.dso\output\template\*' -s $stage --namespace-scope -v6} -ErrorAction Stop

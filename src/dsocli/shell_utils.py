@@ -11,7 +11,6 @@ from dsocli.configs import Config
 def expand_shell_parameters(parameters):
     for param in parameters:
         if not parameters[param]['Value'] is None: ### !important
-            parameters[param]['Value'] = "" ### !important for type casting possible int to str
             parameters[param]['Value'] = os.getenv(parameters[param]['Value'], '')
     return parameters
 

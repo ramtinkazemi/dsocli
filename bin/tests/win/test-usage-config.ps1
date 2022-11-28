@@ -50,11 +50,11 @@ Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" test.local-conf
 Write-Output "`ndso config get -v5 -w `"${working_dir}`" test.local-config`n"
 Invoke-Call -ScriptBlock {dso config get -v5 -w "${working_dir}" test.local-config} -ErrorAction Stop
 
-Write-Output "`ndso config delete -v5 test.global-config --global-scope`n"
-Invoke-Call -ScriptBlock {dso config delete -v5 test.global-config --global-scope} -ErrorAction Stop
+Write-Output "`ndso config unset -v5 test.global-config --global-scope`n"
+Invoke-Call -ScriptBlock {dso config unset -v5 test.global-config --global-scope} -ErrorAction Stop
 
-Write-Output "`ndso config delete -v5 -w `"${working_dir}`" test.local-config`n"
-Invoke-Call -ScriptBlock {dso config delete -v5 -w "${working_dir}" test.local-config} -ErrorAction Stop
+Write-Output "`ndso config unset -v5 -w `"${working_dir}`" test.local-config`n"
+Invoke-Call -ScriptBlock {dso config unset -v5 -w "${working_dir}" test.local-config} -ErrorAction Stop
 
 Write-Output "`ndso config set -v5 -w `"${working_dir}`" namespace ${namespace}`n"
 Invoke-Call -ScriptBlock {dso config set -v5 -w "${working_dir}" namespace ${namespace}} -ErrorAction Stop

@@ -48,11 +48,11 @@ class SecretService():
         Logger.info(f"Adding secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         return provider.add(key, value)
 
-    def get(self, key, revision=None, uninherited=False, decrypt=False):
+    def get(self, key, revision=None, uninherited=False, rendered=True):
         # self.validate_key(key)
         provider = Providers.SecretProvider()
         Logger.info(f"Getting secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        return provider.get(key, revision, uninherited, decrypt)
+        return provider.get(key, revision, uninherited, rendered)
 
     def history(self, key, decrypt=False):
         # self.validate_key(key)
