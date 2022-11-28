@@ -8,11 +8,11 @@ config:
     spec: {}
 parameter:
   provider:
-    id: aws/ssm/v1
+    id: shell/v1
     spec: {}
 secret:
   provider:
-    id: aws/ssm/v1
+    id: shell/v1
     spec: {}
 template:
   provider:
@@ -22,7 +22,7 @@ template:
     new-keys: ./.dso/output/new-keys
     global-template: .\.dso\output\global-template
     global_stage_template: .\.dso\output\global_stage_template
-    namespace_template: .\'\namespace_template'
+    namespace_template: .\.dso\output\template\namespace_template
     namespace_stage_template: .\.dso\output\template\namespace_stage_template
     app_template: .\.dso\output\template\app_template
     app_stage_template: .\.dso\output\template\app_stage_template
