@@ -9,6 +9,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+##################################
+
+$Env:DSO_USE_PAGER = "no"
+$Env:TEST_INTRACTIVELY = "yes"
 
 ##################################
 
@@ -17,9 +21,13 @@ $ErrorActionPreference = "Stop"
 
 ##################################
 
-if (!(Test-Path tests\output)) {
-    New-Item -ItemType Directory -Force -Path tests\output > $null
+if (!(Test-Path .dso\output)) {
+    New-Item -ItemType Directory -Force -Path .dso\output > $null
 }
+else {
+    Get-ChildItem .dso\output -Recurse | Remove-Item > $null
+}
+
 
 ##################################
 

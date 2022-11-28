@@ -42,7 +42,7 @@ class LocalConfigProvider(RemoteConfigProvider):
 
 
 
-    def add(self, key, value):
+    def set(self, key, value):
         Logger.debug(f"Adding local configuration setting '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         response = add_local_parameter(key=key, value=value, store_name=self.store_name, path_prefix=self.get_path_prefix())
         return response
@@ -98,7 +98,7 @@ class LocalConfigProvider(RemoteConfigProvider):
         return result
 
 
-    def delete(self, key):
+    def unset(self, key):
         Logger.debug(f"Locating config setting '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         ### only configs owned by the config can be deleted, hence uninherited=True
         found = locate_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=True)

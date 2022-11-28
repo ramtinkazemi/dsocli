@@ -9,10 +9,6 @@ param(
 $ErrorActionPreference = "Stop"
 
 ##################################
-
-$Env:DSO_USE_PAGER = "no"
-
-##################################
 function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorActionPreference) {
     & @ScriptBlock
     if (($lastexitcode -ne 0) -and $ErrorAction -eq "Stop") {
@@ -22,11 +18,8 @@ function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorAct
 
 ##################################
 
-if (!(Test-Path .dso\output\parameter)) {
-    New-Item -ItemType Directory -Force -Path .dso\output\parameter > $null
-}
-else {
-    Get-ChildItem .dso\output\parameter -Recurse | Remove-Item > $null
+if (!(Test-Path .dso\output)) {
+    New-Item -ItemType Directory -Force -Path .dso\output > $null
 }
 
 ##################################
@@ -57,13 +50,13 @@ Invoke-Call -ScriptBlock {dso parameter list -v6 --config "namespace=${namespace
 ### Setting configurations
 
 Write-Output "`ndso config set -v6 namespace ${namespace}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 namespace ${namespace}} -ErrorAction Stop
+Invoke-Call -ScriptBlock {dso config set -v6 namespace ${namespace}} -ErrorAction Stop
 
 Write-Output "`ndso config set -v6 application ${application}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 application ${application}} -ErrorAction Stop
+Invoke-Call -ScriptBlock {dso config set -v6 application ${application}} -ErrorAction Stop
 
 Write-Output "`ndso config set -v6 parameter.provider.id ${provider}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 parameter.provider.id ${provider}} -ErrorAction Stop
+Invoke-Call -ScriptBlock {dso config set -v6 parameter.provider.id ${provider}} -ErrorAction Stop
 
 
 ##################################
@@ -145,22 +138,24 @@ Invoke-Call -ScriptBlock {dso parameter get -v6 app_stage2_parameter -s "${stage
 
 ##################################
 ### edit some parameters
+if (${Env:TEST_INTRACTIVELY} -eq "yes")
+{
 
-# Write-Output "`ndso parameter edit -v6 overriden_parameter --global-scope`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter --global-scope} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 overriden_parameter --global-scope`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter --global-scope} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 app_parameter`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 app_parameter} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 app_parameter`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 app_parameter} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 app_stage_parameter -s ${stage}`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage_parameter -s ${stage}} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 app_stage_parameter -s ${stage}`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage_parameter -s ${stage}} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 app_stage2_parameter -s `"${stage}/2`"`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage2_parameter -s "${stage}/2"} -ErrorAction Stop
-
+    Write-Output "`ndso parameter edit -v6 app_stage2_parameter -s `"${stage}/2`"`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage2_parameter -s "${stage}/2"} -ErrorAction Stop
+}
 
 ##################################
 ### getting history of some parameters
@@ -190,10 +185,10 @@ Write-Output "`ndso parameter list -v6 -s ${stage} --uninherited --query-all ove
 Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --uninherited --query-all overriden_parameter} -ErrorAction Stop
 
 Write-Output "`ndso parameter list -v6 -s ${stage} --uninherited --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\parameter\app_stage_uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\app_stage_uninherited-${filename}.json"
 
 Write-Output "`ndso parameter list -v6 -s ${stage} --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --query-all -f yaml} -ErrorAction Stop > ".dso\output\parameter\app_stage_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage_all-${filename}.yaml"
 
 Write-Output "`ndso parameter list -v6 -s `"${stage}/2`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso parameter list -v6 -s "${stage}/2" --query-all -f yaml} -ErrorAction Stop > ".dso\output\parameter\app_stage2-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso parameter list -v6 -s "${stage}/2" --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage2-all-${filename}.yaml"

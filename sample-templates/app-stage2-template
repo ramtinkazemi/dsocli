@@ -1,6 +1,6 @@
 Application Stage 2 Template
 
-Parameter:
+Parameters:
 ----------
 global_parameter = {{global_parameter}}
 global_stage_parameter = {{global_stage_parameter}}

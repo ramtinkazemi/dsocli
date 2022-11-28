@@ -1,0 +1,42 @@
+
+Global: all namespaces, all applications, all stages, all envrionments
+  |-- Global Stage: all namespaces, all applications, specific stages, all envrionments within the stage
+  | 
+  |-- Namespace: specific namespace, all applications within the namespace, all stages, all envrionments
+  |   |-- Namespace Stage: specific namespace, all applications within the namespace, specific stages, all envrionments within the stage
+  |   |
+  |   |-- Application: specific namespace, all applications within the namespace, all stages, all envrionments
+  |   |   |- Defaults: (available to all stages across all the applications in the project)
+  |   |   |   |- Project.Name: Backend
+  |   |   |   |- ...
+  |   |   |
+  |   |   |- Stages: (stages specific parameters across all the applications in the project)
+  |   |   |   |- dev:
+  |   |   |   |   |- Infra.VPC_ID: dev-backend-vpc-id
+  |   |   |   |   |- ...
+  |   |   |   |
+  |   |   |   |- prd:
+  |   |   |   |   |- Infra.VPC_ID: prd-backend-vpc-id
+  |   |   |   |   |- ...
+  |   |   |   |
+  |   |   |   |- ...
+  |   |   |
+  |   |   |- Application: (applicaion spicifc parameters)
+  |   |   |   |- API:
+  |   |   |   |   |- Defaults: (available to all stages in the applicaion)
+  |   |   |   |   |   |- Applicaion.Name: API
+  |   |   |   |   |   |- ...
+  |   |   |   |   |
+  |   |   |   |   |- Stages: (stages specific parameterst)
+  |   |   |   |   |   |- dev:
+  |   |   |   |   |   |   |- Database.Host: dev-api-backend-db-host
+  |   |   |   |   |   |   |- Database.Username: dev-api-backend-db-username
+  |   |   |   |   |   |   |- ...
+  |   |   |   |   |   |
+  |   |   |   |   |   |- prd:
+  |   |   |   |   |   |   |- Database.Host: prd-api-backend-db-host
+  |   |   |   |   |   |   |- Database.Username: prd-api-backend-db-username
+  |   |   |   |   |   |
+  |   |   |   |   |   |- ...
+  |   |   |   |   |
+

@@ -86,12 +86,12 @@ CLI_COMMANDS_HELP = {
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration
                 """,
-        'add': """Add DSO application configuration.\n
+        'set': """Add DSO application configuration.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration. It may also be provided using the '--key' option.\n
                 VALUE: The value for the configuration. It may also be provided using the '--value' option.\n
                 """,
-        'delete': """Delete DSO application configuration.\n
+        'unset': """Delete DSO application configuration setting.\n
                 ** Tips: 1) Use --local or --global to get local or global configuration only.\n
                 KEY: The key of the configuration
                 """,
@@ -189,8 +189,8 @@ CLI_COMMANDS_SHORT_HELP = {
     'config': {
         'list': "List configuration settings available to the application.",
         'get': "Get DSO application configuration.",
-        'add': "Add DSO application configuration.",
-        'delete': "Delete a DSO application configuration.",
+        'set': "Add DSO application configuration setting.",
+        'unset': "Delete a DSO application configuration setting.",
         'init': "Initialize DSO application in the working directory.",
         'edit': "Edit the value of a configuration setting.",
         'history': "Get the revision history of a configuration setting.",
@@ -229,7 +229,7 @@ CLI_PARAMETERS_HELP = {
         'query_values': "Include secret values in the output.",
         'uninherited': "Select only secrets which are specific to the gievn context, i.e. not inherited from the parent contexts.",
         'revision': "The revision ID whose value to be fetched.",
-        'ask_password': "Inputing password from stdin.",
+        'ask_value': "Inputing password from stdin.",
     },
     'template': {
         'type': "Type of the template. Use 'resource' for templates needed at the provision time when provisioning resources required by the application to run such as SQS queus, SNS topics, and CI/CD piplines.\nUse 'package' for templates needed at the build time when generating a package.\nUse 'release' for templates needed at the deploy time when generating a release." ,

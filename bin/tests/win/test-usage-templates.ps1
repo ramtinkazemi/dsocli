@@ -18,16 +18,9 @@ function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorAct
 
 ##################################
 
-if (!(Test-Path .dso\output\template)) {
-    New-Item -ItemType Directory -Force -Path .dso\output\template > $null
+if (!(Test-Path .dso\output)) {
+    New-Item -ItemType Directory -Force -Path .dso\output > $null
 }
-else {
-    Get-ChildItem .dso\output\template -Recurse | Remove-Item > $null
-}
-
-##################################
-
-$Env:DSO_USE_PAGER = "no"
 
 ##################################
 ### delete existing templates, in order to also test overriding configurartions, they will be set later
@@ -57,63 +50,63 @@ Invoke-Call -ScriptBlock {dso template list -v6 --config "namespace=$namespace, 
 ##################################
 ### set configurations
 
-Write-Output "`ndso config add -v6 namespace $namespace`n"
-Invoke-Call -ScriptBlock {dso config add -v6 namespace $namespace} -ErrorAction Stop
+Write-Output "`ndso config set -v6 namespace $namespace`n"
+Invoke-Call -ScriptBlock {dso config set -v6 namespace $namespace} -ErrorAction Stop
 
-Write-Output "`ndso config add -v6 application $application`n"
-Invoke-Call -ScriptBlock {dso config add -v6 application $application} -ErrorAction Stop
+Write-Output "`ndso config set -v6 application $application`n"
+Invoke-Call -ScriptBlock {dso config set -v6 application $application} -ErrorAction Stop
 
-Write-Output "`ndso config add -v6 template.provider.id $provider`n"
-Invoke-Call -ScriptBlock {dso config add -v6 template.provider.id "$provider"} -ErrorAction Stop
+Write-Output "`ndso config set -v6 template.provider.id $provider`n"
+Invoke-Call -ScriptBlock {dso config set -v6 template.provider.id "$provider"} -ErrorAction Stop
 
 
 ##################################
 ### add context-specific templates
 
-Write-Output "`ndso template add sample-templates\global-template global_template -r '.dso\output\template\*' --global-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\global-template global_template -r '.dso\output\template\*' --global-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\global-template --global-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\global-template --global-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\global-stage-template global_stage_template -r '.dso\output\template\*' -s $stage --global-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\global-stage-template global_stage_template -r '.dso\output\template\*' -s $stage --global-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\global-stage-template global_stage_template -s $stage --global-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\global-stage-template global_stage_template -s $stage --global-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\namespace-template namespace_template -r '.dso\output\template\*' --namespace-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-template namespace_template -r '.dso\output\template\*' --namespace-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\namespace-template namespace_template -r '**\*' --namespace-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-template namespace_template -r `'**\*`' --namespace-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\namespace-stage-template namespace_stage_template -r '.dso\output\template\*' -s $stage --namespace-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-stage-template namespace_stage_template -r '.dso\output\template\*' -s $stage --namespace-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\namespace-stage-template namespace_stage_template -r '.dso\output\*' -s $stage --namespace-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-stage-template namespace_stage_template -r '.dso\output\*' -s $stage --namespace-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\app-template app_template -r '.dso\output\template\*' -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\app-template app_template -r '.dso\output\template\*' -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\app-template app_template -r '.dso\output\*' -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\app-template app_template -r '.dso\output\*' -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\app-stage-template app_stage_template -r '.dso\output\template\*' -s $stage -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage-template  app_stage_template -r '.dso\output\template\*' -s $stage -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\app-stage-template app_stage_template -r '.dso\output\*' -s $stage -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage-template  app_stage_template -r '.dso\output\*' -s $stage -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\app-stage2-template app_stage2_template -r '.dso\output\template\*' -s `"$stage/2`" -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage2-template app_stage2_template -r '.dso\output\template\*' -s "$stage/2" -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\app-stage2-template app_stage2_template -r '.dso\output\*' -s `"$stage/2`" -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage2-template app_stage2_template -r '.dso\output\*' -s "$stage/2" -v6} -ErrorAction Stop
 
 # ##################################
 # ### add overriden templates
 
-Write-Output "`ndso template add sample-templates\global-template-overriden overriden_template -r '.dso\output\template\*' --global-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\global-template-overriden overriden_template -r '.dso\output\template\*' --global-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\global-template-overriden overriden_template -r '.dso\output\*' --global-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\global-template-overriden overriden_template -r '.dso\output\*' --global-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\global-stage-template-overriden overriden_template -r '.dso\output\template\*' -s $stage --global-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\global-stage-template-overriden overriden_template -r '.dso\output\template\*' -s $stage --global-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\global-stage-template-overriden overriden_template -r '.dso\output\*' -s $stage --global-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\global-stage-template-overriden overriden_template -r '.dso\output\*' -s $stage --global-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\namespace-template-overriden overriden_template -r '.dso\output\template\*' --namespace-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-template-overriden overriden_template -r '.dso\output\template\*' --namespace-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\namespace-template-overriden overriden_template -r '.dso\output\*' --namespace-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-template-overriden overriden_template -r '.dso\output\*' --namespace-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\namespace-stage-template-overriden overriden_template -r '.dso\output\template\*' -s $stage --namespace-scope -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-stage-template-overriden overriden_template -r '.dso\output\template\*' -s $stage --namespace-scope -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\namespace-stage-template-overriden overriden_template -r '.dso\output\*' -s $stage --namespace-scope -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\namespace-stage-template-overriden overriden_template -r '.dso\output\*' -s $stage --namespace-scope -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\app-template-overriden overriden_template -r '.dso\output\template\*' -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\app-template-overriden overriden_template -r '.dso\output\template\*' -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\app-template-overriden overriden_template -r '.dso\output\*' -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\app-template-overriden overriden_template -r '.dso\output\*' -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\app-stage-template-overriden overriden_template -r '.dso\output\template\*' -s $stage -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage-template-overriden overriden_template -r '.dso\output\template\*' -s $stage -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\app-stage-template-overriden overriden_template -r '.dso\output\*' -s $stage -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage-template-overriden overriden_template -r '.dso\output\*' -s $stage -v6} -ErrorAction Stop
 
-Write-Output "`ndso template add sample-templates\app-stage2-template-overriden overriden_template -r '.dso\output\template\*' -s `"$stage/2`" -v6`n"
-Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage2-template-overriden overriden_template -r '.dso\output\template\*' -s "$stage/2" -v6} -ErrorAction Stop
+Write-Output "`ndso template add sample-templates\app-stage2-template-overriden overriden_template -r '.dso\output\*' -s `"$stage/2`" -v6`n"
+Invoke-Call -ScriptBlock {dso template add sample-templates\app-stage2-template-overriden overriden_template -r '.dso\output\*' -s "$stage/2" -v6} -ErrorAction Stop
 
 
 ##################################
@@ -140,20 +133,24 @@ Invoke-Call -ScriptBlock {dso template get -v6 app_stage2_template -s "$stage/2"
 ##################################
 ### edit some tempaltes
 
-# Write-Output "`ndso template edit -v6 overriden_template --global-scope`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template --global-scope} -ErrorAction Stop
+if (${Env:TEST_INTRACTIVELY} -eq "yes")
+{
 
-# Write-Output "`ndso template edit -v6 overriden_template -s $stage --namespace-scope`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template -s $stage --namespace-scope} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 overriden_template --global-scope`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template --global-scope} -ErrorAction Stop
 
-# Write-Output "`ndso template edit -v6 app_template`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 app_template} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 overriden_template -s $stage --namespace-scope`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template -s $stage --namespace-scope} -ErrorAction Stop
 
-# Write-Output "`ndso template edit -v6 app_stage_template -s $stage`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 app_stage_template -s $stage} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 app_template`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 app_template} -ErrorAction Stop
 
-# Write-Output "`ndso template edit -v6 app_stage2_template -s `"$stage/2`"`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 app_stage2_template -s "$stage/2"} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 app_stage_template -s $stage`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 app_stage_template -s $stage} -ErrorAction Stop
+
+    Write-Output "`ndso template edit -v6 app_stage2_template -s `"$stage/2`"`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 app_stage2_template -s "$stage/2"} -ErrorAction Stop
+}
 
 ##################################
 ### get history of some templates
@@ -185,13 +182,13 @@ Write-Output "`ndso template list -v6 -s $stage --uninherited --query-all overri
 Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all overriden_template} -ErrorAction Stop
 
 Write-Output "`ndso template list -v6 -s $stage --uninherited --query-all --include-contents -f json`n"
-Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all --include-contents -f json} -ErrorAction Stop > ".dso\output\template\app-uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --uninherited --query-all --include-contents -f json} -ErrorAction Stop > ".dso\output\app-uninherited-${filename}.json"
 
 Write-Output "`ndso template list -v6 -s $stage --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --query-all -f yaml} -ErrorAction Stop > ".dso\output\template\app-stage-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso template list -v6 -s $stage --query-all -f yaml} -ErrorAction Stop > ".dso\output\app-stage-all-${filename}.yaml"
 
 Write-Output "`ndso template list -v6 -s `"$stage/2`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso template list -v6 -s "$stage/2" --query-all -f yaml} -ErrorAction Stop > ".dso\output\template\app-stage2-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso template list -v6 -s "$stage/2" --query-all -f yaml} -ErrorAction Stop > ".dso\output\app-stage2-all-${filename}.yaml"
 
 ##################################
 ### render templates

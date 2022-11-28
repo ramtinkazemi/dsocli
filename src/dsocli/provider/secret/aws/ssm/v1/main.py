@@ -72,7 +72,7 @@ class AwsSsmSecretProvider(SecretProvider):
         return result
 
 
-    def get(self, key, revision=None, uninherited=False, decrypt=False):
+    def get(self, key, revision=None, uninherited=False, rendered=True):
         Logger.debug(f"Locating SSM secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         found = locate_ssm_parameter_in_context_hierachy(key=key, path_prefix=self.get_path_prefix(), uninherited=uninherited)
         if not found:
@@ -81,7 +81,7 @@ class AwsSsmSecretProvider(SecretProvider):
             if not found['Type'] == 'SecureString':
                 raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         Logger.debug(f"Getting SSM secret: path={found['Name']}")
-        response = get_ssm_secret_history(found['Name'], decrypt)
+        response = get_ssm_secret_history(found['Name'], decrypt=True)
         secrets = sorted(response['Parameters'], key=lambda x: int(x['Version']), reverse=True)
         if revision is None:
             ### get the latest revision

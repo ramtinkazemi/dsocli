@@ -51,7 +51,7 @@ class ShellSecretProvider(SecretProvider):
 
     def list(self, uninherited=False, decrypt=False, filter=None):
         Logger.debug(f"Listing shell secrets: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        secrets = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
+        secrets = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter, raw=True)
         result = []
         for key, details in secrets.items():
             item = {
@@ -63,11 +63,11 @@ class ShellSecretProvider(SecretProvider):
         return result
 
 
-    def get(self, key, revision=None, uninherited=False, decrypt=True):
+    def get(self, key, revision=None, uninherited=False, rendered=True):
         if revision:
             Logger.warn(f"Secret provider 'shell/v1' does not support versioning. Revision request ignored.")
         Logger.debug(f"Getting shell secret '{key}': namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, rendered=decrypt)
+        found = locate_shell_parameter_in_context_hierachy(key=key, store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, rendered=rendered)
         if not found:
             raise DSOException(f"Secret '{key}' not found in the given context: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
         result = {

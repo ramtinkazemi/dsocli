@@ -13,7 +13,9 @@ working_dir=${4:-$root_path}
 
 [ -d .dso/output ] || mkdir .dso/output
 
-export DSO_USE_PAGER=no
+###################################
+
+export DSO_USE_PAGER=${DSO_USE_PAGER:=no}
 
 ###################################
 
@@ -26,18 +28,18 @@ dso config list -v6 -w "${working_dir}"
 printf "\n\ndso config get -v6 -w \"${working_dir}\" --local\n\n"
 dso config list -v6 -w "${working_dir}" --local
 
-printf "\n\ndso config add -v6 -w \"${working_dir}\" test.config some-value\n\n"
-dso config add -v6 -w "${working_dir}" test.config some-value
+printf "\n\ndso config set -v6 -w \"${working_dir}\" test.config some-value\n\n"
+dso config set -v6 -w "${working_dir}" test.config some-value
 
 printf "\n\ndso config get -v6 -w \"${working_dir}\" test.config\n\n"
 dso config get -v6 -w "${working_dir}" test.config
 
-printf "\n\ndso config delete -v6 -w \"${working_dir}\" test.config\n\n"
-dso config delete -v6 -w "${working_dir}" test.config
+printf "\n\ndso config unset -v6 -w \"${working_dir}\" test.config\n\n"
+dso config unset -v6 -w "${working_dir}" test.config
 
-printf "\n\ndso config add -v6 -w \"${working_dir}\" namespace $namespace\n\n"
-dso config add -v6 -w "${working_dir}" namespace $namespace
+printf "\n\ndso config set -v6 -w \"${working_dir}\" namespace $namespace\n\n"
+dso config set -v6 -w "${working_dir}" namespace $namespace
 
-printf "\n\ndso config add -v6 -w \"${working_dir}\" application $application\n\n"
-dso config add -v6 -w "${working_dir}" application $application
+printf "\n\ndso config set -v6 -w \"${working_dir}\" application $application\n\n"
+dso config set -v6 -w "${working_dir}" application $application
 

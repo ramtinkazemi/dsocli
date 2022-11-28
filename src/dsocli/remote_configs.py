@@ -12,11 +12,11 @@ class RemoteConfigService():
         return response
 
 
-    def add(self, key, value):
+    def set(self, key, value):
         # self.validate_key(key)
         from .providers import Providers
         provider = Providers.RemoteConfigProvider()
-        return provider.add(key=key, value=value)
+        return provider.set(key=key, value=value)
 
 
     def get(self, key, revision=None, uninherited=False, rendered=True):
@@ -31,10 +31,10 @@ class RemoteConfigService():
         return provider.history(key)
 
 
-    def delete(self, key):
+    def unset(self, key):
         from .providers import Providers
         provider = Providers.RemoteConfigProvider()
-        return provider.delete(key=key)
+        return provider.unset(key=key)
 
 
 RemoteConfig = RemoteConfigService()

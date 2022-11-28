@@ -51,7 +51,7 @@ class ShellParameterProvider(ParameterProvider):
 
     def list(self, uninherited=False, filter=None):
         Logger.debug(f"Listing shell parameters: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        parameters = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
+        parameters = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter, raw=True)
         result = []
         for key, details in parameters.items():
             item = {

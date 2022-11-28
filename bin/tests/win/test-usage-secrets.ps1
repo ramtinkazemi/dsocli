@@ -23,10 +23,6 @@ $Env:app_stage2_overriden_secret='app_stage2_overriden_secret'
 $ErrorActionPreference = "Stop"
 
 ##################################
-
-$Env:DSO_USE_PAGER = "no"
-
-##################################
 function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorActionPreference) {
     & @ScriptBlock
     if (($lastexitcode -ne 0) -and $ErrorAction -eq "Stop") {
@@ -36,12 +32,10 @@ function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorAct
 
 ##################################
 
-if (!(Test-Path .dso\output\secret)) {
-    New-Item -ItemType Directory -Force -Path .dso\output\secret > $null
+if (!(Test-Path .dso\output)) {
+    New-Item -ItemType Directory -Force -Path .dso\output > $null
 }
-else {
-    Get-ChildItem .dso\output\secret -Recurse | Remove-Item > $null
-}
+
 
 ##################################
 ### delete existing secret, in order to also test overriding configurartions, they will be set later
@@ -70,14 +64,14 @@ Invoke-Call -ScriptBlock {dso secret list -v6 --config "namespace=${namespace}, 
 ##################################
 ### Setting configurations
 
-Write-Output "`ndso config add -v6 namespace ${namespace}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 namespace ${namespace}} -ErrorAction Stop
+Write-Output "`ndso config set -v6 namespace ${namespace}`n"
+Invoke-Call -ScriptBlock {dso config set -v6 namespace ${namespace}} -ErrorAction Stop
 
-Write-Output "`ndso config add -v6 application ${application}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 application ${application}} -ErrorAction Stop
+Write-Output "`ndso config set -v6 application ${application}`n"
+Invoke-Call -ScriptBlock {dso config set -v6 application ${application}} -ErrorAction Stop
 
-Write-Output "`ndso config add -v6 secret.provider.id ${provider}`n"
-Invoke-Call -ScriptBlock {dso config add -v6 secret.provider.id "${provider}"} -ErrorAction Stop
+Write-Output "`ndso config set -v6 secret.provider.id ${provider}`n"
+Invoke-Call -ScriptBlock {dso config set -v6 secret.provider.id "${provider}"} -ErrorAction Stop
 
 
 ##################################
@@ -155,22 +149,24 @@ Invoke-Call -ScriptBlock {dso secret get -v6 app_stage2_secret -s "${stage}/2" -
 
 ##################################
 ### edit some secrets
+if (${Env:TEST_INTRACTIVELY} -eq "yes")
+{
 
-# Write-Output "`ndso secret edit -v6 overriden_secret --global-scope`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret --global-scope} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 overriden_secret --global-scope`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret --global-scope} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 overriden_secret -s ${stage} --namespace-scope`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret -s ${stage} --namespace-scope} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 overriden_secret -s ${stage} --namespace-scope`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret -s ${stage} --namespace-scope} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 app_secret`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 app_secret} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 app_secret`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 app_secret} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 app_stage_secret -s ${stage}`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage_secret -s ${stage}} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 app_stage_secret -s ${stage}`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage_secret -s ${stage}} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 app_stage2_secret -s `"${stage}/2`"`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage2_secret -s "${stage}/2"} -ErrorAction Stop
-
+    Write-Output "`ndso secret edit -v6 app_stage2_secret -s `"${stage}/2`"`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage2_secret -s "${stage}/2"} -ErrorAction Stop
+}
 
 ##################################
 ### getting history of some secrets
@@ -200,10 +196,10 @@ Write-Output "`ndso secret list -v6 -s ${stage} --uninherited --query-all overri
 Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all overriden_secret} -ErrorAction Stop
 
 Write-Output "`ndso secret list -v6 -s ${stage} --uninherited --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\secret\app_stage_uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\app_stage_uninherited-${filename}.json"
 
 Write-Output "`ndso secret list -v6 -s ${stage} --config `"namespace=${namespace}, application=${application}, secret.provider.id=${provider}`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\secret\app_stage_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage_all-${filename}.yaml"
 
 Write-Output "`ndso secret list -v6 -s `"${stage}/2`" --config `"namespace=${namespace}, application=${application}, secret.provider.id=${provider}`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s "${stage}/2" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\secret\app_stage2_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s "${stage}/2" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage2_all-${filename}.yaml"
