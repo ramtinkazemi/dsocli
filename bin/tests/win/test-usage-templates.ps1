@@ -26,10 +26,6 @@ else {
 }
 
 ##################################
-
-$Env:DSO_USE_PAGER = "no"
-
-##################################
 ### delete existing templates, in order to also test overriding configurartions, they will be set later
 
 Write-Output "`ndso template list -v6 --config `"namespace=$namespace, application=$application, template.provider.id=$provider`" --global-scope --uninherited -f json | dso template delete -v6 --namespace $namespace --namespace $namespace --application $application --config `"template.provider.id=$provider`" --global-scope -i - -f json`n"
@@ -140,20 +136,24 @@ Invoke-Call -ScriptBlock {dso template get -v6 app_stage2_template -s "$stage/2"
 ##################################
 ### edit some tempaltes
 
-# Write-Output "`ndso template edit -v6 overriden_template --global-scope`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template --global-scope} -ErrorAction Stop
+if (${Env:TEST_INTRACTIVELY} -eq "yes")
+{
 
-# Write-Output "`ndso template edit -v6 overriden_template -s $stage --namespace-scope`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template -s $stage --namespace-scope} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 overriden_template --global-scope`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template --global-scope} -ErrorAction Stop
 
-# Write-Output "`ndso template edit -v6 app_template`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 app_template} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 overriden_template -s $stage --namespace-scope`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 overriden_template -s $stage --namespace-scope} -ErrorAction Stop
 
-# Write-Output "`ndso template edit -v6 app_stage_template -s $stage`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 app_stage_template -s $stage} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 app_template`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 app_template} -ErrorAction Stop
 
-# Write-Output "`ndso template edit -v6 app_stage2_template -s `"$stage/2`"`n"
-# Invoke-Call -ScriptBlock {dso template edit -v6 app_stage2_template -s "$stage/2"} -ErrorAction Stop
+    Write-Output "`ndso template edit -v6 app_stage_template -s $stage`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 app_stage_template -s $stage} -ErrorAction Stop
+
+    Write-Output "`ndso template edit -v6 app_stage2_template -s `"$stage/2`"`n"
+    Invoke-Call -ScriptBlock {dso template edit -v6 app_stage2_template -s "$stage/2"} -ErrorAction Stop
+}
 
 ##################################
 ### get history of some templates

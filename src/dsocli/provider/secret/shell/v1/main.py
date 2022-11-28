@@ -51,7 +51,7 @@ class ShellSecretProvider(SecretProvider):
 
     def list(self, uninherited=False, decrypt=False, filter=None):
         Logger.debug(f"Listing shell secrets: namespace={Config.get_namespace(ContextMode.Target)}, application={Config.get_application(ContextMode.Target)}, stage={Config.get_stage(ContextMode.Target)}, scope={Config.scope}")
-        secrets = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter)
+        secrets = load_context_shell_parameters(store_name=self.store_name, path_prefix=self.get_path_prefix(), uninherited=uninherited, filter=filter, raw=True)
         result = []
         for key, details in secrets.items():
             item = {

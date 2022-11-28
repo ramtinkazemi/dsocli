@@ -10,11 +10,14 @@ root_path=$(realpath ${bin_path}/../../..)
 namespace=${1:-"test-ns"}
 application=${2:-"test-app"}
 stage=${3:-"test-stage"}
-provider=${4:-"parameter/local/v1"}
+provider=${4:-"local/v1"}
 
-[ -d .dso/output/parameter ] || mkdir -p .dso/output/parameter && rm -rf .dso/output/parameter/*
+[ -d .dso/output ] || mkdir .dso/output
 
-export DSO_USE_PAGER=no
+###################################
+
+export DSO_USE_PAGER=${DSO_USE_PAGER:=no}
+export TEST_INTRACTIVELY=${TEST_INTRACTIVELY:=yes}
 
 ###################################
 
@@ -139,20 +142,22 @@ dso parameter get -v6 app_stage2_parameter -s $stage/2 -f text
 ###################################
 ### edit some parameters
 
-# printf "\n\ndso parameter edit -v6 overriden_parameter --global-scope\n\n"
-# dso parameter edit -v6 overriden_parameter --global-scope
+if [ ${TEST_INTRACTIVELY} = 'yes' ]; then 
+    printf "\n\ndso parameter edit -v6 overriden_parameter --global-scope\n\n"
+    dso parameter edit -v6 overriden_parameter --global-scope
 
-# printf "\n\ndso parameter edit -v6 overriden_parameter -s $stage --namespace-scope\n\n"
-# dso parameter edit -v6 overriden_parameter -s $stage --namespace-scope
+    printf "\n\ndso parameter edit -v6 overriden_parameter -s $stage --namespace-scope\n\n"
+    dso parameter edit -v6 overriden_parameter -s $stage --namespace-scope
 
-# printf "\n\ndso parameter edit -v6 app_parameter\n\n"
-# dso parameter edit -v6 app_parameter
+    printf "\n\ndso parameter edit -v6 app_parameter\n\n"
+    dso parameter edit -v6 app_parameter
 
-# printf "\n\ndso parameter edit -v6 app_stage_parameter -s $stage\n\n"
-# dso parameter edit -v6 app_stage_parameter -s $stage
+    printf "\n\ndso parameter edit -v6 app_stage_parameter -s $stage\n\n"
+    dso parameter edit -v6 app_stage_parameter -s $stage
 
-# printf "\n\ndso parameter edit -v6 app_stage2_parameter -s $stage/2\n\n"
-# dso parameter edit -v6 app_stage2_parameter -s $stage/2
+    printf "\n\ndso parameter edit -v6 app_stage2_parameter -s $stage/2\n\n"
+    dso parameter edit -v6 app_stage2_parameter -s $stage/2
+fi
 
 ###################################
 ### getting history of some parameters
@@ -179,13 +184,13 @@ printf "\n\ndso parameter list -v6 -s $stage --uninherited --query-all overriden
 dso parameter list -v6 -s $stage --uninherited --query-all overriden_parameter 
 
 printf "\n\ndso parameter list -v6 -s $stage --uninherited --query-all -f json\n\n"
-dso parameter list -v6 -s $stage --uninherited --query-all -f json > .dso/output/parameter/app-uninherited-${provider%%/*}.json
+dso parameter list -v6 -s $stage --uninherited --query-all -f json > .dso/output/app-uninherited-${provider%%/*}.json
 
 printf "\n\ndso parameter list -v6 -s $stage --query-all -f yaml\n\n"
-dso parameter list -v6 -s $stage --query-all -f yaml > .dso/output/parameter/app-stage-all-${provider%%/*}.yaml
+dso parameter list -v6 -s $stage --query-all -f yaml > .dso/output/app-stage-all-${provider%%/*}.yaml
 
 printf "\n\ndso parameter list -v6 -s $stage/2 --query-all -f yaml\n\n"
-dso parameter list -v6 -s $stage/2 --query-all -f yaml > .dso/output/parameter/app-stage2-all-${provider%%/*}.yaml
+dso parameter list -v6 -s $stage/2 --query-all -f yaml > .dso/output/app-stage2-all-${provider%%/*}.yaml
 
 
 

@@ -9,6 +9,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+##################################
+
+$Env:DSO_USE_PAGER = "no"
+$Env:TEST_INTRACTIVELY = "yes"
 
 ##################################
 

@@ -9,11 +9,14 @@ root_path=$(realpath ${bin_path}/../../..)
 namespace=${1:-"test-ns"}
 application=${2:-"test-app"}
 stage=${3:-"test-stage"}
-provider=${4:-"secret/local/v1"}
+provider=${4:-"local/v1"}
 
-[ -d .dso/output/secret ] || mkdir -p .dso/output/secret && rm -rf .dso/output/secret/*
+[ -d .dso/output ] || mkdir .dso/output
 
-export DSO_USE_PAGER=no
+###################################
+
+export DSO_USE_PAGER=${DSO_USE_PAGER:=no}
+export TEST_INTRACTIVELY=${TEST_INTRACTIVELY:=yes}
 
 ###################################
 export global_secret='global secret'
@@ -187,21 +190,24 @@ dso secret get -v6 app_stage2_secret -s $stage/2 -f text
 ###################################
 ### edit some secrets
 
-# printf "\n\ndso secret edit -v6 overriden_secret --global-scope\n\n"
-# dso secret edit -v6 overriden_secret --global-scope -v6
+if [ ${TEST_INTRACTIVELY} = 'yes' ]; then 
 
-# printf "\n\ndso secret edit -v6 overriden_secret -s $stage --namespace-scope\n\n"
-# dso secret edit -v6 overriden_secret -s $stage --namespace-scope
+    printf "\n\ndso secret edit -v6 overriden_secret --global-scope\n\n"
+    dso secret edit -v6 overriden_secret --global-scope -v6
 
-# printf "\n\ndso secret edit -v6 app_secret\n\n"
-# dso secret edit -v6 app_secret
+    printf "\n\ndso secret edit -v6 overriden_secret -s $stage --namespace-scope\n\n"
+    dso secret edit -v6 overriden_secret -s $stage --namespace-scope
 
-# printf "\n\ndso secret edit -v6 app_stage_secret -s $stage\n\n"
-# dso secret edit -v6 app_stage_secret -s $stage
+    printf "\n\ndso secret edit -v6 app_secret\n\n"
+    dso secret edit -v6 app_secret
 
-# printf "\n\ndso secret edit -v6 app_stage2_secret -s $stage/2\n\n"
-# dso secret edit -v6 app_stage2_secret -s $stage/2
+    printf "\n\ndso secret edit -v6 app_stage_secret -s $stage\n\n"
+    dso secret edit -v6 app_stage_secret -s $stage
 
+    printf "\n\ndso secret edit -v6 app_stage2_secret -s $stage/2\n\n"
+    dso secret edit -v6 app_stage2_secret -s $stage/2
+
+fi
 
 ###################################
 ### getting history of some secrets
@@ -229,10 +235,10 @@ printf "\n\ndso secret list -v6 -s $stage --uninherited --query-all overriden_se
 dso secret list -v6 -s $stage --uninherited --query-all overriden_secret
 
 printf "\n\ndso secret list -v6 -s $stage --uninherited -d --query-all -f json\n\n"
-dso secret list -v6 -s $stage --uninherited -d --query-all -f json > .dso/output/secret/app-stage-uninherited-${provider%%/*}.json
+dso secret list -v6 -s $stage --uninherited -d --query-all -f json > .dso/output/app-stage-uninherited-${provider%%/*}.json
 
 printf "\n\ndso secret list -v6 -s $stage -d --query-all -f yaml\n\n"
-dso secret list -v6 -s $stage -d --query-all -f yaml > .dso/output/secret/app-stage-all-${provider%%/*}.yaml
+dso secret list -v6 -s $stage -d --query-all -f yaml > .dso/output/app-stage-all-${provider%%/*}.yaml
 
 printf "\n\ndso secret list -v6 -s $stage/2 -d --query-all -f yaml\n\n"
-dso secret list -v6 -s $stage/2 -d --query-all -f yaml > .dso/output/secret/app-stage2-all-${provider%%/*}.yaml
+dso secret list -v6 -s $stage/2 -d --query-all -f yaml > .dso/output/app-stage2-all-${provider%%/*}.yaml

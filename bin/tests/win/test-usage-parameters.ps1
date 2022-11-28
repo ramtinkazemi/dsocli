@@ -9,10 +9,6 @@ param(
 $ErrorActionPreference = "Stop"
 
 ##################################
-
-$Env:DSO_USE_PAGER = "no"
-
-##################################
 function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorActionPreference) {
     & @ScriptBlock
     if (($lastexitcode -ne 0) -and $ErrorAction -eq "Stop") {
@@ -145,22 +141,24 @@ Invoke-Call -ScriptBlock {dso parameter get -v6 app_stage2_parameter -s "${stage
 
 ##################################
 ### edit some parameters
+if (${Env:TEST_INTRACTIVELY} -eq "yes")
+{
 
-# Write-Output "`ndso parameter edit -v6 overriden_parameter --global-scope`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter --global-scope} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 overriden_parameter --global-scope`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter --global-scope} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 overriden_parameter -s ${stage} --namespace-scope} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 app_parameter`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 app_parameter} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 app_parameter`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 app_parameter} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 app_stage_parameter -s ${stage}`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage_parameter -s ${stage}} -ErrorAction Stop
+    Write-Output "`ndso parameter edit -v6 app_stage_parameter -s ${stage}`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage_parameter -s ${stage}} -ErrorAction Stop
 
-# Write-Output "`ndso parameter edit -v6 app_stage2_parameter -s `"${stage}/2`"`n"
-# Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage2_parameter -s "${stage}/2"} -ErrorAction Stop
-
+    Write-Output "`ndso parameter edit -v6 app_stage2_parameter -s `"${stage}/2`"`n"
+    Invoke-Call -ScriptBlock {dso parameter edit -v6 app_stage2_parameter -s "${stage}/2"} -ErrorAction Stop
+}
 
 ##################################
 ### getting history of some parameters

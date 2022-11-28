@@ -13,7 +13,9 @@ working_dir=${4:-$root_path}
 
 [ -d .dso/output ] || mkdir .dso/output
 
-export DSO_USE_PAGER=no
+###################################
+
+export DSO_USE_PAGER=${DSO_USE_PAGER:=no}
 
 ###################################
 

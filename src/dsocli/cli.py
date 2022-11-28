@@ -1026,16 +1026,13 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
         scope = ContextScope.Global if global_scope else ContextScope.Namespace if namespace_scope else ContextScope.App
 
         if input:
-            # validate_none_provided([key], ["KEY"], ["'-i' / '--input'"])
             validate_none_provided([contents_path], ["PATH"], ["'-i' / '--input'"])
-            # validate_none_provided([render_path], ["'-r' / '--render-path'"], ["'-i' / '--input'"])
             
             templates = read_data(input, 'Templates', ['Key', 'Contents', 'RenderPath'], format)
 
         ### no input file
         else:
             validate_provided(contents_path, "PATH") 
-            # validate_provided(key, "'KEY")
             if not key:
                 key = '**/*'
             else:
@@ -1060,8 +1057,8 @@ def add_template(contents_path, recursive, key, render_path, stage, global_scope
 
             ### use the current dir as the base for render path
             if not render_path:
-                # render_path = f'{Config.config_dir}{os.sep}output{os.sep}**{os.sep}*'
-                render_path = f'**{os.sep}*'
+                render_path = f'{Config.config_dir}{os.sep}output{os.sep}**{os.sep}*'
+                # render_path = f'**{os.sep}*'
             else:
                 if not '*' in render_path:
                     render_path = f'{render_path}{os.sep}**{os.sep}*'

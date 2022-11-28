@@ -11,6 +11,13 @@ application=${2:-"test-app"}
 stage=${3:-"test-stage"}
 working_dir=${4:-$root_path}
 
+[ -d .dso/output ] || mkdir .dso/output && rm -rf .dso/output/*
+
+###################################
+
+export DSO_USE_PAGER=${DSO_USE_PAGER:=no}
+export TEST_INTRACTIVELY=${TEST_INTRACTIVELY:=yes}
+
 ###################################
 
 $bin_path/test-usage-config.sh $namespace $application $stage $working_dir

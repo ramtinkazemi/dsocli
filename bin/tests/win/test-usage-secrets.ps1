@@ -23,10 +23,6 @@ $Env:app_stage2_overriden_secret='app_stage2_overriden_secret'
 $ErrorActionPreference = "Stop"
 
 ##################################
-
-$Env:DSO_USE_PAGER = "no"
-
-##################################
 function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorActionPreference) {
     & @ScriptBlock
     if (($lastexitcode -ne 0) -and $ErrorAction -eq "Stop") {
@@ -155,22 +151,24 @@ Invoke-Call -ScriptBlock {dso secret get -v6 app_stage2_secret -s "${stage}/2" -
 
 ##################################
 ### edit some secrets
+if (${Env:TEST_INTRACTIVELY} -eq "yes")
+{
 
-# Write-Output "`ndso secret edit -v6 overriden_secret --global-scope`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret --global-scope} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 overriden_secret --global-scope`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret --global-scope} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 overriden_secret -s ${stage} --namespace-scope`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret -s ${stage} --namespace-scope} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 overriden_secret -s ${stage} --namespace-scope`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 overriden_secret -s ${stage} --namespace-scope} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 app_secret`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 app_secret} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 app_secret`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 app_secret} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 app_stage_secret -s ${stage}`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage_secret -s ${stage}} -ErrorAction Stop
+    Write-Output "`ndso secret edit -v6 app_stage_secret -s ${stage}`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage_secret -s ${stage}} -ErrorAction Stop
 
-# Write-Output "`ndso secret edit -v6 app_stage2_secret -s `"${stage}/2`"`n"
-# Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage2_secret -s "${stage}/2"} -ErrorAction Stop
-
+    Write-Output "`ndso secret edit -v6 app_stage2_secret -s `"${stage}/2`"`n"
+    Invoke-Call -ScriptBlock {dso secret edit -v6 app_stage2_secret -s "${stage}/2"} -ErrorAction Stop
+}
 
 ##################################
 ### getting history of some secrets

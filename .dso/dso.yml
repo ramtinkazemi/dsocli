@@ -19,6 +19,7 @@ template:
     id: local/v1
     spec: {}
   renderPath:
+    new-keys: ./.dso/output/new-keys
     gt: ./.dso/output/gt
     gst: ./.dso/output/gst
     nt: ./.dso/output/nt
@@ -27,66 +28,6 @@ template:
     ast: ./.dso/output/ast
     as2t: ./.dso/output/as2t
     ot: ./.dso/output/ot
-    app-stage-template-overriden: ./.dso/output/app-stage-template-overriden
-    app-stage2-template: ./.dso/output/app-stage2-template
-    app-stage2-template-overriden: ./.dso/output/app-stage2-template-overriden
-    app-template: ./.dso/output/app-template
-    app-template-overriden: ./.dso/output/app-template-overriden
-    global-stage-template: ./.dso/output/global-stage-template
-    global-stage-template-overriden: ./.dso/output/global-stage-template-overriden
-    global-template: ./.dso/output/global-template
-    global-template-overriden: ./.dso/output/global-template-overriden
-    include-me: ./.dso/output/include-me
-    namespace-stage-template: ./.dso/output/namespace-stage-template
-    namespace-stage-template-overriden: ./.dso/output/namespace-stage-template-overriden
-    namespace-template: ./.dso/output/namespace-template
-    namespace-template-overriden: ./.dso/output/namespace-template-overriden
-    subfolder/app-stage-template: ./.dso/output/subfolder/app-stage-template
-    subfolder/app-stage-template-overriden: ./.dso/output/subfolder/app-stage-template-overriden
-    subfolder/app-stage2-template: ./.dso/output/subfolder/app-stage2-template
-    subfolder/app-stage2-template-overriden: ./.dso/output/subfolder/app-stage2-template-overriden
-    subfolder/app-template: ./.dso/output/subfolder/app-template
-    subfolder/app-template-overriden: ./.dso/output/subfolder/app-template-overriden
-    subfolder/global-stage-template: ./.dso/output/subfolder/global-stage-template
-    subfolder/global-stage-template-overriden: ./.dso/output/subfolder/global-stage-template-overriden
-    subfolder/global-template: ./.dso/output/subfolder/global-template
-    subfolder/global-template-overriden: ./.dso/output/subfolder/global-template-overriden
-    subfolder/include-me: ./.dso/output/subfolder/include-me
-    subfolder/namespace-stage-template: ./.dso/output/subfolder/namespace-stage-template
-    subfolder/namespace-stage-template-overriden: ./.dso/output/subfolder/namespace-stage-template-overriden
-    subfolder/namespace-template: ./.dso/output/subfolder/namespace-template
-    subfolder/namespace-template-overriden: ./.dso/output/subfolder/namespace-template-overriden
-    new-keys: ./.dso/output/new-keys
-    new-keys/app-stage-template: ./.dso/output/new-keys/app-stage-template
-    new-keys/app-stage-template-overriden: ./.dso/output/new-keys/app-stage-template-overriden
-    new-keys/app-stage2-template: ./.dso/output/new-keys/app-stage2-template
-    new-keys/app-stage2-template-overriden: ./.dso/output/new-keys/app-stage2-template-overriden
-    new-keys/app-template: ./.dso/output/new-keys/app-template
-    new-keys/app-template-overriden: ./.dso/output/new-keys/app-template-overriden
-    new-keys/global-stage-template: ./.dso/output/new-keys/global-stage-template
-    new-keys/global-stage-template-overriden: ./.dso/output/new-keys/global-stage-template-overriden
-    new-keys/global-template: ./.dso/output/new-keys/global-template
-    new-keys/global-template-overriden: ./.dso/output/new-keys/global-template-overriden
-    new-keys/include-me: ./.dso/output/new-keys/include-me
-    new-keys/namespace-stage-template: ./.dso/output/new-keys/namespace-stage-template
-    new-keys/namespace-stage-template-overriden: ./.dso/output/new-keys/namespace-stage-template-overriden
-    new-keys/namespace-template: ./.dso/output/new-keys/namespace-template
-    new-keys/namespace-template-overriden: ./.dso/output/new-keys/namespace-template-overriden
-    new-keys/subfolder/app-stage-template: ./.dso/output/new-keys/subfolder/app-stage-template
-    new-keys/subfolder/app-stage-template-overriden: ./.dso/output/new-keys/subfolder/app-stage-template-overriden
-    new-keys/subfolder/app-stage2-template: ./.dso/output/new-keys/subfolder/app-stage2-template
-    new-keys/subfolder/app-stage2-template-overriden: ./.dso/output/new-keys/subfolder/app-stage2-template-overriden
-    new-keys/subfolder/app-template: ./.dso/output/new-keys/subfolder/app-template
-    new-keys/subfolder/app-template-overriden: ./.dso/output/new-keys/subfolder/app-template-overriden
-    new-keys/subfolder/global-stage-template: ./.dso/output/new-keys/subfolder/global-stage-template
-    new-keys/subfolder/global-stage-template-overriden: ./.dso/output/new-keys/subfolder/global-stage-template-overriden
-    new-keys/subfolder/global-template: ./.dso/output/new-keys/subfolder/global-template
-    new-keys/subfolder/global-template-overriden: ./.dso/output/new-keys/subfolder/global-template-overriden
-    new-keys/subfolder/include-me: ./.dso/output/new-keys/subfolder/include-me
-    new-keys/subfolder/namespace-stage-template: ./.dso/output/new-keys/subfolder/namespace-stage-template
-    new-keys/subfolder/namespace-stage-template-overriden: ./.dso/output/new-keys/subfolder/namespace-stage-template-overriden
-    new-keys/subfolder/namespace-template: ./.dso/output/new-keys/subfolder/namespace-template
-    new-keys/subfolder/namespace-template-overriden: ./.dso/output/new-keys/subfolder/namespace-template-overriden
 artifactory:
   provider:
     id: aws/s3/v1
