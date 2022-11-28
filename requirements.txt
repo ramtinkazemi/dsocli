@@ -26,28 +26,12 @@ colorama==0.4.6
     # via -r requirements/prod.in
 coloredlogs==15.0.1
     # via -r requirements/prod.in
-commonmark==0.9.1
-    # via rich
-cryptography==38.0.4
-    # via secretstorage
 decorator==5.1.1
     # via validators
 humanfriendly==10.0
     # via coloredlogs
 idna==3.4
     # via requests
-importlib-metadata==5.1.0
-    # via
-    #   keyring
-    #   twine
-iniconfig==1.1.1
-    # via pytest
-jaraco-classes==3.2.3
-    # via keyring
-jeepney==0.8.0
-    # via
-    #   keyring
-    #   secretstorage
 jinja2==3.1.2
     # via -r requirements/prod.in
 jmespath==1.0.1
@@ -73,36 +57,14 @@ six==1.16.0
     #   validators
 stdiomask==0.0.6
     # via -r requirements/prod.in
-toml==0.10.2
-    # via pre-commit
-tomli==2.0.1
-    # via
-    #   build
-    #   pep517
-    #   pytest
-    #   tox
-tox==3.27.1
-    # via -r requirements/dev.in
-twine==4.0.1
-    # via -r requirements/dev.in
 urllib3==1.26.13
     # via
     #   botocore
     #   requests
 validators==0.18.2
     # via click-params
-virtualenv==20.17.0
-    # via
-    #   pre-commit
-    #   tox
-webencodings==0.5.1
-    # via bleach
 wheel==0.38.4
-    # via
-    #   -r requirements/prod.in
-    #   pip-tools
-zipp==3.11.0
-    # via importlib-metadata
+    # via -r requirements/prod.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
