@@ -20,14 +20,14 @@ template:
     spec: {}
   renderPath:
     new-keys: ./.dso/output/new-keys
-    gt: ./.dso/output/gt
-    gst: ./.dso/output/gst
-    nt: ./.dso/output/nt
-    nst: ./.dso/output/nst
-    at: ./.dso/output/at
-    ast: ./.dso/output/ast
-    as2t: ./.dso/output/as2t
-    ot: ./.dso/output/ot
+    global-template: .\.dso\output\global-template
+    global_stage_template: .\.dso\output\global_stage_template
+    namespace_template: .\'\namespace_template'
+    namespace_stage_template: .\.dso\output\template\namespace_stage_template
+    app_template: .\.dso\output\template\app_template
+    app_stage_template: .\.dso\output\template\app_stage_template
+    app_stage2_template: .\.dso\output\template\app_stage2_template
+    overriden_template: .\.dso\output\template\overriden_template
 artifactory:
   provider:
     id: aws/s3/v1

@@ -32,12 +32,10 @@ function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorAct
 
 ##################################
 
-if (!(Test-Path .dso\output\secret)) {
-    New-Item -ItemType Directory -Force -Path .dso\output\secret > $null
+if (!(Test-Path .dso\output)) {
+    New-Item -ItemType Directory -Force -Path .dso\output > $null
 }
-else {
-    Get-ChildItem .dso\output\secret -Recurse | Remove-Item > $null
-}
+
 
 ##################################
 ### delete existing secret, in order to also test overriding configurartions, they will be set later
@@ -198,10 +196,10 @@ Write-Output "`ndso secret list -v6 -s ${stage} --uninherited --query-all overri
 Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all overriden_secret} -ErrorAction Stop
 
 Write-Output "`ndso secret list -v6 -s ${stage} --uninherited --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\secret\app_stage_uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\app_stage_uninherited-${filename}.json"
 
 Write-Output "`ndso secret list -v6 -s ${stage} --config `"namespace=${namespace}, application=${application}, secret.provider.id=${provider}`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\secret\app_stage_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s ${stage} --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage_all-${filename}.yaml"
 
 Write-Output "`ndso secret list -v6 -s `"${stage}/2`" --config `"namespace=${namespace}, application=${application}, secret.provider.id=${provider}`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso secret list -v6 -s "${stage}/2" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\secret\app_stage2_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso secret list -v6 -s "${stage}/2" --config "namespace=${namespace}, application=${application}, secret.provider.id=${provider}" --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage2_all-${filename}.yaml"

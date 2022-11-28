@@ -18,11 +18,8 @@ function Invoke-Call([scriptblock]$ScriptBlock, [string]$ErrorAction = $ErrorAct
 
 ##################################
 
-if (!(Test-Path .dso\output\parameter)) {
-    New-Item -ItemType Directory -Force -Path .dso\output\parameter > $null
-}
-else {
-    Get-ChildItem .dso\output\parameter -Recurse | Remove-Item > $null
+if (!(Test-Path .dso\output)) {
+    New-Item -ItemType Directory -Force -Path .dso\output > $null
 }
 
 ##################################
@@ -188,10 +185,10 @@ Write-Output "`ndso parameter list -v6 -s ${stage} --uninherited --query-all ove
 Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --uninherited --query-all overriden_parameter} -ErrorAction Stop
 
 Write-Output "`ndso parameter list -v6 -s ${stage} --uninherited --query-all -f json`n"
-Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\parameter\app_stage_uninherited-${filename}.json"
+Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --uninherited --query-all -f json} -ErrorAction Stop > ".dso\output\app_stage_uninherited-${filename}.json"
 
 Write-Output "`ndso parameter list -v6 -s ${stage} --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --query-all -f yaml} -ErrorAction Stop > ".dso\output\parameter\app_stage_all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso parameter list -v6 -s ${stage} --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage_all-${filename}.yaml"
 
 Write-Output "`ndso parameter list -v6 -s `"${stage}/2`" --query-all -f yaml`n"
-Invoke-Call -ScriptBlock {dso parameter list -v6 -s "${stage}/2" --query-all -f yaml} -ErrorAction Stop > ".dso\output\parameter\app_stage2-all-${filename}.yaml"
+Invoke-Call -ScriptBlock {dso parameter list -v6 -s "${stage}/2" --query-all -f yaml} -ErrorAction Stop > ".dso\output\app_stage2-all-${filename}.yaml"

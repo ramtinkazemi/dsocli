@@ -21,9 +21,13 @@ $Env:TEST_INTRACTIVELY = "yes"
 
 ##################################
 
-if (!(Test-Path tests\output)) {
-    New-Item -ItemType Directory -Force -Path tests\output > $null
+if (!(Test-Path .dso\output)) {
+    New-Item -ItemType Directory -Force -Path .dso\output > $null
 }
+else {
+    Get-ChildItem .dso\output -Recurse | Remove-Item > $null
+}
+
 
 ##################################
 
